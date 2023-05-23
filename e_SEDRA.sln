@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.5.33530.505
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{13B669BE-BB05-4DDF-9536-439F39A36129}") = "e_SEDRA", "e_SEDRA.phpproj", "{D7EEFBAF-ADD3-411A-ADF6-5B531786935B}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{D7EEFBAF-ADD3-411A-ADF6-5B531786935B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D7EEFBAF-ADD3-411A-ADF6-5B531786935B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D7EEFBAF-ADD3-411A-ADF6-5B531786935B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D7EEFBAF-ADD3-411A-ADF6-5B531786935B}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {DEDAD3CB-7CF6-4BFA-9F5D-7C8E2E325AC6}
+	EndGlobalSection
+EndGlobal

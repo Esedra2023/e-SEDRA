@@ -1,0 +1,20 @@
+[
+  {
+    "outputFileName": "css/custom.min.css",
+    "inputFiles": [
+      "css/custom.css"
+    ]
+  },
+  {
+    "outputFileName": "css/common.min.css",
+    "inputFiles": [
+      "css/common.css"
+    ]
+  },
+  {
+    "outputFileName": "nested-comments-main/commentBox.min.js",
+    "inputFiles": [
+      "nested-comments-main/commentBox.js"
+    ]
+  }
+]
