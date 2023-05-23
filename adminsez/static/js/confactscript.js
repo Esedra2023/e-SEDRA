@@ -109,10 +109,7 @@ var activobj = [{ act:[300],
     }
 ];
 
-//const obj = {
-//    demo: 'none',
-//    rank: 'Captain'
-//};
+
 
 function searchobj(ac) {
     for (let i = 0; i < activobj.length; i++) {
@@ -349,7 +346,7 @@ async function readStelleFromDb(act) {
         }
     },
         failResponse => {
-            //console.log("promessa fallita in readstelle");
+            console.log("promessa fallita in readstelle");
             return null;
         }
     );
@@ -384,7 +381,7 @@ async function call_ajax_edit_act(act) {
         }
     },
         failResponse => {
-            //console.log("promessa fallita in edit act");
+            console.log("promessa fallita in edit act");
             return null;
         }
     );
@@ -405,7 +402,7 @@ async function call_ajax_edit_act(act) {
         }
     },
         failResponse => {
-            //console.log("promessa 2 fallita in edit act");
+            console.log("promessa 2 fallita in edit act");
             return null;
         }
     );
@@ -502,7 +499,7 @@ function showActivity(ac) {
             savebtn.disabled = '';
             document.getElementById("allbuttonAct").disabled = '';
         //}
-    } else { //console.log('show activity riceve null'); } 
+    } else { console.log('show activity riceve null'); } 
 }
 
 
@@ -551,7 +548,7 @@ async function call_ajax_delete_data(id) {
         .then(
             function (response) {
                 if (response.status !== 200) {
-                    //console.log('Looks like there was a problem. Status Code: ' +response.status);
+                    console.log('Looks like there was a problem. Status Code: ' +response.status);
                     return;
                 }
                 // Examine the text in the response
@@ -666,7 +663,7 @@ async function call_ajax_save_act(act, ruoliAuto) {
         }
     },
         failResponse => {
-            //console.log("promessa 1 fallita in save act");
+            console.log("promessa 1 fallita in save act");
             return null;
         }
     );
@@ -736,7 +733,7 @@ async function call_ajax_save_act(act, ruoliAuto) {
         }
     },
         failResponse => {
-            //console.log("promessa 3 fallita in save act");
+            console.log("promessa 3 fallita in save act");
             return null;
         }
     );
@@ -761,7 +758,7 @@ async function call_ajax_save_act(act, ruoliAuto) {
 //codice di esempio con una promessa
 //    async function fetchProducts() {
 //        try {
-//            const response = await fetch('https://mdn.github.io/learning-area/javascript/apis/fetching-data/can-store/products.json');
+//            const response = await fetch('https://products.json');
 //            if (!response.ok) {
 //                throw new Error(`HTTP error: ${response.status}`);
 //            }
