@@ -44,6 +44,39 @@ async function call_ajax_rootpath() {
     rootPATH = result;
 }
 
+function abilitaFS(fs, ab) {
+    if (ab) {
+        if (fs.disabled)
+            fs.disabled = false;
+    }
+    else {
+        if (!fs.disabled)
+            fs.disabled = true;
+    }
+}
+
+function vediPulsante(bot, vedi) {
+    if (vedi) {
+        if (bot.classList.contains("d-none"))
+            bot.classList.remove("d-none");
+    }
+    else {
+        if (!bot.classList.contains("d-none"))
+            bot.classList.add("d-none");
+    }
+}
+
+function resetHidden() {
+    document.getElementById("hidden_post_id").value = 0;
+}
+
+function setHidden(bis) {
+    document.getElementById("hidden_post_id").value = bis;
+}
+
+function getHidden() {
+    return (document.getElementById("hidden_post_id").value);
+}
 
 function btnPubUnpub(pub, elem, span) {
     if (pub) {

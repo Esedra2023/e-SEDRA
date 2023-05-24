@@ -39,10 +39,11 @@
 				<!-- validation errors for the form -->		
 
 				<!-- if editing post, the id is required to identify that post -->
-                <fieldset id="fsForm" disabled>
+               
 						<?php if (isset($_POST['hidden_post_id'])) $hi=$_POST['hidden_post_id'];else $hi=0;?>
 						<input type="hidden" id="hidden_post_id" name="hidden_post_id" value="<?php echo $hi; ?>">
-						<div class="form-floating col-md-12 mb-3">                                    
+					 <fieldset id="fsForm" disabled>
+                         <div class="form-floating col-md-12 mb-3">                                    
 							<input class="form-control" type="text" id="titleBis" name="titleBis" value="" maxlength="60" required>
 							<label for="titleBis" class="form-label">*Titolo (max 60 caratteri)</label>
 						</div>
@@ -70,10 +71,11 @@
 								<label for="moreambito" class="form-label">Specificare</label>
 							</div>
 						</div>
-				
+				    </fieldset>
 						<hr />
 						<!-- Only admin users o revisor can view publish input field -->
 						<!-- display checkbox according to whether post has been published or not -->
+                    <fieldset id="fsRev">
 						<div id="revisioning" class="row g-1 <?php if(!isset( $_POST['revisionsect']) || $_POST['revisionsect']!=1) echo 'd-none';?>">					
 							<div class="form-floating mb-3 col-sm-7">
 								<input class="form-control" type="text" value="" id="NdR" name="NdR" />
@@ -129,7 +131,8 @@
     if (canc) {
         canc.addEventListener("click", function () {
             //console.log('click su annulla');
-            resetAccordion(collapsableBis, "btnAccBis", formBis,);
+            resetAccordion(collapsableBis, "btnAccBis", formBis," Segnala nuovo Bisogno");
+            resetHidden();
         });
     }
 
@@ -158,8 +161,9 @@
 }) //end ready
 
 //ok per revisione - per pubblicazione cambiato tolto il settaggio del titolo
-function showBisogno(bis, mod) {
+function showBisogno(bis, crud) {
     document.getElementById("hidden_post_id").value = bis['idBs'];
+    console.log("valore di hidden ", bis['idBs']);
     document.getElementById("titleBis").value = bis['titleBis'];
     document.getElementById("textBis").value = bis['textBis'];
     document.getElementById("topic_id").value = bis['ambito'];
@@ -187,19 +191,56 @@ function showBisogno(bis, mod) {
         pb.checked = bis['pubblicato'];
         toggleBtnPub();
     }
-    var fieldsetBis = document.getElementById("fsForm");
-    if (!mod || bis['deleted'] == 1) {
-        fieldsetBis.disabled = 'disabled';
-        //    if(revBis)
-        //        revBis.style.display = 'none';
+         var fsForm = document.getElementById("fsForm");
+   /*     var fsDatiPro = document.getElementById("fsDatiPro");*/
+        var fsRev = document.getElementById("fsRev");
+        let cp = document.getElementById("confirmBis");
+
+     if (crud == 'U') {
+            abilitaFS(fsForm, true);
+         vediPulsante(cp, true);
+         if (pb.disabled) pb.disabled = false;
+             cp.value = "Conferma Dati";
+            settaTitleAccordion("btnAccBis", "Modifica Bisogno");
+        }
+        if (crud == 'D') {
+            abilitaFS(fsForm, false);
+            abilitaFS(fsRev, true);
+            pb.disabled = true;
+            cp.value = "Cancella";
+            vediPulsante(cp, true);
+            settaTitleAccordion("btnAccBis", "Cancella Bisogno");
+        }
+        if (crud == 'R') {
+            abilitaFS(fsForm, true);
+            abilitaFS(fsRev, true);
+            cp.value = "Conferma Dati";
+            vediPulsante(cp, true);
+            if(pb.disabled) pb.disabled = false;
+            settaTitleAccordion("btnAccBis", "Revisiona Bisogno");
+        }
+        if (crud == 'V' || bis['deleted'] == 1) {
+            abilitaFS(fsForm, false);
+            abilitaFS(fsRev, false);
+            vediPulsante(cp, false);
+            settaTitleAccordion("btnAccBis", "Vedi Bisogno");
     }
-    else fieldsetBis.disabled = '';
+
+     collapsableBis.show();
+    //var fieldsetBis = document.getElementById("fsForm");
+    //if (!mod || bis['deleted'] == 1) {
+    //    fieldsetBis.disabled = 'disabled';
+    //    //    if(revBis)
+    //    //        revBis.style.display = 'none';
+    //}
+    //else fieldsetBis.disabled = '';
 }
 
 
 //ok per revisione in pub rimane uguale
-async function call_ajax_edit_bis(bis, mod,accord) {
+async function call_ajax_edit_bis(bis, crud) {
     //console.log(bis);
+    setHidden(bis);
     var pub = 0;
     var data = new FormData;
     data.append("idBis", bis);
@@ -224,8 +265,8 @@ async function call_ajax_edit_bis(bis, mod,accord) {
     let result = await promo;
     if (result) {
         //console.log(result);
-        showBisogno(result, mod);
-        accord.show();
+        showBisogno(result, crud);
+        //accord.show();
     }
 }
 

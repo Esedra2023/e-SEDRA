@@ -277,7 +277,7 @@ function  processUserRolesString($users, $campokey)
     {
         //$n=count($u);
         $pu=$u[0];
-        //$pu[$campokey]=$key;
+        $pu[$campokey]=$key;
 
         //$pu['idUs']=$u[0]['idUs'];
         //$pu['email']=$key;

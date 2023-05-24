@@ -69,7 +69,7 @@ ready(function () {
     if (lvwb) {
         for (let i = 0; i < lvwb.length; i++) {
             lvwb[i].addEventListener("mouseover", (e) => { e.target.style.cursor = 'pointer'; });
-            lvwb[i].addEventListener("click", (e) => { let idBisogno = e.target.dataset.idbis; call_ajax_edit_bis(idBisogno, false, collapsableBis); });
+            lvwb[i].addEventListener("click", (e) => { let idBisogno = e.target.dataset.idbis; call_ajax_edit_bis(idBisogno, 'V'); });
         }
     }
 
@@ -85,7 +85,7 @@ ready(function () {
             let span = null;
             if (elem.classList.contains("linkstylebutton")) {
                 let idBisogno = elem.dataset.idbis;
-                call_ajax_edit_bis(idBisogno, false, collapsableBis);      //false disabilita i campi
+                call_ajax_edit_bis(idBisogno, 'V');      //false disabilita i campi
             }
             else {
                 if (e.target.nodeName == 'SPAN') {

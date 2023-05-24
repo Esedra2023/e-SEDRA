@@ -34,7 +34,7 @@
                 <div id="collapsePro" class="accordion-collapse collapse" aria-labelledby="sezEditPro" data-bs-parent="#accordionPro">
                     <div class="accordion-body">
                 		<form id="formInputPro" method="post" enctype="multipart/form-data" class="row g-3 align-items-center" action="<?php echo $_SERVER['PHP_SELF'];?>" >	
-                            <fieldset id="fsForm">
+                           
 
                                 <!-- validation errors for the form -->
 
@@ -42,6 +42,7 @@
 
                                 <?php if (isset($isEditingProposta) && ($isEditingProposta === true)) $hi = $_POST['hidden_post_id'];else $hi=0; ?>
                                 <input type="hidden" id="hidden_post_id" name="hidden_post_id" value="<?php echo $hi; ?>" />
+                            <fieldset id="fsForm">
                                 <fieldset id="fsDatiPro">
                                     <div class="form-floating col-md-12 mb-2">
                                         <input class="form-control" type="text" id="perconto" name="perconto" value="" required />
@@ -126,7 +127,7 @@
 						<button type="reset" id="annullBis" class="btn btn-secondary" name="annulla">Annulla</button>
 					</div>-->
                                     </div>
-                                </fieldset>
+                            </fieldset>
                                     <div>
                                         <!-- if editing post, display the update button instead of create button -->
                                         <div class="col-sm-12 mb-3 text-sm-end inputrevisor">
@@ -233,13 +234,6 @@
             abilitaFS(fsRev, false);
             vediPulsante(cp, false);
         }
-     
-        //else {  //U
-        //    //    fsForm.disabled = '';
-        //    fsRev.disabled = 'disabled'
-        //    if (cp.classList.contains("d-none"))
-        //        cp.classList.remove("d-none");
-        //}
 
         //if (!mod || pro['deleted'] == 1) {
         //        fsForm.disabled = 'disabled';
@@ -250,27 +244,6 @@
         collapsablePro.show();
 }
 
-    function abilitaFS(fs, ab) {
-        if (ab) {
-            if (fs.disabled)
-                fs.disabled = false;
-        }
-        else {
-                if (!fs.disabled)
-                fs.disabled = true;
-        }
-    }
-
-    function vediPulsante(bot,vedi) {
-        if (vedi) {
-            if (bot.classList.contains("d-none"))
-                bot.classList.remove("d-none");
-        }
-        else {
-             if (!bot.classList.contains("d-none"))
-                bot.classList.add("d-none");
-        }
-    }
 
 //ok per revisione in pub rimane uguale
 async function call_ajax_edit_pro(pro, crud) {

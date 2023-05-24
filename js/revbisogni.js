@@ -113,8 +113,8 @@ ready(function () {
 
     var revBis = document.getElementById("confirmBis");
     if (revBis) {
-        defaultTit = getTitleAccordion("btnAccBis");
-        defaultBtn = revBis.value;
+        //defaultTit = getTitleAccordion("btnAccBis");
+        //defaultBtn = revBis.value;
         revBis.addEventListener("click", (e) => {
             e.preventDefault();
             call_ajax_rev_bisogno(actualCrud);
@@ -129,8 +129,7 @@ ready(function () {
             let elem = e.target;
             let span = null;
             if (elem.classList.contains("linkstylebutton")) {
-                let idBisogno = elem.dataset.idbis;
-                call_ajax_edit_bis(idBisogno, true, collapsableBis);      //false disabilita i campi
+                call_ajax_edit_bis(elem.dataset.idbis, 'R');      //false disabilita i campi
                 actualCrud = elem.dataset.crud;
             }
             else {
@@ -149,18 +148,18 @@ ready(function () {
                 else if (elem.name == "revision-post") {
                     actualCrud = elem.dataset.crud;
                     //console.log('REVISION ' + param);
-                    oldTit = getTitleAccordion("btnAccBis");
-                    if (oldTit != defaultTit)
-                        settaTitleAccordion("btnAccBis", defaultTit);
-                    call_ajax_edit_bis(param, true, collapsableBis );
+                    //oldTit = getTitleAccordion("btnAccBis");
+                    //if (oldTit != defaultTit)
+                    //    settaTitleAccordion("btnAccBis", defaultTit);
+                    call_ajax_edit_bis(param, 'R' );
                     //call_ajax_revision_bis(param);
                 }
                 else if (elem.name == "cancella-post") {
                     actualCrud = elem.dataset.crud;
                     //console.log('CANCEL ' + param);
-                    settaTitleAccordion("btnAccBis", "Cancellazione Bisogno");
-                    revBis.value = "Cancella";
-                    call_ajax_edit_bis(param, true, collapsableBis);
+                    //settaTitleAccordion("btnAccBis", "Cancellazione Bisogno");
+                    //revBis.value = "Cancella";
+                    call_ajax_edit_bis(param, 'D');
                    // fieldsetBis.disabled = 'disabled';    dovrebbe essere disabilitato di default
                     //call_ajax_cancella_bis(param);
                 }
@@ -192,10 +191,12 @@ function btnPubUnpub(pub, elem, span)
 
 //ok per revisione
 async function call_ajax_rev_bisogno(crud) { 
-    //e.preventDefault();
-    
+    //e.preventDefault();    
     var data = new FormData(document.getElementById('formInputBis'));
     data.append('crud', crud);
+    if (crud == 'D') {
+
+    }
     let promo1 = await fetch('ajax/revisionabisogno.php', {
         method: 'POST',
         body: data

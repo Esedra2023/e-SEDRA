@@ -28,6 +28,8 @@ require_once ROOT_PATH .'/include/functions.php';
 $output = [];
 $errors = [];
 
+$crud = $_POST['crud'];
+
 if(isset($_POST['titleBis']))
 	$title = esc($_POST['titleBis']);
 else $title="";
@@ -41,28 +43,31 @@ if(isset($_POST['NdR']))
 else $Ndr="";
 
 	// validate form
-    if (empty($title)) {
+    if (empty($title) && $crud!='D') {
         array_push($errors, "Titolo del bisogno mancante");
     }
-    else if(empty($body)) {
+    else if(empty($body) && $crud != 'D') {
         array_push($errors, "Corpo del bisogno vuoto");
     }
-    else if(!isset($_POST['topic_id']))
+    else if(!isset($_POST['topic_id']) && $crud != 'D')
         array_push($errors, "Ambito obbligatorio in fase di revisione");
    else
     {
+
     if(!$conn = connectDB()) {echo errorConnectDB(); exit();}
     // revisiona bisogno if there are no errors in the form
 	    if (count($errors) == 0) {
             $publish=0;
             if(isset($_POST['publish']))
                 $publish=$_POST['publish'];
-            $crud=$_POST['crud'];
-            if($crud=='D')
-            {
-                //uso solo il revisore e metto il campo deleted a 1 che indica CANCELLAZIONE LOGICA e pubblicato a zero
-                $title=$body=$Ndr=null;
-            }
+        if (!isset($_POST['topic_id']))
+            $_POST['topic_id'] = null;
+
+        //if($crud=='D')
+            //{
+            //    //uso solo il revisore e metto il campo deleted a 1 che indica CANCELLAZIONE LOGICA e pubblicato a zero
+            //    $title=$body=$Ndr=null;
+            //}
             if(!isset($_POST['moreambito']))
                 $_POST['moreambito']="";
             //mantenuto image per eventuali sviluppi

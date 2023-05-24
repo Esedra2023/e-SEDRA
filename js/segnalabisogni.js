@@ -56,6 +56,7 @@ ready(function () {
     var btnacc = document.getElementById("btnAccBis");
     if (btnacc) {
         btnacc.disabled = false;
+        btnacc.addEventListener("click", resetHidden());
     }
 
     var fieldsetBis = document.getElementById("fsForm");
@@ -77,7 +78,7 @@ ready(function () {
 
     var delBisOK = document.getElementById("deleteBis");
     delBisOK.addEventListener("click", function () {
-        call_ajax_delete_bis(id_bisogno_selezionato, false);    //false fa eliminazione fisica => è un mio bisogno
+        call_ajax_delete_bis(id_bisogno_selezionato, 0);    //0 false fa eliminazione fisica => è un mio bisogno
         call_ajax_dati_table('bisogni', 'Bistable', personalbis);
     });
 
@@ -86,7 +87,7 @@ ready(function () {
     if (canc) {
         canc.addEventListener("click", function () {
             //console.log('click su annulla');
-            resetAccordion(collapsableBis, "btnAccBis", formBis, "Segnala nuovo bisogno");
+            resetAccordion(collapsableBis, "btnAccBis", formBis, " Segnala nuovo bisogno");
         });
     }
 
@@ -110,9 +111,9 @@ ready(function () {
             let elem = e.target;
             let span = null;
             if (elem.classList.contains("linkstylebutton")) {
-                let idBisogno = elem.dataset.idbis;
+                //let idBisogno = elem.dataset.idbis;
                 //console.log('+ ' + elem.nodeName + ' ' + idBisogno);
-                call_ajax_edit_bis(idBisogno, true, collapsableBis);      //false disabilita i campi
+                call_ajax_edit_bis(elem.dataset.idbis, 'U');      //false disabilita i campi
                 actualCrud = elem.dataset.crud;
             }
             else {
@@ -120,16 +121,28 @@ ready(function () {
                     elem = e.target.parentNode;
                     span = e.target;
                 }
-                let param = elem.dataset.idbis;
+            /*    let param = elem.dataset.idbis;*/
 
                 if (elem.name == "delete-post") {
                     //console.log('DELETE ' + param);
-                    id_bisogno_selezionato = param;
+                    id_bisogno_selezionato = elem.dataset.idbis;
                 }
             }
         });
     }
 }); //end ready
+
+function resetHidden() {
+    document.getElementById("hidden_post_id").value = 0;
+}
+
+function setHidden(bis) {
+    document.getElementById("hidden_post_id").value = bis;
+}
+
+function getHidden() {
+    return(document.getElementById("hidden_post_id").value);
+}
 
 //ok per cancellazione
 async function call_ajax_delete_bis(idcanc,clogic) {
@@ -189,6 +202,7 @@ async function call_ajax_upcre_bisogni() {
         //console.log('OK.. ' + result);
     if (result['success']) {
         resetAccordion(collapsableBis, "btnAccBis", formBis, "Segnala nuovo bisogno");
+        formBis.reset();
         showMessagge(result['success'], "my-callout-info", "infoMessagge");      
         call_ajax_dati_table('bisogni', 'Bistable', personalbis);
     }

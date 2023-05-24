@@ -143,7 +143,7 @@ ready(function () {
             let elem = e.target;
             let span = null;
             if (elem.classList.contains("linkstylebutton")) {
-                let idBisogno = elem.dataset.idbis;
+              /*  let idBisogno = elem.dataset.idbis;*/
                 //console.log('+ ' + elem.nodeName + ' ' + idBisogno);
                 call_ajax_edit_pro(e.target.dataset.idpro, 'U');      
                 actualCrud = elem.dataset.crud;

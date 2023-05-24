@@ -69,7 +69,7 @@
         if (lsb) {
             for (let i = 0; i < lsb.length; i++) {
                 lsb[i].addEventListener("mouseover", (e) => { e.target.style.cursor = 'pointer'; });
-                lsb[i].addEventListener("click", (e) => { call_ajax_edit_bis(e.target.dataset.idbis, false, collapsableBis); });     //false disabilita i campi });
+                lsb[i].addEventListener("click", (e) => { call_ajax_edit_bis(e.target.dataset.idbis, 'V'); });     //false disabilita i campi });
             }
         }
 

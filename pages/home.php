@@ -57,6 +57,9 @@ if (session_status() !== PHP_SESSION_ACTIVE) {
                 <div id="carouseloghi" class="carousel slide" data-bs-ride="carousel">
                     <div class="carousel-inner">
                         <div class="carousel-item active">
+                            <img class="img-responsive d-block h-100" src="images/loghisponsor/logosanpaolo.webp" title="logoSanPaolo" />
+                        </div>
+                        <div class="carousel-item">
                             <img class="img-responsive d-block h-100" src="images/loghisponsor/logoitaca.webp" title="logoItaca" />
                         </div>
                         <div class="carousel-item">

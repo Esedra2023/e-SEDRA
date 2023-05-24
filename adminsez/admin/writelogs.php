@@ -26,7 +26,8 @@ if (!defined('ROOT_PATH'))
 //require_once (ROOT_PATH . '/adminsez/admin/includes/utilfunctions.php');
 $_POST['notajax']=1;
 require(ROOT_PATH . '/adminsez/admin/ajax/getlogdata.php');
-
+foreach($result as &$re)
+    unset($re['idLg']);
 $now=time();
 //$path= $_SERVER['DOCUMENT_ROOT']."\\logs\\";
 $filename="log".$now.".csv";
@@ -58,8 +59,3 @@ unlink($filename);
 //echo json_encode($filename);
 exit();
 
-//function preparaRiga($lg)
-//{
-//    $st=$lg['cognome']." ".$lg['nome'].",".$lg['ruolo'].",".$lg['email'].",".$lg['dtS'].",".$lg['dtE'].PHP_EOL;
-//    return $st;
-//}
