@@ -54,5 +54,5 @@ $stmt = NULL;
 $conn = NULL;
 //così abbiamo sempre il $_SESSION['allRoles'] aggiornato
 include_once ROOT_PATH.'/include/getruoliall.php';
-
+echo json_encode(0);
 exit();
