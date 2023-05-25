@@ -47,7 +47,7 @@ if(isset($_POST['idOrigin']))
     $stmt=null;
     echo json_encode($idB);
 }
-else json_encode(0);
+else echo json_encode(0);   //non dovrebbe mai succedere
 
-exit(0);
+//exit(0);
 

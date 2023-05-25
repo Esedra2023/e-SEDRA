@@ -41,8 +41,9 @@ try{
     //$grBis = $stmt->fetchAll(PDO::FETCH_ASSOC);
 } catch(PDOException $e) {echo error($e); exit();}
 
-//echo json_encode($grBis);
 
 $stmt = NULL;
 $conn = NULL;
+echo json_encode($_POST['val']);
+
 exit();

@@ -46,24 +46,32 @@ var gradtab = {
 
 var localgrad = [];
 var confGrad;
-
+var confv2;
 ready(function () {
     var collapsableBis;
 
-    var accbt = document.getElementById("bottoneAccGrad");
+    //var accbt = document.getElementById("bottoneAccGrad");
     //if(accbt)
     //    accbt.addEventListener("click", function () {call_ajax_get_poll_res("revisor",0, 1);  });
 
     confv2 = document.getElementById("confirmVot2");
-    if (confv2)
-        confv2.addEventListener("click", goActivityPage);
-
+    if (confv2) { 
+        confv2.addEventListener("click", (e) =>{
+            //alert(e.target.parentNode);
+            //alert(e.target.parentNode.value);
+            componiAutoNews("Bisogni", 'B', e.target.parentNode.value);
+        });
+       /* confv2.addEventListener("click", goActivityPage);*/
+    }
     let sezB = document.getElementById("collapseBis");
     if (sezB) {
         collapsableBis = new bootstrap.Collapse(sezB, { toggle: false });
     }
  
-
+    //var goa = document.getElementById("gopageact");
+    //if (goa) {     
+    //        goa.addEventListener("click", goActivityPage);
+    //}
 
     var lvwb = document.querySelectorAll('.linkstylebutton');
     if (lvwb) {
@@ -120,15 +128,44 @@ ready(function () {
 }); //end ready
 
 
+async function componiAutoNews(what,itable,field) {
+    var data = new FormData;
+    data.append("title", "Pubblicata graduatoria " + what);
+    data.append("field", field);
+    data.append("itable", itable);
+    let promo = fetch('ajax/automaticNews.php', {
+        method: 'POST',
+        body: data
+    }).then(successResponse => {
+        if (successResponse.status != 200) {
+            return null;
+        } else {
+            return successResponse.json();
+        }
+    },
+        failResponse => {
+            //console.log("promessa fallita con updatebis2vot");
+            return null;
+        }
+    );
+    //console.log('aspetto che la promessa risolva');
+
+    let result = await promo;
+    confv2.disabled = true;
+    goHomePage();
+    console.log('OK ... promessa risolta ' + result);
+    return (result);
+}
+
 //sono in function.js
 
-//function goActivityPage() {
-//    //var data = new FormData;
-//    //data.append("page", 1);
-//    //call_ajax_viewPage('adminsez/admin/admconfact.php', data);
-//    menu = document.getElementById("4");
-//    simulateClick(menu);
-//}
+function goHomePage() {
+    //var data = new FormData;
+    //data.append("page", 1);
+    //call_ajax_viewPage('adminsez/admin/admconfact.php', data);
+    menu = document.getElementById("0");
+    simulateClick(menu);
+}
 
 //function stabilisciNumeroGrad(elem, span,idbis, posg) {
 //    let totr = document.getElementById("nrigh").value;
@@ -191,36 +228,36 @@ ready(function () {
 //    doc.save('gradBisogni.pdf');
 //}
 
-async function call_ajax_set_II_vot(idbis,val) {
-    var data = new FormData;
-    data.append("idBs", idbis);
-    data.append("val", val);
-    let promo = fetch('ajax/updatebis2vot.php', {
-        method: 'POST',
-        body: data
-    }).then(successResponse => {
-        if (successResponse.status != 200) {
-            return null;
-        } else {
-            return successResponse.json();
-        }
-    },
-        failResponse => {
-            //console.log("promessa fallita con updatebis2vot");
-            return null;
-        }
-    );
-    //console.log('aspetto che la promessa risolva');
+//async function call_ajax_set_II_vot(idbis,val) {
+//    var data = new FormData;
+//    data.append("idBs", idbis);
+//    data.append("val", val);
+//    let promo = fetch('ajax/updatebis2vot.php', {
+//        method: 'POST',
+//        body: data
+//    }).then(successResponse => {
+//        if (successResponse.status != 200) {
+//            return null;
+//        } else {
+//            return successResponse.json();
+//        }
+//    },
+//        failResponse => {
+//            //console.log("promessa fallita con updatebis2vot");
+//            return null;
+//        }
+//    );
+//    //console.log('aspetto che la promessa risolva');
 
-    let result = await promo;
-    //console.log('OK ... promessa risolta ' + result);   
-    //if (!save) {
-    //    refreshTable("Gradtable", result, gradtab);
-    //   /* return 0;*/
-    //}
-    //else localgrad = result;
-//    else return (result.length);
-//   return grad;
-}
+//    let result = await promo;
+//    //console.log('OK ... promessa risolta ' + result);   
+//    //if (!save) {
+//    //    refreshTable("Gradtable", result, gradtab);
+//    //   /* return 0;*/
+//    //}
+//    //else localgrad = result;
+////    else return (result.length);
+////   return grad;
+//}
 
 

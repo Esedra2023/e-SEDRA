@@ -88,13 +88,13 @@ require_once ROOT_PATH .'/include/functions.php';
             $rest=$rest.$up;
             $stmt = $conn->prepare($rest);
             if(! $stmt->execute()) throw new Exception('Errore query save graduatoria');
-            $_SESSION['ini']['gradDefBisogni']=true;
-            updIniFile('Temp', 'gradDefBisogni', true);
+            $_SESSION['ini']['gradDefBisogni']=1;
+            updIniFile('Temp', 'gradDefBisogni', 1);
 
             if($field=="ingrad")
             {
-                $_SESSION['ini']['BallottaggioBis']=true;
-                updIniFile('Temp', 'BallottaggioBis', true);
+                $_SESSION['ini']['BallottaggioBis']=1;
+                updIniFile('Temp', 'BallottaggioBis', 1);
 
             }
 

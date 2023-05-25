@@ -77,6 +77,7 @@ if($nat!=0)
             $titlePage='Fase attiva dal '.date_format(date_create($Rbisogni['dtStart']),'d/m/Y').
                 ' al '.date_format(date_create($Rbisogni['dtStop']),'d/m/Y').' - mancano '.
                 $Rbisogni['ggscad'].' giorni alla chiusura.<br/>Il tuo ruolo non consente la partecipazione in questa fase';
+            $h2 = $Rbisogni['nome'];
             include(ROOT_PATH . '/pages/bisognidefault.php');
         }
         $conta++;
@@ -207,30 +208,41 @@ if($nat!=0)
         {
             if($ballot['ballottaggio'] == 0)        //prima votazione
             {
+                $field = "pubblicato";
+                $_POST['field'] = $field;
                 if($Pbisogni['IamRev'])
                 {
+
                     if(!isset($_SESSION['ini']['gradDefBisogni']) || $_SESSION['ini']['gradDefBisogni']==0)
                     {
-                        $posts = wr_getBisResultPolling("revisor",1,"pubblicato");   //salvo la graduatoria con ballot a zero e imposto il $_SESSION['ini']['gradDefBisogni']
+                        $posts = wr_getBisResultPolling("revisor",1, $field);   //salvo la graduatoria con ballot a zero e imposto il $_SESSION['ini']['gradDefBisogni']
                     }
-                    //vedo grad 1 con check
-                    $_POST['check']=1;
-                    $posts=wr_viewDefGradBis("pubblicato"); //recupero graduatoria da tabella apposita
-                    $esclusib=getBisogniEsclusi("revisor","pubblicato");
+                    if($_SESSION['ini']['gradDefBisogni'] == 1) //vedo grad 1 con check
+                    {
+                        $_POST['check'] = 1;  $_POST['news'] = 1;
+                    }
+                    else if ($_SESSION['ini']['gradDefBisogni'] == 2)
+                    {
+                        $_POST['check']=0;
+                        $_POST['news'] = 0;
+                    }
+                    $posts=wr_viewDefGradBis($field); //recupero graduatoria da tabella apposita
+                    $esclusib=getBisogniEsclusi("revisor", $field);
                     include(ROOT_PATH . '/pages/bisognipubblicaGrad.php');
                 }
                 else
                 {
-                    if(isset($_SESSION['ini']['gradDefBisogni']) && $_SESSION['ini']['gradDefBisogni']==1)
+                    if(isset($_SESSION['ini']['gradDefBisogni']) && $_SESSION['ini']['gradDefBisogni']!=0)
                     {
                         //vedo grad1 senza check
                         $_POST['check']=0;
-                        $posts=wr_viewDefGradBis("pubblicato"); //recupero graduatoria da tabella apposita
-                        $esclusib=getBisogniEsclusi("personal","pubblicato");
+                        $_POST['news'] = 0;
+                        $posts=wr_viewDefGradBis($field); //recupero graduatoria da tabella apposita
+                        $esclusib=getBisogniEsclusi("personal", $field);
                         include(ROOT_PATH . '/pages/bisognipubblicaGrad.php');
                     }
                     else{//utente generico con graduatoria non ancora consolidata
-                        $posts = wr_getBisResultPolling("personal",0,"pubblicato");
+                        $posts = wr_getBisResultPolling("personal",0, $field);
                         $titlePage='Fase attiva dal '.date_format(date_create($Pbisogni['dtStart']),'d/m/Y').' al '.date_format(date_create($Pbisogni['dtStop']),'d/m/Y').' - mancano '.$Pbisogni['ggscad'].' giorni alla chiusura.<br/>';
                         $titlePage=$titlePage. 'Il tuo ruolo non consente la partecipazione in questa fase';
                         $h2=$Pbisogni['nome'];
@@ -241,16 +253,28 @@ if($nat!=0)
             }
             else if($ballot['ballottaggio'] == 1)
             {
+                $field = "ingrad";
+                $_POST['field'] = $field;
+
                 if($Pbisogni['IamRev'])
                 {
                     if(!isset($_SESSION['ini']['BallottaggioBis']) || $_SESSION['ini']['BallottaggioBis'] == 0)
                     {
-                        $posts = wr_getBisResultPolling("revisor",1,"ingrad");   //salvo la graduatoria con ballot a 1
+                        $posts = wr_getBisResultPolling("revisor",1, $field);   //salvo la graduatoria con ballot a 1
                     }
-                    $_POST['check']=0;
-                    //vedo grad 2 senza check e bottone
-                    $posts=wr_viewDefGradBis("ingrad"); //recupero graduatoria da tabella apposita
-                    $esclusib=getBisogniEsclusi("revisor","ingrad");
+                    if($_SESSION['ini']['BallottaggioBis'] == 1)
+                    { //vedo grad 2 senza check con bottone
+                        $_POST['check']=0;  //no check
+                        $_POST['news'] = 1; //si news
+                    }
+                    else if ($_SESSION['ini']['BallottaggioBis'] == 2)
+                    {
+                        $_POST['check'] = 0;
+                        $_POST['news'] = 0; //no news
+                    }
+
+                    $posts=wr_viewDefGradBis($field); //recupero graduatoria da tabella apposita
+                    $esclusib=getBisogniEsclusi("revisor", $field);
                     include(ROOT_PATH . '/pages/bisognipubblicaGrad.php');
                 }
                 else
@@ -258,13 +282,15 @@ if($nat!=0)
                     if(isset($_SESSION['ini']['BallottaggioBis']) && $_SESSION['ini']['BallottaggioBis'] == 1)
                     {
                         //vedo grad2 senza check
-                        $_POST['check']=0;
-                        $posts=wr_viewDefGradBis("ingrad"); //recupero graduatoria da tabella apposita
-                        $esclusib=getBisogniEsclusi("personal","ingrad");
+                        $_POST['check']=0;  $_POST['news'] = 0;
+                        $posts=wr_viewDefGradBis($field); //recupero graduatoria da tabella apposita
+                        $esclusib=getBisogniEsclusi("personal", $field);
                     }
                     else{
+                        $_POST['field'] = "pubblicato";
                         //vedo grad1 senza check
                         $_POST['check']=0;
+                        $_POST['news'] = 0;
                         $posts=wr_viewDefGradBis("pubblicato"); //recupero graduatoria da tabella apposita
                         $esclusib=getBisogniEsclusi("personal","pubblicato");
                     }

@@ -19,6 +19,9 @@
  */
 
 $check=$_POST['check'];
+$news = $_POST['news'];
+$field = $_POST['field'];
+
 ?>
 <section class="container mt-3" id="pubblicaPGrad">
     <h2>
@@ -115,24 +118,21 @@ $check=$_POST['check'];
               
             </table>
             <input type="hidden" id="nrigh" name="nrigh" value="<?php echo $tot?>" />
-            <?php  if(array_key_exists(1, $_SESSION['user']['roles'])) { if($check == 1)   {  ?>
-                <div class="col-sm-12 mb-3 text-sm-end inputrevisor">
-                    <input type="button" class="btn btn-secondary" name="creanews" value="Crea News" disabled/>
-                    <a href="" id="confirmVot2" class="btn btn-primary <?php if(isset($_SESSION['ini']['BallottaggioPro']) && $_SESSION['ini']['BallottaggioPro'] == 1) echo 'disabled'; ?>">
-                        <span class="bi bi-box-seam-fill"> Imposta seconda votazione</span>
-                    </a>
-                   
-                </div>
-            <?php }
-                   } else { if($check == 1) {?>
-
-            <div id="infoMessagged" class="my-callout my-callout-info">
-                Dopo aver scelto quante proposte pubblicare, contatta l'amministratore<br />
-                per la configurazione di una eventuale seconda fase di votazione 
+            <?php 
+            if($news == 1)   {  ?>
+            <div class="col-sm-12 mb-3 text-sm-end inputrevisor">
+                <button id="confirmVot2" class="btn btn-primary" value="<?php  echo $field;?> ">
+                    <span class='bi bi-box-seam-fill'>&nbsp;Conferma graduatoria</span>
+                </button>
             </div>
+            <?php
+            }
+            ?>
 
-            <?php } }
-                   ?>
+            <!--<div id="infoMessagged" class="my-callout my-callout-info">
+                Dopo aver scelto quanti bisogni pubblicare, contatta l'amministratore<br />
+                per la configurazione di una eventuale seconda fase di votazione
+            </div>-->
             <?php } else if ($Pproposte['pubPro']  && ! $Pproposte['IamRev']) {
                 //include(ROOT_PATH . '/include/templatetablebis.php');
             ?>
@@ -260,7 +260,5 @@ $check=$_POST['check'];
 
 	</div>
 </section>	
-<!--libreria per creare pdf da JS-->
-<!--<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/1.4.1/jspdf.debug.js" integrity="sha384-THVO/sM0mFD9h7dfSndI6TS0PgAGavwKvB5hAxRRvc0o9cPLohB0wb/PTA7LdUHs" crossorigin="anonymous"></script>-->
 
 <script src="js/pubproposte.js"></script>

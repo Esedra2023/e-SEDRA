@@ -108,7 +108,7 @@ for($i=0;$i<count($news);$i++)
                     </button>
                 </h2>
                 <div id="n<?php echo $row['idNw']?>" class="accordion-collapse collapse" data-bs-parent="#NewsScadAccHP">
-                    <div class="accordion-body">
+                    <div class="accordion-body ">
                         <strong><?php	echo $row['title'];		?></strong><br/><?php	echo $row['text'];?>
                     </div>
                 </div>

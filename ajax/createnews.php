@@ -76,4 +76,4 @@ $errors = [];
             $output['errors'] = $errors;
         echo json_encode($output);
 
-        exit(0);
+        //exit(0);

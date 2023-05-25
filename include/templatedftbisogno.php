@@ -107,10 +107,10 @@
     //var fieldsetBis = document.getElementById("fsFormDef");
  /*   var collapsableBis;*/
 
-
+ 	var collapsableBis;
 	ready(function () {
 
-	var collapsableBis;
+
 
     let sezB = document.getElementById("collapseBis");
     if (sezB) {

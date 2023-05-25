@@ -77,6 +77,7 @@ if($nat!=0)
             $titlePage='Fase attiva dal '.date_format(date_create($Rproposte['dtStart']),'d/m/Y').
                 ' al '.date_format(date_create($Rproposte['dtStop']),'d/m/Y').' - mancano '.
                 $Rproposte['ggscad'].' giorni alla chiusura.<br/>Il tuo ruolo non consente la partecipazione in questa fase';
+            $h2 = $Rproposte['nome'];
             include(ROOT_PATH . '/pages/propostedefault.php');
         }
         $conta++;
@@ -170,30 +171,40 @@ if($nat!=0)
         {
             if($ballot['ballottaggio'] == 0)
             {
+                $field = "pubblicato";
+                $_POST['field'] = $field;
                 if($Pproposte['IamRev'])
                 {
-                    if(!isset($_SESSION['ini']['gradDefProposte']))
+                    if(!isset($_SESSION['ini']['gradDefProposte']) || $_SESSION['ini']['gradDefProposte'] == 0)
                     {
-                        $posts = wr_getProResultPolling("revisor",1,"pubblicato");   //salvo la graduatoria con ballot a zero e imposto il $_SESSION['ini']['gradDefBisogni']
+                        $posts = wr_getProResultPolling("revisor",1, $field);   //salvo la graduatoria con ballot a zero e imposto il $_SESSION['ini']['gradDefBisogni']
                     }
-                    //vedo grad 1 con check
-                    $_POST['check']=1;
-                    $posts=wr_viewDefGradPro("pubblicato",1); //recupero graduatoria da tabella apposita
-                    $esclusib=getProposteEscluse("revisor","pubblicato");
+                    if ($_SESSION['ini']['gradDefProposte'] == 1) //vedo grad 1 con check
+                    {
+                        $_POST['check'] = 1;
+                        $_POST['news'] = 1;
+                    } else if ($_SESSION['ini']['gradDefProposte'] == 2) {
+                        $_POST['check'] = 0;
+                        $_POST['news'] = 0;
+                    }
+
+                    $posts=wr_viewDefGradPro($field,1); //recupero graduatoria da tabella apposita
+                    $esclusib=getProposteEscluse("revisor", $field);
                     include(ROOT_PATH . '/pages/propostepubblicaGrad.php');
                 }
                 else
                 {
-                    if(isset($_SESSION['ini']['gradDefProposte']))
+                    if(isset($_SESSION['ini']['gradDefProposte']) && $_SESSION['ini']['gradDefProposte'] != 0)
                     {
                         //vedo grad1 senza check
-                        $_POST['check']=0;
-                        $posts=wr_viewDefGradPro("pubblicato",1); //recupero graduatoria da tabella apposita
-                        $esclusib=getProposteEscluse("personal","pubblicato");
+                        $_POST['check'] = 0;
+                        $_POST['news'] = 0;
+                        $posts=wr_viewDefGradPro($field,1); //recupero graduatoria da tabella apposita
+                        $esclusib=getProposteEscluse("personal", $field);
                         include(ROOT_PATH . '/pages/propostepubblicaGrad.php');
                     }
                     else{//utente generico con graduatoria non ancora consolidata
-                        $posts = wr_getProResultPolling("personal",0,"pubblicato");
+                        $posts = wr_getProResultPolling("personal",0, $field);
                         $titlePage='Fase attiva dal '.date_format(date_create($Pproposte['dtStart']),'d/m/Y').' al '.date_format(date_create($Pproposte['dtStop']),'d/m/Y').' - mancano '.$Pproposte['ggscad'].' giorni alla chiusura.<br/>';
                         $titlePage=$titlePage. 'Il tuo ruolo non consente la partecipazione in questa fase';
                         $h2=$Pproposte['nome'];
@@ -203,16 +214,24 @@ if($nat!=0)
             }
             else if($ballot['ballottaggio'] == 1)
             {
+                $field = "ingrad";
+                $_POST['field'] = $field;
                 if($Pproposte['IamRev'])
                 {
                     if(!isset($_SESSION['ini']['BallottaggioPro']) || $_SESSION['ini']['BallottaggioPro'] == 0)
                     {
-                        $posts = wr_getProResultPolling("revisor",1,"ingrad");   //salvo la graduatoria con ballot a 1
+                        $posts = wr_getProResultPolling("revisor",1, $field);   //salvo la graduatoria con ballot a 1
                     }
-                    $_POST['check']=0;
+                    if ($_SESSION['ini']['BallottaggioPro'] == 1) { //vedo grad 2 senza check con bottone
+                        $_POST['check'] = 0; //no check
+                        $_POST['news'] = 1; //si news
+                    } else if ($_SESSION['ini']['BallottaggioPro'] == 2) {
+                        $_POST['check'] = 0;
+                        $_POST['news'] = 0; //no news
+                    }
                     //vedo grad 2 senza check e bottone
-                    $posts=wr_viewDefGradPro("ingrad",1); //recupero graduatoria da tabella apposita
-                    $esclusib=getProposteEscluse("revisor","ingrad");
+                    $posts=wr_viewDefGradPro($field,1); //recupero graduatoria da tabella apposita
+                    $esclusib=getProposteEscluse("revisor", $field);
                     include(ROOT_PATH . '/pages/propostepubblicaGrad.php');
                 }
                 else
@@ -220,13 +239,17 @@ if($nat!=0)
                     if(isset($_SESSION['ini']['BallottaggioPro']) && $_SESSION['ini']['BallottaggioPro'] == 1)
                     {
                         //vedo grad2 senza check
-                        $_POST['check']=0;
-                        $posts=wr_viewDefGradPro("ingrad",1); //recupero graduatoria da tabella apposita
-                        $esclusib=getProposteEscluse("personal","ingrad");
+                        $_POST['check'] = 0;
+                        $_POST['news'] = 0;
+                        $posts=wr_viewDefGradPro($field,1); //recupero graduatoria da tabella apposita
+                        $esclusib=getProposteEscluse("personal", $field);
                     }
                     else{
+      
+                        $_POST['field'] = "pubblicato";
                         //vedo grad1 senza check
-                        $_POST['check']=0;
+                        $_POST['check'] = 0;
+                        $_POST['news'] = 0;
                         $posts=wr_viewDefGradPro("pubblicato",1); //recupero graduatoria da tabella apposita
                         $esclusib=getProposteEscluse("personal","pubblicato");
                     }

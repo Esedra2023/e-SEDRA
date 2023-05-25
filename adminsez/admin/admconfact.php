@@ -99,7 +99,7 @@ if(!isset($_SESSION['allRoles']))
                                         <div id="secondvot" class="btn-group" role="group" aria-label="Seconda Votazione">
                                             <input type="checkbox" class="btn-check" name="ballottaggio" id="ballottaggio" autocomplete="off" value="1" <?php if(isset($facti['ballottaggio']) && $facti['ballottaggio']==1) echo "checked";?> />
                                             <label class="btn btn-outline-primary" for="ballottaggio">
-                                                Ballottaggio
+                                                Seconda Votazione
                                             </label>
                                         </div>
                                     </div>

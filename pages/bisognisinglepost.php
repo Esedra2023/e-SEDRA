@@ -53,9 +53,9 @@ if($VDbisogni['ballottaggio'])
    }
    if($VDbisogni['blogAct'])
    {
-       $comments = getAllCommentsNotCanceled($ib,'bisogni','bisogno');
+       $comments = getAllCommentsNotCanceled($ib,'blogB','bisogno');
        $contCom=count($comments);
-       $answers=getAllAnswersNotCanceled($ib,'bisogni','bisogno');
+       $answers=getAllAnswersNotCanceled($ib,'blogB','bisogno');
        $totalCom=count($answers)+$contCom;
        foreach($comments as &$cm)
        {
@@ -231,23 +231,26 @@ if($VDbisogni['ballottaggio'])
                                             <label class="btn btn-outline-primary" for="toggleRisp<?php echo $cmn['idBl'];?>">
                                                 <span class="bi bi-reply"></span>
                                             </label>
-                                            <input type="checkbox" class="btn-check signalBtn " data-bs-toggle="tooltip" title="Segnala" id="btnSegnala<?php echo $cmn['idBl'];?>" autocomplete="off" <?php if($segncom) echo 'checked disabled'; else if($riabi) echo 'disabled';?>  />
-                                            <label class="btn btn-outline-primary" for="btnSegnala<?php echo $cmn['idBl'];?>">
-                                                <?php if($segncom) echo "<span class='bi bi-hand-thumbs-down-fill'></span>"; else echo "<span class='bi bi-hand-thumbs-down'></span>"?><!--bi bi-hand-thumbs-down-->
-                                            </label>
-                                        </div>
+                                                <input type="checkbox" class="btn-check signalBtn " data-bs-toggle="tooltip" title="Segnala" id="btnSegnala<?php echo $cmn['idBl'];?>" autocomplete="off" <?php if($segncom) echo 'checked disabled'; else if($riabi) echo 'disabled';?> />
+                                                <label class="btn btn-outline-primary" for="btnSegnala<?php echo $cmn['idBl'];?>">
+                                                    <?php if($segncom) echo "<span class='bi bi-hand-thumbs-down-fill'></span>"; else echo "<span class='bi bi-hand-thumbs-down'></span>"?><!--bi bi-hand-thumbs-down-->
+                                                </label>
+                                            </div>
+                                        <!--</div>-->
                                     </div>
 
                                     <div id="collapseInsCom<?php echo $cmn['idBl'];?>" class="collapse container mt-1" aria-labelledby="">
                                         <form id="formRisposta<?php echo $cmn['idBl'];?>" action="" method="POST">
                                             <input type="hidden" id="idBl<?php echo $cmn['idBl'];?> " name="idBl" value="<?php echo $cmn['idBl'];?>" />
-                                            <input type="hidden" name="idBs" value="<?php echo $post['idBs']; ?>" />
-                                            <div class="form-floating col-12 mb-0">
-                                                <input type="text" class="form-control mb-2" name="testoCommento" id="testoRisposta<?php echo $cmn['idBl'];?>" />
-                                                <label for="testoRisposta<?php echo $cmn['idBl'];?>" class="form-label">Risposta</label>
-                                            </div>
-                                            <div class="text-md-end">
-                                                <input type="submit" id="rispostaCommento<?php echo $cmn['idBl'];?>" data-idpadre="<?php echo $cmn['bisogno'];?>" class="btn btn-primary btn-sm mb-3 publicBtn" name="rispostaCommento" value="Pubblica" <?php echo "data-idbis=".$post['idBs']; ?> />
+                                            <input type="hidden" name="idOrigin" value="<?php echo $post['idBs']; ?>" />
+                                            <div class="row justify-content-evenly">
+                                                <div class="form-floating col-10 mb-0">
+                                                    <input type="text" class="form-control mb-1" name="testoCommento" id="testoRisposta<?php echo $cmn['idBl'];?>" />
+                                                    <label for="testoRisposta<?php echo $cmn['idBl'];?>" class="form-label">Risposta</label>
+                                                </div>
+                                                <div class="form-floating col-2 text-md-end">
+                                                    <input type="submit" id="rispostaCommento<?php echo $cmn['idBl'];?>" data-idpadre="<?php echo $cmn['bisogno'];?>" class="btn btn-primary btn-sm mb-3 publicBtn" name="rispostaCommento" value="Pubblica" <?php echo "data-idbis=".$post['idBs']; ?> />
+                                                </div>
                                             </div>
                                         </form>
                                     </div>

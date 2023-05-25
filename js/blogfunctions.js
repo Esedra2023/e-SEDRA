@@ -38,7 +38,8 @@ function goPersonalPost(itable)
 function call_ajax_set_comment(formNome, risp, master,elemb,itable) {
     var formd = document.getElementById(formNome);
     var data = new FormData(formd);
-   /* alert("target dentro funz" + elemb);*/
+    //l'id del bisogno viene recuperato dal campo nascosto idOrigin nel form'
+    /* alert("target dentro funz" + elemb);*/
     //if(!data['idBs'])
     //    data.append('idBs', idBs);
     data.append('risp', risp);
@@ -50,7 +51,7 @@ function call_ajax_set_comment(formNome, risp, master,elemb,itable) {
     }).then(
         function (response) {
             if (response.status !== 200) {
-                //console.log('Looks like there was a problem. Status Code: ' +
+                console.log('Looks like there was a problem. Status Code: ' +
                     response.status);
                 return;
             }
