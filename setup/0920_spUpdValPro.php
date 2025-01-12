@@ -47,15 +47,26 @@ if(stripos($_SESSION['ini']['dbms'], 'SQL Server') === 0){
 SQL;
 } else if($_SESSION['ini']['dbms'] == 'My SQL'){
 $sql =<<<SQL
-    CREATE PROCEDURE updValPro(idPro INT, idUs INT, val INT)
-    BEGIN
-		SELECT @id=valPrp.idVp FROM valPrp WHERE valPrp.proposta=idPro AND valPrp.utente=idUs AND valPrp.dtIns >= (SELECT dtStart FROM attivita WHERE idAt=204) AND valPrp.dtIns <= (SELECT dtStop FROM attivita WHERE idAt=204) ;
-		IF @id > 0 THEN
-			 UPDATE valPrp SET valPrp.grade=val, valPrp.dtIns=DATE(CURRENT_TIMESTAMP) WHERE valPrp.idVp=@id;
-		ELSE
-			INSERT INTO valPrp(proposta, utente, grade, dtIns) VALUES(idPro, idUs, val, DATE(CURRENT_TIMESTAMP));
-		END IF;
-    END
+CREATE PROCEDURE updValPro(
+    IN idPro INT,
+    IN idUs INT,
+    IN val INT
+)
+BEGIN
+    DECLARE id INT DEFAULT 0;
+
+    SELECT valPrp.idVb INTO id FROM valPrp
+    WHERE valPrp.proposta=idPro AND valPrp.utente=idUs
+    AND valPrp.dtIns >= (SELECT dtStart FROM attivita WHERE idAt = 104)
+    AND valPrp.dtIns <= (SELECT dtStop FROM attivita WHERE idAt = 104)
+    LIMIT 1;
+
+    IF id > 0 THEN
+        UPDATE valPrp SET valPrp.grade = val, valPrp.dtIns = NOW() WHERE valPrp.idVp = id;
+    ELSE
+        INSERT INTO valPrp(proposta, utente, grade, dtIns) VALUES(idPro, idUs, val, NOW());
+    END IF;
+END
 SQL;
 }
 

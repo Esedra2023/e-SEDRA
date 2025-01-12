@@ -42,8 +42,9 @@ CREATE TABLE news
 	utente INT NOT NULL,
 	title VARCHAR(60) NOT NULL,
 	text VARCHAR(1024) NOT NULL,
+    topublish TINYINT DEFAULT 0,
     dtNews DATETIME $dtNow NOT NULL,
-	dtEnd DATE,
+	dtEnd DATETIME,
 	FOREIGN KEY(utente) REFERENCES utenti(idUs) ON DELETE CASCADE
 );
 SQL;

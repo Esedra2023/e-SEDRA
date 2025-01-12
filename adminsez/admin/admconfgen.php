@@ -91,7 +91,7 @@ if (session_status() !== PHP_SESSION_ACTIVE) {
 
 <!--<div class="spanAll flexWrap">-->
      <div class="form-floating col-md-6">      
-        <input class="form-control inputcfg" id="emailNoRep" type="email" name="emailNoRep" value="<?php if(isset($_SESSION['ini']['emailNoRep'])) echo $_SESSION['ini']['emailNoRep'];?>" />
+        <input class="form-control" id="emailNoRep" type="email" name="emailNoRep" value="<?php if(isset($_SESSION['ini']['emailNoRep'])) echo $_SESSION['ini']['emailNoRep'];?>" />
      <label class="form-label" for="emailNoRep">Email no-reply (no-reply@dominio.it)</label>
      </div>
   <div class="form-floating col-md-6">    
@@ -106,11 +106,7 @@ if (session_status() !== PHP_SESSION_ACTIVE) {
             <option value="60" <?php if(isset($_SESSION['ini']['delLog']) && $_SESSION['ini']['delLog']==60) echo ' selected';?> >5 anni</option>
         </select>
         <label class="form-label" for="delLog">Mantieni registrazioni di log</label>
-    </div>
-   <!--<div class="col-md-4">
-        <label class="form-label" for="swScore">Non mostrare totale valutazioni:</label>
-        <input class="form-check-input checkcfg" id="swScore" type="checkbox" name="swScore" <?php echo ($_SESSION['ini']['swScore']==1?'checked':'') ?> />
-    </div>-->
+    </div>  
 </div>
     <hr />
  <!-- -------- GESTIONE RUOLI  -------- -->    
@@ -120,11 +116,14 @@ if (session_status() !== PHP_SESSION_ACTIVE) {
     <div class="col-md-4 mb-3">
        <!--<div class="mb-3">-->    
             <?php 
-                include_once ROOT_PATH.'/include/getruolitree.php'; 
+                //include_once ROOT_PATH.'/include/getruolitree.php';
+            include_once ROOT_PATH . '/include/getruolitree.php';
+
             ?>
          <select id="listAllRoles" class="form-select" size="<?php echo count($result);?>">
 
             <?php
+            $ruolo = 1;
                 foreach($result as $row){ 
                     if($ruolo != $row['idR']){
                         $ruolo = $row['idR'];
@@ -167,8 +166,8 @@ if (session_status() !== PHP_SESSION_ACTIVE) {
              <label for="listRolesSec" class="form-label">Ruoli secondari</label>
         </div>
              
-       <div class="col-md-4 mb-3">
-             <button class="btn btn-primary updRuoli" id="addRoleSec">Assegna</button>
+       <div class="col-md-6 mb-3">
+             <button class="btn btn-primary updRuoli" id="addRoleSec">Assegna Secondario</button>
        </div>
        </div>
        <div class="row">
@@ -177,7 +176,7 @@ if (session_status() !== PHP_SESSION_ACTIVE) {
                  <label for="newRoleSec" class="form-label">Nuovo ruolo secondario</label>
             </div>
            <div class="col-md-6 mb-3">
-               <button class="btn btn-primary updRuoli" id="insRoleSec">Crea Secondario</button>
+               <button class="btn btn-primary updRuoli" id="insRoleSec">Crea e Assegna Secondario</button>
            </div>
        </div>
       

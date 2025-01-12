@@ -63,11 +63,11 @@ $sql =<<<SQL
     BEGIN
         DECLARE _lastid INT;
         IF crud = 'U' THEN
-            UPDATE proposte SET titlePrp=title, email=mail, tel=cel, rifbisgenerico=bis, textPrp=body, aggiornato=DATE(CURRENT_TIMESTAMP)
+            UPDATE proposte SET titlePrp=title, email=mail, tel=cel, rifbisgenerico=bis, textPrp=body, aggiornato=now()
             WHERE idPr=@pid;
          ELSE IF crud = 'C' THEN
             INSERT INTO proposte (utente, proponente, email, tel,titlePrp, textPrp, pdfalleg, pdforigname,rifbisgenerico, pubblicato, dtIns, aggiornato)
-                    VALUES(ute, propo, mail, cel, title,body, pdfall, pdfnome, bis, publish, DATE(CURRENT_TIMESTAMP), DATE(CURRENT_TIMESTAMP));
+                    VALUES(ute, propo, mail, cel, title,body, pdfall, pdfnome, bis, publish, now(), now());
            SELECT LAST_INSERT_ID() INTO _lastid;
         END IF;
        END IF;

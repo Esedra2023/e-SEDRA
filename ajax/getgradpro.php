@@ -33,7 +33,7 @@ require_once ROOT_PATH .'/include/functions.php';
 
     if(!$conn = connectDB()) {echo errorConnectDB(); exit();}
 	$sql = "SELECT gp.*, p.titlePrp, p.textPrp, p.pdfalleg, p.pdforigname,  p.utente, p.dtRev, p.rev, p.pubblicato, p.ingrad FROM gradProposte AS gp, proposte AS p
-        WHERE gp.idPr=p.idPr AND gp.idRl=$ruolo AND gp.ballot=$bal ;";
+        WHERE gp.idPr=p.idPr AND gp.idRl=$ruolo AND gp.ballot=$bal ORDER BY gb.grade DESC, gb.nlike DESC, gb.votanti DESC;";
     $stmt = $conn->prepare($sql);
     if(! $stmt->execute()) throw new Exception('Errore query GetGradPro');
     $gradb = $stmt->fetchAll(PDO::FETCH_ASSOC);

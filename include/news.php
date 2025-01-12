@@ -30,6 +30,8 @@ for($i=0;$i<count($news);$i++)
     else $news[$i]['scad']=0;
 }
 ?>
+<script src="js/news.js"></script>
+
 <div class="content">
     <h2 class="content-head is-center">News</h2>
    
@@ -43,7 +45,7 @@ for($i=0;$i<count($news);$i++)
                   //$dtN = $row['dtNews'];
                   //$dtN = strtotime($dtN);
                   //$dtN = date("d/m/Y H:i", $dtN);		//formatta la data
-                 if($row['scad']!=1){
+                 if($row['scad']!=1 && $row['topublish']!=1){
                      $nb++;
                 ?>
                 <div class="accordion-item">
@@ -81,18 +83,18 @@ for($i=0;$i<count($news);$i++)
      <div class="form-check form-switch mt-3 mb-3">
         <h5>
          <input class="form-check-input" type="checkbox" id="newscadute" /><!--role="switch"-->         
-          <label class="form-check-label" for="newscadute">News Scadute</label>
+         <label class="form-check-label" for="newscadute">News Scadute</label>
         </h5>
          <!--<span class="slider round"></span>--><!---->
      </div>
      <hr />
-        <div class="accordion" id="NewsScadAccHP">
+        <div class="accordion d-none" id="NewsScadAccHP">
             <?php foreach($news as $row){
 
                       //$dtN = $row['dtNews'];
                       //$dtN = strtotime($dtN);
                       //$dtN = date("d/m/Y H:i", $dtN);		//formatta la data
-                      if($row['scad'] == 1){
+                      if($row['scad'] == 1 && $row['topublish']!=1){
             ?>
             <div class="accordion-item">
 
@@ -123,6 +125,5 @@ for($i=0;$i<count($news);$i++)
     </section>
 </div>
 
-<script src="js/news.js"></script>
-<!--<script src="js/expandtext.js"></script>-->
+<!--<script src="js/news.js"></script>-->
 

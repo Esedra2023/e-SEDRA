@@ -29,216 +29,274 @@ var resume = 0;
 /// togliere blank
 //$outputString = preg_replace('/\s+/', '', $originalString);
 
-//per passare il ROOT_PATH in JS
-//function get_rootpath() {
-//   /* rootPATH = window.location.pathname.split(`/`)[1];*/
-//    rootPATHjs = document.getElementById('myRoot').value;
-//    alert('js ' + rootPATHjs);
-//}
 
+ready(function () {
+    const dbms = document.getElementById('dbms');
+    const inst = document.getElementById('installa')
+    dbms.addEventListener('change', function () {
+        let host = document.getElementById('host');
+        let usn = document.getElementById('usn');
+        let psw = document.getElementById('psw');
+        let dbex = document.getElementById('dbEx');
+        if (dbms.value == "SQL Server Express LocalDB") {
+            host.value = "";
+            host.setAttribute('disabled', true);
+            usn.value = "";
+            usn.setAttribute('disabled', true);
+            psw.value = "";
+            psw.setAttribute('disabled', true);
+            dbex.setAttribute('disabled', true);
+        }
+        else {
+            host.removeAttribute('disabled');
+            usn.removeAttribute('disabled');
+            psw.removeAttribute('disabled');
+            dbex.removeAttribute('disabled');
+        }
+    });
+    
 
+    document.querySelectorAll('input').forEach(input => {
+        input.addEventListener('keypress', function (e) {
+            if (e.key == " ") {
+                alert("Lo spazio non \u00E8 un carattere valido!");
+                e.preventDefault();
+            }
+        });
+    });
 
+    function addKeyUpListener(ids, callback) {
+        ids.forEach(id => {
+            //console.log(id);
+            const element = document.getElementById(id);
+            if (element) element.addEventListener('keyup', callback);
+        });
+    }
 
-$(document).ready(function () {
+    // Aggiunta degli event listener
+    addKeyUpListener(['pswAdm', 'rpswAdm'], checkPassword);
 
-    /*get_rootpath();*/
-   /* alert(rootPATH);*/
-    $("#dbms").change(function () {
-        if ($("#dbms").val() == "SQL Server Express LocalDB") {
-            $('#host').val("").prop("disabled", true).prev().prop("hidden", true);
-            $('#usn').val("").prop("disabled", true).prev().prop("hidden", true);
-            $('#psw').val("").prop("disabled", true).prev().prop("hidden", true);
+    // Funzione per controllare se le password sono uguali
+    function checkPassword(event) {
+        const newPswR = document.getElementById('pswAdm');
+        const rNewPswR = document.getElementById('rpswAdm');
+        
+        const target = event.target; // Elemento che ha scatenato l'evento
+        let other; // L'altro campo da confrontare
+        console.log(target.id);
+        if (target.id === 'pswAdm') {
+            other = rNewPswR;
+        }
+        else other = newPswR;
+        console.log(target.value +'  '+other.value);
+        if (target.value === other.value) {
+            target.style.backgroundColor = "rgba(var(--bs-success-rgb),0.35";
+            other.style.backgroundColor = "rgba(var(--bs-success-rgb),0.35";
         } else {
-            $('#host').prop("disabled", false).prev().prop("hidden", false);
-            $('#usn').prop("disabled", false).prev().prop("hidden", false);
-            $('#psw').prop("disabled", false).prev().prop("hidden", false);
+            target.style.backgroundColor = "rgba(var(--bs-danger-rgb),0.35)";
+            other.style.backgroundColor = "rgba(var(--bs-danger-rgb),0.35)";
         }
-        /*alert(rootPATH);*/
-    }); //fine $("#dbms").change
-
-    //$("input").blur(function (event) {
-    //    var pattern = new RegExp(/^[a-zA-Z0-9_]+$/);
-    //    alert(pattern.test($(this)));
-    //    return false;
-    //}); //fine $("input").blur
-
-$("input").keypress(function (event) {
-    if (event.which == 32) {
-        alert("Lo spazio non \u00E8 un carattere valido!");
-        return false;
-    }
-}); //fine $("input").keypress
-
-$("#pswAdm, #rpswAdm").keyup(function () {
-    if ($("#pswAdm").val() == $("#rpswAdm").val()) {
-        $("#pswAdm").css("background-color", "rgba(var(--bs-success-rgb),0.35)");
-        $("#rpswAdm").css("background-color", "rgba(var(--bs-success-rgb),0.35)");
-    }
-    else {
-        $("#pswAdm").css("background-color", "rgba(var(--bs-danger-rgb),0.35)");
-        $("#rpswAdm").css("background-color", "rgba(var(--bs-danger-rgb),0.35)");
-    }
-}); //fine $("#pswAdm, #rpswAdm").keyup
-
-$('#login').click(function () {
-    //$(window.location).attr('href', 'login.php');
-    $.post("ajax/chklogin.php", { EMAIL: $("#mailAdm").val(), PSW: $("#pswAdm").val() }
-    ).done(function (result) {
-        if (result ==='K') $(window.location).attr('href', 'index.php'); //window.location.reload();
-        else if (result.substr(0, 2) === '->') { //se errore in login.php
-            alert('Errore 000-9: ' + result);
-            logerror('-9', 'chklogin.php', result);
-        }
-        else $("#msg").text("Username o Password Errati!");
-    }).fail(function (xhr, ajaxOptions, thrownError) { //errore ajax
-        let str = "Errore 000-10: " + xhr.status + " " + thrownError;
-        alert(str);
-        logerror('-10', 'chklogin.php', str);
-    })
-});
-
-    //$('#domRoot').click(function () {
-    //    if ($('#domRoot').is(':checked')) {
-    //        $('#cartRoot').val("").prop("disabled", true).prev().prop("hidden", true);
-    //    }
-    //    else { 
-    //        $('#cartRoot').val("").prop("disabled", false).prev().prop("hidden", false);
-    //    }
-    //});
-
-$("form").submit(function (event) {
-    event.preventDefault();
-
-    $error = false;
-    $("select, input").each(function (index) {
-        $(this).val($.trim($(this).val()));
-        if (!$(this).val() && !$(this).prop("disabled")) {
-            alert("Inserire tutti i dati richiesti");
-            $error = true; return false;
-        }
-    }); // fine each
-    if (!$error && $("#pswAdm").val() !== $("#rpswAdm").val()) {
-        alert("I campi Password e Ripeti password dell'Account Amministratore devono contenere lo stesso valore");
-        $error = true; return false;
     }
 
-    if ($error) return false;
+    document.getElementById('login').addEventListener('click', function () {
+        const email = document.getElementById("mailAdm").value;
+        const password = document.getElementById("pswAdm").value;
 
-    //SE la validazione form è OK
-    $('#installa').attr('disabled', true);
-    $(".progress").css("visibility", "visible");
-    $("#msgProgress").css("visibility", "visible");
-
-    if ($('#installa').attr('value') == "Installa" || !count) start();
-    else if (resume == 1) progress();
-    else if (resume == -2) finish();
-    else alert("Errore non identificato!\n");
-
-    //// crea file config.ini.php e logerrors.txt.php sul server
-    //// restituisce vettore (json) con i file "0 *.php" per setup
-    function start() {
-        dati = 'DBMS=' + $('#dbms').val() + '&HOST=' + $('#host').val() + '&DB=' + $('#db').val() + '&DBEX=' + $('#dbEx').is(':checked') + '&USN=' + $('#usn').val() + '&PSW=' + $('#psw').val() + '&resume=' + resume + '&SubDROOT=' + $('#myRoot').val() +
-            '&MAIL=' + $('#emailLink').val() + '&SOCIAL=' + $('#socialLink').val() + '&WEB=' + $('#webLink').val();
-        $.ajax({
+        fetch("ajax/chklogin.php", {
             method: "POST",
-            url: "setup/start.php",
-            data: dati,
-            dataType: "json"
-        }).done(function (result) {
-            let str = JSON.stringify(result);
-            if (str.substr(0, 2) === '->') { //se errore in start.php
-                alert('Errore 000-1: ' + str);
-                $('#installa').attr('value', "Riprova");
-                $('#installa').attr('disabled', false);
-                resume = -1;
-                logerror('-1', 'start.php', str);
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+            },
+            body: `EMAIL=${encodeURIComponent(email)}&PSW=${encodeURIComponent(password)}`
+        })
+            .then(response => response.text())
+            .then(result => {
+                if (result === 'K') {
+                    window.location.href = 'index.php';
+                } else if (result.substring(0, 2) === '->') {
+                    alert('Errore 000-9: ' + result);
+                    logerror('-9', 'chklogin.php', result);
+                } else {
+                    document.getElementById("msg").textContent = "Username o Password Errati!";
+                }
+            })
+            .catch(error => {
+                let str = "Errore 000-10: " + error.status + " " + error;
+                alert(str);
+                logerror('-10', 'chklogin.php', str);
+            });
+    });
+
+document.querySelectorAll('form').forEach(form => {    
+        form.addEventListener('submit', function (event) {
+            event.preventDefault();
+            errore = false;
+            //alert("prima di validate");
+            // Esegui la validazione del form qui. Assicurati che la funzione validate() ora accetti un elemento form HTML
+            document.querySelectorAll('select, input').forEach(tb => {
+                tb.value = tb.value.trim();
+                if (!tb.value && !tb.disabled) {
+                    if(!errore)
+                        alert("Inserire tutti i dati richiesti");
+                    errore = true; return false;
+                }
+            });
+            if (!errore && document.getElementById('pswAdm').value !== document.getElementById('rpswAdm').value) {
+                alert("I campi Password e Ripeti password dell'Account Amministratore devono contenere lo stesso valore");
+                errore = true; return false;
             }
-            else {
-                resume = 0; //Eventuale errore nel file php è stato corretto
-                arrayFiles = [...result];       //operatore ... spread copia il vettore result in arrayFiles
-                totFiles = arrayFiles.length;
-                $("#msgProgress").text("Inizializzazione completata...");
-                progress();
-            }
-        }).fail(function (xhr, ajaxOptions, thrownError) { //errore ajax
-            let str = "Errore 000-2: " + xhr.status + " " + thrownError;
-            alert(str);
-            $('#installa').attr('value', "Riprova");
-            $('#installa').attr('disabled', false);
+            if (errore) return false;
+
+            //SE la validazione form è OK
+           
+            if(inst)
+                inst.setAttribute('disabled', true);
+            document.getElementsByClassName('progress')[0].style.visibility = 'visible';
+            document.getElementById('msgProgress').style.visibility = 'visible';
+            if (inst.value == 'Installa' || !count) start();
+            else if (resume == 1) progress();
+            else if (resume == -2) finish();
+            else alert("Errore non identificato!\n");
+        });
+
+    async function start() {
+        dati = new FormData(document.getElementById('formsetup'));
+        //aggiumgo i campi non abilitati
+        dati.append('SubDROOT', document.getElementById('myRoot').value);
+        dati.append('resume', resume);
+        let dbe = document.getElementById('dbEx');
+        dati.append('DBEX', dbe.checked);
+        //dati = 'DBMS=' + dbv + '&HOST=' + hostv + '&DB=' + dbv + '&DBEX=' + $('#dbEx').is(':checked') + '&USN=' + usnv + '&PSW=' + pswv + '&resume=' + resume + '&SubDROOT=' + myrv +
+        //    '&MAIL=' + $('#emailLink').val() + '&SOCIAL=' + $('#socialLink').val() + '&WEB=' + $('#webLink').val();
+        let promo1 = await fetch('setup/start.php', {
+            method: 'POST',
+            body: dati
+        }).then(successResponse => {
+            if (successResponse.status != 200) {
+                return null;
+            } else {
+                return successResponse.json();
+            }              
+        },
+        failResponse => {
+            inst.value = 'Riprova';
+            inst.removeAttribute('disabled');
             resume = -1;
             logerror('-2', 'start.php', str);
-        })
+            return null;
+            });
+
+        //console.log('aspetto che la promessa risolva');
+        let result = await promo1;
+        if (result != null) { 
+        //console.log('promessa risolta ');
+        let str = JSON.stringify(result);
+        //console.log(str);
+        if (str.substring(0, 2) === '->') { //se errore in start.php
+            alert('Errore 000-1: ' + str);
+            inst.value = 'Riprova';
+            inst.removeAttribute('disabled');
+            resume = -1;
+            logerror('-1', 'start.php', str);
+        }
+        else {
+            resume = 0; //Eventuale errore nel file php è stato corretto
+            arrayFiles = [...result];       //operatore ... spread copia il vettore result in arrayFiles
+            totFiles = arrayFiles.length;
+            document.getElementById('msgProgress').value="Inizializzazione completata...";
+            progress();
+            }
+        }
     }  //fine start()
 
-    //// esegue codice php dei file restituiti da start()
+
     function progress() {
-        if (count == 1) dati = 'MAILAD=' + $('#mailAdm').val() + '&PSWAD=' + $('#pswAdm').val() + '&resume=' + resume;
-        else dati = 'resume=' + resume;
-        //console.log(arrayFiles[count]);
-        $.ajax({
+        let dati;
+        if (count == 1) {
+            dati = 'MAILAD=' + document.getElementById('mailAdm').value + '&PSWAD=' + document.getElementById('pswAdm').value + '&resume=' + resume;
+        } else {
+            dati = 'resume=' + resume;
+        }
+
+        fetch(arrayFiles[count], {
             method: "POST",
-            url: arrayFiles[count],
-            data: dati
-        }).done(function (result) {
-            if (result.substr(0, 2) === '->') {
-                let str = 'Errore ' + arrayFiles[count].substr(7, 4) + ": " + result;
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+            },
+            body: dati
+        })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                return response.text();
+            })
+            .then(result => {
+                if (result.substring(0, 2) === '->') {
+                    let str = 'Errore ' + arrayFiles[count].substring(7, 11) + ": " + result;
+                    alert(str);
+                    document.getElementById('installa').removeAttribute('disabled');
+                    document.getElementById('installa').value = "Riprova";
+                    resume = 1;
+                    logerror(count, arrayFiles[count], str);
+                } else {
+                    let percent = Math.round(((++count) / totFiles * 100.0)) + "%";
+                    document.getElementById('myBar').style.width = percent;
+                    document.getElementById('myBar').innerHTML = percent;
+                    document.getElementById('msgProgress').textContent = result;
+                    if (count == 1) document.getElementById('dbEx').setAttribute('disabled', true); // dopo creazione prima tabella DB non si può più cambiare
+                    resume = 0; // Eventuale errore nel file php è stato corretto
+                    if (count < totFiles) progress();
+                    else finish();
+                }
+            })
+            .catch(error => {
+                let str = 'Errore ' + arrayFiles[count].substring(7, 11) + ': ' + error.message;
                 alert(str);
-                $('#installa').attr("disabled", false);
-                $('#installa').attr("value", "Riprova");
+                document.getElementById('installa').removeAttribute('disabled');
+                document.getElementById('installa').value = "Riprova";
                 resume = 1;
                 logerror(count, arrayFiles[count], str);
-            }
-            else {
-                let percent = Math.round(((++count) / totFiles * 100.0)) + "%";
-                $("#myBar").css("width", percent).html(percent);
-                $("#msgProgress").text(result);
-                if (count == 1) $('#dbEx').attr('disabled', true); //dopo creazione prima tabella DB non si può più cambiare
-                resume = 0; //Eventuale errore nel file php è stato corretto
-                if (count < totFiles) progress();
-                else finish();
-            }
-        }).fail(function (xhr, ajaxOptions, thrownError) {
-            let str = 'Errore ' + arrayFiles[count].substr(7, 4) + ': ' + xhr.status + ' ' + thrownError;
-            alert(str);
-            $('#installa').attr("disabled", false);
-            $('#installa').attr("value", "Riprova");
-            resume = 1;
-            logerror(count, arrayFiles[count], str);
-        })
+            });
     } //fine progress()
 
     //// scrive setup = 1 (installazione completata) nel file config.ini.php
     function finish() {
-        $.ajax({
+        fetch("setup/finish.php", {
             method: "POST",
-            url: "setup/finish.php",
-            data: "resume=" + resume
-        }).done(function (result) {
-            if (result.substr(0, 2) === '->') {
-                let str = 'Errore 000-3: ' + result;
-               alert(str);
-                $('#installa').attr("disabled", false);
-                $('#installa').attr("value", "Riprova");
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+            },
+            body: "resume=" + resume
+        })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                return response.text();
+            })
+            .then(result => {
+                if (result.substring(0, 2) === '->') {
+                    let str = 'Errore 000-3: ' + result;
+                    alert(str);
+                    document.getElementById('installa').removeAttribute('disabled');
+                    document.getElementById('installa').value = "Riprova";
+                    resume = -2;
+                    logerror('', 'finish.php', str);
+                } else {
+                    document.getElementById('login').style.display = "block";
+                    document.getElementById('installa').style.display = "none";
+                    document.getElementById('msgProgress').textContent = "Installazione completata.";
+                }
+            })
+            .catch(error => {
+                let str = 'Errore 000-4: ' + error.message;
+                alert(str);
+                document.getElementById('installa').removeAttribute('disabled');
+                document.getElementById('installa').value = "Riprova";
                 resume = -2;
                 logerror('', 'finish.php', str);
-            }
-            else {
-                $("#login").css("display", "block");
-                $("#installa").css("display", "none");
-                $("#msgProgress").text("Installazione completata.");
-            }
-        }).fail(function (xhr, ajaxOptions, thrownError) {
-            let str = 'Errore 000-4: ' + xhr.status + ' ' + thrownError;
-            alert(str);
-            $('#installa').attr("disabled", false);
-            $('#installa').attr("value", "Riprova");
-            resume = -2;
-            logerror('', 'finish.php', str);
-        })
+            });
     } //fine finish()
-
 }); // fine $("form").submit
-
 }); //fine $(document).ready
-
-

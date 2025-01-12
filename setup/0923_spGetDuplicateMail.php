@@ -44,7 +44,7 @@ $sql =<<<SQL
     BEGIN
         SELECT utenti.email
         FROM utenti
-        WHERE utenti.email LIKE 'testo';
+        WHERE utenti.email LIKE testo;
     END
 SQL;
 }

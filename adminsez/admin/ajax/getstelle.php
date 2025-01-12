@@ -27,7 +27,7 @@ require_once ROOT_PATH .'/include/functions.php';
 
     if(!$conn = connectDB()) {echo errorConnectDB(); exit();}
     $campo=$_POST['campo'];
-    $sql = "SELECT idstar,[$campo] FROM numberOfStars;";
+    $sql = "SELECT idstar,".$campo. " FROM numberOfStars;";
     if(! $stmt=$conn->query($sql)) throw new Exception('Errore query getstelle');
 
     $stelle = $stmt->fetchAll(PDO::FETCH_ASSOC); //result set per tutte le attività

@@ -69,7 +69,7 @@ function wr_getAllPosts( $role,$table)
     $_POST['table']=$table;
     $_POST['role']=$role;
 
-    include(ROOT_PATH . '/ajax/getallposts.php');
+    include(ROOT_PATH . '/ajax/getallpostsdatelimited.php');
     return $posts;
 }
 function wr_getCina($act)

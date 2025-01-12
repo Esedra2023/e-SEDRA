@@ -29,39 +29,37 @@ if (session_status() !== PHP_SESSION_ACTIVE) {
           $sql =<<<SQL
     CREATE PROCEDURE getNroVoti
         @idAct INT,
-        @idUs INT,
-        @dtIni DATE,
-		@dtFin DATE
+        @idUs INT
     AS
     BEGIN
         IF @idAct = 104
         BEGIN
             SELECT valBis.grade, COUNT(valBis.grade) AS tot
             FROM valBis
-            WHERE valBis.utente=@idUs AND valBis.dtIns>=@dtIni AND valBis.dtIns<=@dtFin
+            WHERE valBis.utente=@idUs AND valBis.dtIns>=(SELECT dtStart FROM attivita where idAt=@idAct) AND valBis.dtIns<=(SELECT dtStop FROM attivita where idAt=@idAct)
             GROUP BY valBis.grade;
         END
         ELSE BEGIN
             SELECT valPrp.grade, COUNT(valPrp.grade) AS tot
             FROM valPrp
-            WHERE valPrp.utente=@idUs AND valPrp.dtIns>=@dtIni AND valPrp.dtIns<=@dtFin
+            WHERE valPrp.utente=@idUs AND valPrp.dtIns>=(SELECT dtStart FROM attivita where idAt=@idAct) AND valPrp.dtIns<=(SELECT dtStop FROM attivita where idAt=@idAct)
             GROUP BY valPrp.grade;
         END
     END
 SQL;
       } else if($_SESSION['ini']['dbms'] == 'My SQL'){
           $sql =<<<SQL
-    CREATE PROCEDURE getNroVoti(idAct INT, idUs INT, dtIni DATE, dtFin DATE)
+    CREATE PROCEDURE getNroVoti(idAct INT, idUs INT)
     BEGIN
-        IF @idAct = 104 THEN
+        IF idAct = 104 THEN
             SELECT valBis.grade, COUNT(valBis.grade) AS tot
             FROM valBis
-            WHERE valBis.utente=idUs AND valBis.dtIns>=dtIni AND valBis.dtIns<=dtFin
+            WHERE valBis.utente=idUs AND valBis.dtIns>=(SELECT dtStart FROM attivita where idAt=idAct) AND valBis.dtIns<=(SELECT dtStop FROM attivita where idAt=idAct)
             GROUP BY valBis.grade;
         ELSE
             SELECT valPrp.grade, COUNT(valPrp.grade) AS tot
             FROM valPrp
-            WHERE valPrp.utente=idUs AND valPrp.dtIns>=dtIni AND valPrp.dtIns<=dtFin
+            WHERE valPrp.utente=idUs AND valPrp.dtIns>=(SELECT dtStart FROM attivita where idAt=idAct) AND valPrp.dtIns<=(SELECT dtStop FROM attivita where idAt=idAct)
             GROUP BY valPrp.grade;
         END IF;
 	END

@@ -68,7 +68,7 @@
     <div class="footercopy text-center  p-3">
         Sviluppato da:
         Dipartimento di Informatica - IIS LOMBARDI <a class="text-white text-decoration-none" href="http://nuke.itisvc.it/"> (sede ITI Faccio) Vercelli</a>
-        <br />Ultimo aggiornamento: Maggio 2023
+        <br />Ultimo aggiornamento: Febbraio 2024
     </div>
     <!-- Copyright -->
 </footer>

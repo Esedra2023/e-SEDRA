@@ -153,5 +153,5 @@
     echo json_encode($output);
 
     //header('location: ../users.php');
-    exit(0);
+    //exit(0);
     //}

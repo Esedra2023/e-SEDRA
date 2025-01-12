@@ -40,8 +40,10 @@ try{
     $stmt = $conn->prepare($sql);
     $stmt->bindValue(':usn', $_POST['EMAIL']);
     $stmt->bindValue(':token', $token);
+    if(!isset($_SESSION['ini']['scTkn']))
+        $_SESSION['ini']['scTkn']=0;
+  
     $stmt->bindValue(':exp', $_SESSION['ini']['scTkn']);
-
     $stmt->execute();
 } catch(PDOException $e) {echo error($e); exit();}
 $return = $stmt->fetchColumn(0);

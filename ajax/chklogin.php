@@ -83,7 +83,8 @@ if(count($row)!=0 && password_verify($_POST['PSW'], $row[0]['psw'])){
     //}
     session_regenerate_id();
     //CONTROLLO SCADENZA PASSWORD ( x modal dialog login )
-    if( isset($_SESSION['user']['ggScPsw']) && ($_SESSION['ini']['ggMsgPsw'] - $_SESSION['user']['ggScPsw'] > 0)  )
+    //$gscad = $_SESSION['ini']['scPsw'] * 30;
+    if( isset($_SESSION['user']['ggScPsw']) && ($_SESSION['user']['ggScPsw'] < 0)  )
         echo $_SESSION['user']['ggScPsw'];  // torna gg mancanti scadenza psw (<0 se scaduta)
     else echo 'K'; // usn e psw OK
 }

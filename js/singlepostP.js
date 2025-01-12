@@ -85,13 +85,13 @@ ready(function () {
     for (let i = 0; i < sig.length; i++)
         sig[i].addEventListener("click", function () {
             var id = this.getAttribute("id");
-            this.disabled = true;
+            this.setAttribute('disabled', true);
             var nome = "btnSegnala";
             var idBl = id.substr(nome.length, id.length);
             //console.log(idBl);
             var bri = document.getElementById("toggleRisp" + idBl);
           /*  alert('bri ' + bri);*/
-            if(bri) bri.disabled = true;
+            if(bri) bri.setAttribute('disabled', true);
             call_ajax_segnala_commento(idBl,'P');
             var card = document.getElementById("Commento" + idBl);
            /* alert("cerco commento n " + idBl);*/

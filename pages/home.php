@@ -81,13 +81,6 @@ if (session_status() !== PHP_SESSION_ACTIVE) {
         </div>
     </div>
     <!--</div>-->
-    <script>
-      /*  $('.carousel').carousel
-            ({
-                interval: 5000,
-                cycle:true
-            });*/
-    </script>
 </section>
 
 

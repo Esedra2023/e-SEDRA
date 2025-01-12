@@ -218,12 +218,12 @@ var setnavigation = (/*outPag*/) => {
     patt.innerText = outPag.paginaCorrente;
     utentiperlettera.innerText = outPag.totali;
     if (!outPag.nextpage)
-        btnAv.disabled = true;
-    else btnAv.disabled = false;
+        btnAv.setAttribute('disabled', true);
+    else btnAv.removeAttribute('disabled');
     if (!outPag.prevpage)
-        btnInd.disabled = true;
+        btnInd.setAttribute('disabled', true);
     else
-        btnInd.disabled = false;
+        btnInd.removeAttribute('disabled');
 };
 
 function setDati(dati) {
@@ -284,11 +284,15 @@ var uploadFile = (file) => {
         }
     }
     //console.log('Import file con Irprim = ' + ruol);
-    data.append('fileup', file);
     let wic = document.getElementById("spinner-div");
     wic.classList.remove('d-none');
+
+    data.append('fileup', file);  
     fetch('adminsez/admin/ajax/impu.php', {
         method: "POST",
+        //headers: {
+        //    'Content-Type': 'application/json'
+        //},
         body: data
     }).then(function (risp) {
         return risp.json();
@@ -296,26 +300,25 @@ var uploadFile = (file) => {
         samplefile.value = '';
         let wic = document.getElementById("spinner-div");
         wic.classList.add('d-none');
-        if (rispdata.success) {     
-            //non c'è verso di visualizzarlo!!!'
-            /*showMessagge(rispdata.success, "my-callout-warning");  */
-            showMessagge(rispdata.success, "my-callout-info", "infoMessaggedx");
-            //alert(rispdata.success);
-            call_close_IULform();
-        }
+       
         if (rispdata.Ruolo) {
             divMessage(samplefile, "col-12 alert alert-danger mt-2", "Scegliere un ruolo!", true);
             return;
         }
-        if (rispdata.errors){
+       if (rispdata.errors){
             var mes = '';
             for (let j = 0; j < rispdata.errors.length; j++)
-                mes = mes + rispdata.errors[j] + '\n';
+                mes = mes + rispdata.errors[j] + '<br>';
             /* showMessagge(mes, "my-callout-danger");*/
             call_close_IULform();
             showMessagge(mes, "my-callout-danger", "infoMessaggedx");
             //alert(mes);
         } 
+        if (rispdata.success) {
+            showMessagge(rispdata.success, "my-callout-info", "infoMessaggedx");
+            //alert(rispdata.success);
+            call_close_IULform();
+        }
         simulateClick(fakesearch);
     });
 }
@@ -377,8 +380,8 @@ function call_close_AUform(title) {
     /*   disAbleButton(false);*/
     resetRuoliPrimSec();
     formAU.classList.remove("alert");
-    formElements.disabled = false;
-    document.getElementById("email").disabled = false;
+    formElements.removeAttribute('disabled');
+    document.getElementById("email").removeAttribute('disabled');
     createUpdatebtn.style.visibility = "visible";
     createUpdatebtn.value = "Salva Utente";
     resetAccordion(collapsableCreate, "btnAccCreateUser", formAU, title)
@@ -612,7 +615,7 @@ function call_ajax_edit_user(id, readonly, showpd) {
 
 function vediUtente(ut, readonly) {
 
-    if (!readonly) { formElements.disabled = false; }
+    if (!readonly) { formElements.removeAttribute('disabled'); }
     idModUser.value = ut['idUs'];
     document.getElementById("nome").value = ut['nome'];
     document.getElementById("cognome").value = ut['cognome'];
@@ -632,18 +635,18 @@ function vediUtente(ut, readonly) {
     //check ruoli primari e secondari
     checkedRuoli(ut['ruolo']);
     if (ut['idUs'] == 1) {
-        document.getElementById("nome").disabled = true;
-        document.getElementById("cognome").disabled = true;
+        document.getElementById("nome").setAttribute('disabled', true);
+        document.getElementById("cognome").setAttribute('disabled', true);
     }
     else {
-        document.getElementById("nome").disabled = false;
-        document.getElementById("cognome").disabled = false;
+        document.getElementById("nome").removeAttribute('disabled');
+        document.getElementById("cognome").removeAttribute('disabled');
     }
     if (readonly) {
-        formElements.disabled = true;
+        formElements.setAttribute('disabled', true);
     }
     else
-        document.getElementById("email").disabled = true;
+        document.getElementById("email").setAttribute('disabled', true);
     
 }
 

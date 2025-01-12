@@ -19,31 +19,36 @@
  */
 ?>
 <section class="container mt-3" id="discutivotaP">
-    <h2><?php if($VDproposte['blogAct']) echo $VDproposte['nome'].' con discussione'; else echo $VDproposte['nome'];?></h2>
-	<blockquote class="blockquote">
-    <p class="alert alert-primary col-md-12 text-center" role="alert">
-        <?php if($VDproposte['votAct']) { 
-                  echo ('Fase attiva dal '.date_format(date_create($VDproposte['dtStart']),'d/m/Y').' al '.date_format(date_create($VDproposte['dtStop']),'d/m/Y').' - mancano '.$VDproposte['ggscad'].' giorni alla chiusura.');
-              }
+    <h2>
+        <?php if($VDproposte['blogAct']) echo $VDproposte['nome'].' con discussione'; else echo $VDproposte['nome'];?>
+    </h2>
+    <blockquote class="blockquote">
+        <p class="alert alert-primary col-md-12 text-center" role="alert">
+            <?php if($VDproposte['votAct']) {
+                  echo ('Fase attiva dal '.date_format(date_create($VDproposte['dtStart']),'d/m/Y H:i').' al '.date_format(date_create($VDproposte['dtStop']),'d/m/Y H:i').' - Termina tra: <span id="demo">'.$VDproposte['ggscad']. '</span></br>');
+            }
        else echo('Fase non attiva');
-        ?></p>
-  </blockquote>
-    <hr />
-    <div class="row justify-content-evenly">     
+            ?>
+        </p>
+        <input type="hidden" id="scadenza" value="<?php echo $VDproposte['dtStop']; ?>" />
 
-<!--<hr />-->
-		<!-- Display records from DB-->
-<?php if ($VDproposte['votAct']) {?>
+    </blockquote>
+    <hr />
+    <div class="row justify-content-evenly">
+
+        <!--<hr />-->
+        <!-- Display records from DB-->
+        <?php if ($VDproposte['votAct']) {?>
         <div class="col-md-3 mt-3">
-            <?php 
+            <?php
                       $_POST['grad']=$VDproposte['altridati'];
                       $_POST['votbp']=204;
                       include(ROOT_PATH . '/include/votgraduatoria.php');
             ?>
         </div>
-        <div class="col-md-9 mt-3">
+        <div class="mt-3">
             <!--colonna per table-->
-            <div class="table-div mb-3">
+            <div class="table-div col-lg-8 mb-3">
                 <div id="infoMessagge" class="my-callout d-none"></div>
 
                 <table class="table align-middle" id="Disctable">
@@ -59,6 +64,7 @@
                             <th colspan="2">
                                 <small>Votazione</small>
                             </th>
+                            <th></th>
                             <?php } ?>
                         </tr>
                     </thead>
@@ -79,22 +85,22 @@
                             </td>
                             <?php
 
-                                  if($_SESSION['user']['idUs']==$post['utente'])
-                                  {
-                                      echo '<td>io</td>';
+                                  //if($_SESSION['user']['idUs']==$post['utente'])
+                                  //{
+                                  //    echo '<td>io</td>';
                                       if(isset($post['nlike']))
                                           echo '<td>'.$post['nlike'].'</td>';
-                                      else  echo '<td>0</td>';
-                                  }
-                                  else if($VDproposte['IamRev'])
-                                  {
-                                      echo '<td>'.$post['nome'].' '.$post['cognome'].'</td>';
-                                      if(isset($post['nlike']))
-                                          echo '<td>'.$post['nlike'].'</td>';
-                                      else  echo '<td>0</td>';
-                                  }
-                                  else
-                                      echo '<td>---</td> <td>-</td>';
+                                      else  echo '<td>-</td>';
+                                  //}
+                                  //if($VDproposte['IamRev'])
+                                  //{
+                                  //    echo '<td>'.$post['nome'].' '.$post['cognome'].'</td>';
+                                  //    if(isset($post['nlike']))
+                                  //        echo '<td>'.$post['nlike'].'</td>';
+                                  //    else  echo '<td>0</td>';
+                                  //}
+                                  //else
+                                  //    echo '<td>---</td> <td>-</td>';
                             ?>
                             <td>
                                 <?php if($VDproposte['IamAuthor']){ ?>
@@ -102,12 +108,19 @@
                                 <my-rating class="rating" max-value="10" value="<?php if(isset($post['grade'])) echo $post['grade']; ?>"></my-rating>
                                 <?php } ?>
                             </td>
+                            <td>
+                                <button type="button" class="btn icona" data-bs-toggle="tooltip" title="Cancella Voto" data-idbis="<?php echo $post['idPr']; ?>" data-crud="D" value="<?php echo $post['idPr']; ?>" name="cancella-voto" <?php //if (!isset($post['grade'])) echo 'disabled'; ?>>
+                                    <span class="bi <?php
+                                                echo 'bi-trash'; ?> "></span>
+                                </button>
+
+                            </td>
 
                         </tr>
                         <?php }
                           }
                        if($tot==0) {
-                           echo '<tr><td colspan="5" class="alert alert-primary col-md-12 mt-3 text-center">Nessuna proposta da visualizzare</td></tr>';
+                           echo '<tr><td colspan="6" class="alert alert-primary col-md-12 mt-3 text-center">Nessuna proposta da visualizzare</td></tr>';
                         $tot++;
                     }
                         ?>
@@ -115,11 +128,13 @@
                     </tbody>
                 </table>
             </div>
-        </div>
-            <?php } ?>
-        </div>
-</section>	
 
-<script src="js/functions.js"></script>
-<script src="js/funzioniValLU.js"></script>
-<script src="js/discuproposte.js"></script>
+        </div>
+
+        <?php } ?>
+    </div>
+
+    <script src="js/functions.js"></script>
+    <script src="js/funzioniValLU.js"></script>
+    <script src="js/discuproposte.js"></script>
+</section>

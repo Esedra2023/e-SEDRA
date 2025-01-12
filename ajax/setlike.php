@@ -33,7 +33,7 @@ require_once ROOT_PATH .'/include/functions.php';
     if(stripos($_SESSION['ini']['dbms'], 'SQL Server') === 0)
         $sql="INSERT INTO miPiace$itable (utente, $campo) VALUES ($us, $id);";
     else if($_SESSION['ini']['dbms'] == 'My SQL')
-        $sql="INSERT INTO miPiace$itable (dtIns, utente, $campo) VALUES (DATE(CURRENT_TIMESTAMP),$us, $id);";
+        $sql="INSERT INTO miPiace$itable (dtIns, utente, $campo) VALUES (now(),$us, $id);";
     $stmt=$conn->query($sql);
     if(!$stmt) throw new Exception('Errore query set like');
     $conn=null;

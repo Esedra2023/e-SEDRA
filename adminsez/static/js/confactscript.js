@@ -28,6 +28,7 @@ var utable;
 var doposetti;
 var tipovot;
 var conblog /*, conblogdiv*/;
+var adesso;
 //var stelle;
 var grad = [];
 grad['bis'] = false;
@@ -153,7 +154,8 @@ ready(function () {
         var modNoAtt = document.getElementById("closeModalAttention");
         modNoAtt.addEventListener("click", function () {
             /*alert("click annulla");*/ /*updAtInCorso = false;*/ savebtn.style.visibility = 'hidden';
-                    document.getElementById("allbuttonAct").disabled = 'disabled';});
+            document.getElementById("allbuttonAct").setAttribute('disabled',true);
+});
     }
 
     var mm2 = document.getElementById('myModalReset');
@@ -200,6 +202,8 @@ ready(function () {
         }
 
     });
+
+
     tipovot = document.getElementById("tipovotazione");
     var graduatoria = document.getElementById("vgraduatoria");
     graduatoria.addEventListener("click", function () { gestiscistelle(hiddenact.value); });
@@ -238,7 +242,7 @@ ready(function () {
     acttable = document.getElementById('actiTable');
     /*  console.log(utable);*/
     acttable.addEventListener("click", (e) => {
-        if (e.target.nodeName != 'BUTTON' && e.target.nodeName != 'SPAN' && e.target.nodeName != 'INPUT') { console.log('- ' + e.target); return; }
+        if (e.target.nodeName != 'BUTTON' && e.target.nodeName != 'SPAN' && e.target.nodeName != 'INPUT') { /*console.log('- ' + e.target);*/ return; }
         let elem = e.target;
         if (e.target.nodeName == 'SPAN')
             elem = e.target.parentNode;
@@ -293,7 +297,11 @@ ready(function () {
                   case 'dtStart':                   
                         var tod = document.getElementById('dtStop');
                         tod.min = elem.value;
-                    break;                 
+                        break;  
+                    //case 'hStart':
+                    //    var toh = document.getElementById('hStop');
+                    //    toh.min = elem.value;
+                    //    break;   
                 }
   }
 });
@@ -363,7 +371,7 @@ async function readStelleFromDb(act) {
 }
 
 async function call_ajax_edit_act(act) {
-    
+    var retroDate = false;
     var data = new FormData;
     data.append("select", "1");
     data.append("idAt", act);
@@ -410,9 +418,9 @@ async function call_ajax_edit_act(act) {
      //console.log('aspetto che la seconda promessa risolva');
 
      let results = await Promise.all(tuttepromesse);
-     for (let i in results) {
-         //console.log('OK..promessa risolta '+results[i]);
-     }
+     //for (let i in results) {
+     //    //console.log('OK..promessa risolta '+results[i]);
+     //}
 
      //console.log('all promises resolved');
      
@@ -423,9 +431,11 @@ async function call_ajax_edit_act(act) {
         if (results[0]['stato'] == 1)   //attività in corso ATTENTION
         {
             myModalAtt.show();
+            retroDate = true;
+
         }
         //else
-          showActivity(results[0]);
+        showActivity(results[0],retroDate);
          //console.log('results ' + results[0]['nome']);        
         }
      //console.log('r1 ' + results[1]);
@@ -437,18 +447,7 @@ async function call_ajax_edit_act(act) {
 /*    return results;*/
 }
 
-
-
-//function call_close_ACTform() {
-//    formACT.reset();
-//    /*   disAbleButton(false);*/
-//    /* formElements.disabled = false;*/
-//    settaTitleAccordion("bottoneAccordion","Impostazioni attivit&agrave");
-//    collapsableAct.hide(); //chiude il formAU
-
-//}
-
-function showActivity(ac) {
+function showActivity(ac, retroDate) {
 
   /*  console.log('showActivity' + ac['idAt'] + ' ' + ac['dtStart'] + ' ' + ac['dtStop']);*/
     if (ac) {
@@ -466,7 +465,7 @@ function showActivity(ac) {
                 document.getElementById("ballottaggio").checked = false;
             }
             if (ac['stato'] != 2)
-                document.getElementById("ballottaggio").disabled = 'disabled';
+                document.getElementById("ballottaggio").setAttribute('disabled', true);
                 //alert('blog ' + ac['blog']);
             if (ac['blog'] == 1) { 
                 document.getElementById("blogactive").checked = 'checked';
@@ -485,55 +484,111 @@ function showActivity(ac) {
         else
             document.getElementById("altridati").value = ac['altridati'];
         document.getElementById("giorninoti").value = ac['giorninoti'];
-        defineDateStartStop(ac);
+        defineDateStartStop(ac,retroDate);
         //document.getElementById("dtStart").value = ac['dtStart'];
         //var dt = document.getElementById("dtStop");
         //dt.value = ac['dtStop'];
-        //if (dt.disabled) dt.disabled = '';
+        //if (dt.disabled) dt.removeAttribute('disabled');
         document.getElementById("revisore").value = ac['revisore'];
         //if (!vis) {
         //    savebtn.disabled = 'disabled';
         //    document.getElementById("allbuttonAct").disabled = 'disabled';
 
         //} else {
-            savebtn.disabled = '';
-            document.getElementById("allbuttonAct").disabled = '';
+            savebtn.removeAttribute('disabled');
+        document.getElementById("allbuttonAct").removeAttribute('disabled');
         //}
     } else { console.log('show activity riceve null'); } 
 }
 
+function now() {
+    var oggi = new Date();
+    var offset = new Date().getTimezoneOffset();
+    oggi.setMinutes(oggi.getMinutes() - offset);
 
-function defineDateStartStop(act) {
-    var di = document.getElementById("dtStart");
-    var df = document.getElementById("dtStop");
-    di.value = act['dtStart'];
-    df.value = act['dtStop'];  
-    if (df.disabled) df.disabled = '';
-    //console.log(act['dtStart'] + " " + act['dtStop'] + " " + act['dipendeda']);
-   //minimo dello start: o la data odierna per non essere retroattivo o lo stop della fase da cui dipende
-   di.setAttribute("min", new Date().toISOString().split('T')[0]);
-   let idp = act['dipendeda'];
-   if (idp != null) {
-         //console.log("dipende da "+idp);
-       let dip = document.getElementById("To" + idp).getAttribute("value");      
-       if (dip != "") { 
-           //console.log("dip " + dip)
-            let next = addDaysToDate(dip, 1);
-            di.setAttribute("min", new Date(next).toISOString().split('T')[0]);
-       }
-   } 
-        //il minimo dello stop è sempre il corrispondente start
-    let diV = di.value;
-    if (diV != "") {
-        let next = addDaysToDate(diV, 1);
-        //console.log("stop " + diV);
-        df.setAttribute("min", new Date(next).toISOString().split('T')[0]);
+    return  (oggi.toISOString().substring(0, 16));
+}
+//function nowData() {
+//    var oggiS = now().toISOString();
+//    return (oggiS.split('T')[0]);
+//}
+
+//function nowOra() {
+//    var oggiS = now().toISOString();
+//    return (oggiS.substring(11, 16));
+//}
+
+function dateForPickerAddT(data) {
+    var nd = data.substring(6, 10) + "-" + data.substring(3, 5) + "-" + data.substring(0, 2) + "T" + data.substring(11, 16);
+    return nd;
+}
+
+function dateFromPickerAddSpace(data) {
+    return data.replace("T", " ");
+}
+function defineDateStartStop(act,retroDate) {
+    //gestione ora locale in JS
+
+    //var oggi = new Date();
+    //var offset = new Date().getTimezoneOffset();
+    //oggi.setMinutes(oggi.getMinutes() - offset);
+    //var oggiS = now();
+    console.log(act + ' ' + retroDate);
+    const di = document.getElementById("dtStart");
+    const df = document.getElementById("dtStop");
+    if (di.disabled) {       
+        di.removeAttribute('disabled');
     }
-    else
-        df.setAttribute("min", new Date().toISOString().split('T')[0]);
+    di.value = act['dtStart'];
+   
+    //console.log("act ", act['dtStart']);
+    df.value = act['dtStop']; 
+    if (df.disabled) df.removeAttribute('disabled');
+    //console.log(act['dtStart'] + " " + act['dtStop'] + " " + act['dipendeda']);
+
+    //retroDate=true se sto modificando attività in corso, in quel caso lascio tutto come sta
+    if (!retroDate) {
+        //minimo dello start: o la data odierna per non essere retroattivo o lo stop della fase da cui dipende
+        di.setAttribute("min", now());
+        //console.log(now());
+        let idp = act['dipendeda'];
+        if (idp != null) {
+            //console.log("dipende da "+idp);
+            let dip = document.getElementById("hTo" + idp).getAttribute("value");
+            //console.log("dipende value " + dip);
+            //if (dip == null) {
+            //    dip = document.getElementById("hTo" + idp).innerHTML.trim();
+            //    console.log("dipende inner " + dip);
+            //}
+            if (dip != "") {
+                //di.setAttribute("min", dateForPickerAddT(dip));
+                di.setAttribute("min", dip);
+            }
+        }
+        //il minimo dello stop è sempre il corrispondente start
+        let diV = di.value;
+        if (diV != "") {
+            //console.log("diV " + diV);      
+            df.setAttribute("min", diV);
+        }
+        else
+            df.setAttribute("min", now());
+    }
+    else {
+        console.log("passo dall'else");
+        di.setAttribute("min", di.value);
+        di.setAttribute('disabled', true); 
+        df.setAttribute("min", now());
+        //il minimo dello start è il valore che ha già e pulsante disabilitato e il minimo dello stop è adesso
+    }
+    
    //df.defaultValue = df.getAttribute("min"); 
 }
 
+//Per rimuovere il disabled
+//df.removeAttribute('disabled');
+//    Per settarlo
+//di.setAttribute('disabled', true);
 async function call_ajax_delete_data(id) {
     var data = new FormData;
     data.append("idAt", id);
@@ -649,6 +704,12 @@ async function call_ajax_save_act(act, ruoliAuto) {
 
    
     var data1 = new FormData();
+    //console.log(data1);
+    //alert("fermo");
+    //const dti = data1['dtStart'].toJSON().slice(0, 19).replace('T', ' ');
+    //data1['dtStart'] = dti;
+    //console.log("senza T "+dti);
+
     data1.append("activity", act);
     data1.append("ruoli", JSON.stringify(ruoliAuto));
     /* console.log('ruoli prima di post'+ruoliAuto+'  '+data1["ruoli"]);*/
@@ -672,10 +733,11 @@ async function call_ajax_save_act(act, ruoliAuto) {
 
 
     var data2 = new FormData(formACT);
+    //console.log(data2);
     data2.append("idAt", act);
     //alert('save '+act+' bis ' + blog['bis'] + '  prop ' + blog['prop']);
-    //console.log(data2);
-    //alert(data2);
+    //stampaFormData(data2);
+    //alert(data2['btntipovotazione']);
     //alert(grad['bis'] + '  ' + act);
     if ((act == 104 && grad['bis']) || (act == 204 && grad['prop'])) data2.append("grad", '1');
    // else if (act == 204 && grad['prop']) data2.append("grad", '1');
@@ -819,9 +881,9 @@ function aggiornaRigaTabella(rig,campo) {
       /*          document.getElementById("name"+id).disabled='';*/
     /*   }*/
     if (campo == "aftereset") {
-        document.getElementById("From" + id).value = '';
-        document.getElementById("To" + id).value = '';
-        document.getElementById("rev" + id).innerHTML = "---";
+        document.getElementById("From" + id).innerHTML = "";
+        document.getElementById("To" + id).innerHTML = "";
+        document.getElementById("rev" + id).innerHTML = "--";
         document.getElementById("raut" + id).innerHTML = "---";
         document.getElementById("incorso" + id).innerHTML = rig['stato'];
         if (!rig['active']) {
@@ -837,14 +899,14 @@ function aggiornaRigaTabella(rig,campo) {
         document.getElementById("actanonim" + id).checked = chk;
     }
    else if (campo == "all") {
-        //console.log("update all");
+        console.log(rig);
         document.getElementById("From" + id).value = rig['dtStart'];
         document.getElementById("To" + id).value = rig['dtStop'];
         document.getElementById("rev" + id).innerHTML = rig['rev'];
         document.getElementById("raut" + id).innerHTML = rig['ruoli'];
         if (!rig['active']) {
             document.getElementById("riga" + id).style.backgroundColor = 'var(--bs-light)'; /*var(--bs-light);*/
-            document.getElementById("actanonim" + id).disabled = 'disabled';
+            document.getElementById("actanonim" + id).setAttribute('disabled', true); 
             document.getElementById("actanonim" + id).checked = '';
             //document.getElementById("conf" + id).style.visibility = 'hidden';
         }
@@ -853,7 +915,7 @@ function aggiornaRigaTabella(rig,campo) {
             document.getElementById("riga" + id).style.backgroundColor = 'var(--bs-body-bg)';
             document.getElementById("actactive" + id).checked = chk;
             if (document.getElementById("actanonim" + id).disabled)
-                document.getElementById("actanonim" + id).disabled = '';
+                document.getElementById("actanonim" + id).removeAttribute('disabled');
             /*if (document.getElementById("conf" + id).style.visibility == 'hidden')
                 document.getElementById("conf" + id).style.visibility = 'visible';*/
             //console.log('aggiorna riga - getrole activity ' + id);
@@ -869,7 +931,7 @@ function aggiornaRigaTabella(rig,campo) {
         case 'active':
             if (!rig['active']) {
                 document.getElementById("riga" + id).style.backgroundColor = 'var(--bs-light)'; /*var(--bs-light)';*/
-                document.getElementById("actanonim" + id).disabled = 'disabled';
+                document.getElementById("actanonim" + id).setAttribute('disabled', true);
                 document.getElementById("actanonim" + id).checked = '';
                // document.getElementById("conf" + id).style.visibility = 'hidden';
             }
@@ -878,7 +940,7 @@ function aggiornaRigaTabella(rig,campo) {
                 document.getElementById("riga" + id).style.backgroundColor = 'var(--bs-body-bg)';
                 document.getElementById("actactive" + id).checked = chk;
                 if (document.getElementById("actanonim" + id).disabled)
-                    document.getElementById("actanonim" + id).disabled = '';
+                    document.getElementById("actanonim" + id).removeAttribute('disabled');
                /* if (document.getElementById("conf" + id).style.visibility =='hidden')
                     document.getElementById("conf" + id).style.visibility = 'visible';*/
                 //console.log('aggiorna riga - getrole activity ' + id);
@@ -893,12 +955,18 @@ function aggiornaRigaTabella(rig,campo) {
         case 'dtStart':
             document.getElementById("From" + id).value = rig['dtStart'];
             break;
+        //case 'hStart':
+        //    document.getElementById("hFrom" + id).value = rig['hStart'];
+            break;
         case 'dtStop':
             var dts = document.getElementById("To" + id);
             dts.value= rig['dtStop'];
             if (dts.disabled)
-                dts.disabled = '';
+                dts.removeAttribute('disabled');
             break;
+        //case 'hStop':
+        //    document.getElementById("hTo" + id).value = rig['hStop'];
+        //    break;
         case 'revisore':
             document.getElementById("rev" + id).innerHTML = rig['rev'];
             break;

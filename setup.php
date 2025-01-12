@@ -58,11 +58,7 @@ if(loadIniFile() && $_SESSION['ini']['install']) redirect('index.php');
 
 <!--favicon end-->
     <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.0.10/css/all.css" integrity="sha384-+d0P83n9kaQMCwj8F4RJB66tzIwOKmrdb46+porD/OvrJ+37WqIM7UoBtwHO6Nlg" crossorigin="anonymous">
-   <script
-          src="https://code.jquery.com/jquery-3.6.1.min.js"
-          integrity="sha256-o88AwQnZB+VDvE9tvIXrMQaPlFFSUTR+nldQm1LuPXQ="
-          crossorigin="anonymous">
-   </script>
+
     <!-- Bootstrap CSS -->
  <link rel="stylesheet" href="css/custom.css" />
 
@@ -91,15 +87,13 @@ if(loadIniFile() && $_SESSION['ini']['install']) redirect('index.php');
  
  <div id="main" class="container">  
       
-    <form name="form row g-3 gap-3">
-        
-        <fieldset class="row gx-5 gy-3 align-items-end" form="form">
-
+    <form id="formsetup" name="form" class="row">
+        <fieldset class="row align-items-end" form="formsetup">   
             <legend class="col-md-2">Database</legend>
             <div class="col-md-5">
                 <label  class="form-label" for="dbms"><span>* </span>DBMS: </label>
                 <select class="form-select" id="dbms" name='DBMS'>
-                    <option disabled selected hidden >Seleziona il DBMS </option>      <!--style="color:gray;"-->
+                    <option disabled selected hidden >Seleziona il DBMS </option>     
                     <option value="My SQL">My SQL</option>
                     <option value="SQL Server">SQL Server</option>
                     <option value="SQL Server Express LocalDB">SQL Server Express LocalDB</option>
@@ -110,34 +104,38 @@ if(loadIniFile() && $_SESSION['ini']['install']) redirect('index.php');
                 <label class="form-label" for="host"><span>* </span>Server database: </label>
                 <input  class="form-control" id="host" name="HOST" type="text" placeholder="servername | IP">
             </div>
-             <div class="msg col-md-2">
-             </div>
-             <div class="col-md-5">
-                <label  class="form-label" for="db"><span>* </span>Nome del database: </label>
-                <input  class="form-control"id="db" name="DB" type="text">
-            </div>
-            
-           
-             <div class="col-md-5 align-items-end">
-               
-                <input  type="checkbox" class="form-check-input" id="dbEx" name="DBEX">
-                 <label class="form-label" for="dbEx">Database gi&agrave; esistente</label>
-            </div>
-             <div class="msg col-md-2">
-                    * campi obbligatori
+         </fieldset>
+         <fieldset class="row align-items-end mt-4" form="formsetup">  
+               <legend class="col-md-2">
+                        
+                    </legend>
+                   
+                <div class="col-md-4">
+                    <label  class="form-label" for="db"><span>* </span>Nome del database: </label>
+                    <input  class="form-control"id="db" name="DB" type="text">
                 </div>
-             <div class="col-md-5">
+             
+             <div class="col-md-3">
                 <label class="form-label"  for="usn"><span>* </span>Username: </label>
                 <input  class="form-control"id="usn" name="USN" type="text">
                   </div>
-             <div class="col-md-5">
+             <div class="col-md-3">
                 <label  class="form-label" for="psw"><span>* </span>Password: </label>
                 <input class="form-control" id="psw" name="PSW" type="password">
              </div>
-            
+            <div class="msg col-md-2">
+                    * campi obbligatori
+                </div>
+              
+             <div class="col-md-5 ">
+               
+                    <input  type="checkbox" class="form-check-input" id="dbEx" name="DBEX">
+                        <label class="form-label" for="dbEx">Database gi&agrave; esistente</label>
+                </div>
         </fieldset >
+
        <div class="mb-2"><hr /></div>
-        <fieldset class="row g-5 align-items-end" form="form">
+        <fieldset class="row align-items-end" form="formsetup">
             <legend class="col-md-2">Account admin</legend>
              <div class="col-md-4">
                 <label class="form-label" for="mailAdm"><span>* </span>E-mail: </label>
@@ -148,34 +146,34 @@ if(loadIniFile() && $_SESSION['ini']['install']) redirect('index.php');
                 <input class="form-control" id="pswAdm" name="PSWAD" type="password" required>
              </div>
              <div class="col-md-3">
-                <label class="form-label" for="rpswAdm"><span>* </span>Ripeti password: </label>
+                <label class="form-label" for="rpswAdm"><span>* </span>Conferma password: </label>
                 <input class="form-control" id="rpswAdm" type="password" required>
              </div>
         </fieldset>
          <div class="mb-2"><hr /></div>
-        <fieldset class="row g-5 align-items-end" form="form">
+        <fieldset class="row align-items-end" form="formsetup">
             <legend   class="col-md-2">Personalizzazione</legend>
              <div class="col-md-4">
                    <div title="E-mail" data-bs-toggle="tooltip" data-bs-placement="top"  class="input-group">
                 <div class="input-group-text"><span  class="fa fa-envelope"/></div>
-                <input  class="form-control" id="emailLink" name="emailLink" type="text" placeholder="Indirizzo e-Mail">
+                <input  class="form-control" id="emailLink" name="emailLink" type="text" placeholder="*Indirizzo e-Mail">
                 </div>
              </div>
              <div class="col-md-3">
                 <div title="Social" data-bs-toggle="tooltip" data-bs-placement="top"  class="input-group">
                 <div  class="input-group-text"><span class="fa fa-users"></span></div>
-                <input  class="form-control" id="socialLink" name="socialLink" type="text" placeholder="Link Social Network">
+                <input  class="form-control" id="socialLink" name="socialLink" type="text" placeholder="*Link Social Network">
                 </div>
              </div>
              <div class="col-md-3">
                  <div title="Sito Web" data-bs-toggle="tooltip" data-bs-placement="top"  class="input-group">
                <div class="input-group-text"><span class="fa fa-globe"></span></div>
-                     <input  class="form-control" id="webLink" name="webLink" type="text" placeholder="Indirizzo Sito Web"/>
+                     <input  class="form-control" id="webLink" name="webLink" type="text" placeholder="*Indirizzo Sito Web"/>
                  </div>
              </div>
         </fieldset>
         <div class="mb-2"><hr /></div>
-        <fieldset class="row g-5 align-items-end">
+        <fieldset class="row align-items-end" form="formsetup">
             <legend class="col-md-2">Percorso</legend>
             <div class="col-md-4">             
                 <input  type="checkbox" class="form-check-input" id="domRoot" name="domRoot" disabled <?php if(strlen($dir)==1 && $dir[0]=='/') echo 'checked';?>>
@@ -188,21 +186,23 @@ if(loadIniFile() && $_SESSION['ini']['install']) redirect('index.php');
              </div>
         </fieldset>
         <!-- PROGRESS BAR -->
-        <div class="progress  mt-3">
+        <div class="progress  col-md-12 mt-3">
              <div id="myBar" class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" aria-label="Avanzamento creazione tabelle db"  aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">0%</div>
          </div>  
         <div id="msgProgress">Inizializzazione...</div>
        
         <!-- FINE PROGRESS BAR -->
-        <div class="d-grid gap-2 d-md-flex justify-content-md-end mb-3">
-        <input class="btn btn-primary" id="installa" name="install" type="submit" value="Installa"/>
-        <input class="btn btn-primary" id="login" type="button" value="Avvia Applicazione"/>
+          <!--<div class="d-grid d-md-flex justify-content-md-end mb-3">-->
+        <div class="row align-items-end mb-3">
+         <div class="col-md-10"></div>
+        <input class="btn btn-primary col-md-2" id="installa" name="install" type="submit" value="Installa"/>
+        <input class="btn btn-primary col-md-2" id="login" type="button" value="Avvia Applicazione"/>
     </div>
     </form>
      </div>
     
 </div>  <!--chiusura wrapper-->
-    <?php include ROOT_PATH. '/include/footer.php'; ?>
+    <?php include ROOT_PATH. '/include/footersetup.php'; ?>
      
     <script src="js/setup.js"></script> 
 

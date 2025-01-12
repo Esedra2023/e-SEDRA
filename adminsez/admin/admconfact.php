@@ -64,12 +64,28 @@ if(!isset($_SESSION['allRoles']))
                                     <input type="hidden" id="idAttCorrente" value="<?php if(isset($facti['idAt'])) echo $facti['idAt'];?>" name="idAt" />
                                     <input type="hidden" id="idTLCorrente" value="<?php if(isset($facti['dipendeda'])) echo $facti['dipendeda'];?>" name="idtl" />
                                     <div class="form-floating col-md-6">
-                                        <input class="Dfrom form-control" id="dtStart" type="date" name="dtStart" <?php if(isset($facti['dtStart'])) echo "value=".$facti['dtStart']; ?> required />
+                                        <input class="Dfrom form-control" id="dtStart" type="datetime-local" name="dtStart"
+                                            <?php if (isset($facti['dtStart']) && $facti['dtStart']!="") {
+                                            $value=str_replace(" ", "T", $facti['dtStart']);
+                                             echo "value=".$value;
+                                        }?> required />
+
                                         <label class="" for="dtStart">Dal: </label>
                                     </div>
+                                    <!--<div class="form-floating col-md-3">
+                                        <button type="button" id="adesso" class="btn btn-primary" name="adesso">Adesso</button>
+                                    </div>-->
+
                                     <div class="form-floating col-md-6">
 
-                                        <input class="Dto form-control" id="dtStop" type="date" name="dtStop" value="<?php if(isset($facti['dtStop'])) echo $facti['dtStop'];?>" <?php if (!isset($facti['dtStart']) || $facti['dtStart']==0) echo "disabled"; else echo "min=".$facti['dtStart'];?> required />
+                                        <input class="Dto form-control" id="dtStop" type="datetime-local" name="dtStop"
+                                            <?php if (isset($facti['dtStop']) && $facti['dtStop'] !="") {                                          
+                                            $value = str_replace(" ", "T", $facti['dtStop']);
+                                            echo "value=".$value;
+                                        }?>
+                                            <?php if (!isset($facti['dtStart']) || $facti['dtStart']==0) echo "disabled"; else echo " min=". str_replace(" ", "T", $facti['dtStart']);?> required />
+
+
                                         <label class="form-label" for="dtStop"> Al: </label>
                                     </div>
                                     <div class="form-floating col-md-12">
@@ -156,12 +172,14 @@ if(!isset($_SESSION['allRoles']))
                                 <th>Nome</th>
                                 <th>Attiva</th>
                                 <th>Anon.</th>
-                                <th>Stato</th>
+                                <!--<th>Stato</th>-->
                                 <th>Data inizio</th>
                                 <th>Data fine</th>
                                 <th>Ruolo Revisore</th>
                                 <th>Ruoli Autorizzati</th>
-                                <th colspan="2"></th>
+                                <th colspan="
+                                    2"></th>
+
                             </tr>
                         </thead>
                         <tbody>
@@ -172,7 +190,7 @@ if(!isset($_SESSION['allRoles']))
                                 <?php } else if($ac['stato']==1) {?>
                                 <tr id="riga<?php echo $ac['idAt'];?>" style="background-color:var(--bs-danger)">
                                     <?php }
-                                      else if($ac['stato']=='3'){ ?>
+                                      else if($ac['stato']=='2'){ ?>
                                     <tr id="riga<?php echo $ac['idAt'];?>" style="background-color:var(--bs-warning)">
                                         <?php } else { ?>
                                         <tr id="riga<?php echo $ac['idAt'];?>">
@@ -196,9 +214,30 @@ if(!isset($_SESSION['allRoles']))
                                             <td colspan=9>
                                                 Attivit&agrave; in corso, solo modifiche autorizzate ...
                                                 <input type="hidden" id="incorso<?php echo $ac['idAt'];?>" name="incorso<?php echo $ac['idAt'];?>" value="<?php echo $ac['stato'];?>" />
-                                                
-                                                <input type="date" class="form-control-plaintext" id="From<?php echo $ac['idAt'];?>" value="<?php  if(isset($ac['dtStart'])) echo $ac['dtStart'];?>" readonly disabled hidden/>
-                                                <input type="date" class="form-control-plaintext" id="To<?php echo $ac['idAt'];?>" value="<?php if(isset($ac['dtStop'])) echo $ac['dtStop']; ?>" readonly disabled hidden/>
+                                                <input type="hidden" id="From<?php echo $ac['idAt']; ?>" value="<?php if (isset($ac['dtStart']) && $ac['dtStart'] != "")
+                                                           echo $ac['dtStart']; //substr($ac['dtStart'], 8, 2) . "/" . substr($ac['dtStart'], 5, 2) . "/" . substr($ac['dtStart'], 0, 4) . " " . substr($ac['dtStart'], 11, 5);
+                                                       else
+                                                           echo ''; ?>"/>
+                                                    <!--readonly disabled hidden--> 
+
+
+                                                <input type="hidden" id="hTo<?php echo $ac['idAt']; ?>" value="<?php if (isset($ac['dtStop']) && $ac['dtStop'] != "")
+                                                           echo $ac['dtStop']; //substr($ac['dtStop'], 8, 2) . "/" . substr($ac['dtStop'], 5, 2) . "/" . substr($ac['dtStop'], 0, 4) . " " . substr($ac['dtStop'], 11, 5);
+                                                       else
+                                                           echo ''; ?>"/>
+                                                    <!--readonly disabled hidden--> 
+
+
+
+                                                <input type="text" id="rev<?php echo $ac['idAt']; ?>"
+                                                    <?php if (isset($ac['rev']))
+                                                            echo " value=".$ac['rev'];
+                                                         ?> readonly disabled hidden />
+                                                <input type="text" id="raut<?php echo $ac['idAt']; ?>"
+                                                        <?php if (isset($ac['raut']))
+                                                            echo " value=" . $ac['raut'];
+                                                        ?> readonly disabled hidden />
+
 
                                             </td>
                                             <?php }
@@ -212,15 +251,25 @@ if(!isset($_SESSION['allRoles']))
                                             <td>
                                                 <input type="checkbox" class="form-check-input" id="actanonim<?php echo $ac['idAt'];?>" name="act-anonim" value="<?php echo $ac['idAt'];?>" <?php echo (($ac['anonima'])?'checked':''); echo (($ac['active'])?'':'disabled');?> />
                                             </td>
-                                            <td id="scad<?php echo $ac['idAt'];?>">
+                                            <td class="d-none" id="scad<?php echo $ac['idAt'];?>">
                                                 <?php echo $ac['stato'];?>
+                                                    </td>
+                                            <td id="From<?php echo $ac['idAt']; ?>">
+                                                <?php if (isset($ac['dtStart']) && $ac['dtStart']!="")
+                                                        echo substr($ac['dtStart'],8,2)."/".substr($ac['dtStart'], 5, 2)."/".substr($ac['dtStart'],0,4)." ". substr($ac['dtStart'], 11, 5);
+                                                        else
+                                                            echo '';?>
                                             </td>
-                                            <td>
-                                                <input type="date" class="form-control-plaintext" id="From<?php echo $ac['idAt'];?>" value="<?php  if(isset($ac['dtStart'])) echo $ac['dtStart'];?>" readonly disabled />
+
+                                            <td id="To<?php echo $ac['idAt']; ?>">
+                                                <?php if (isset($ac['dtStop']) && $ac['dtStop'] != "")
+                                                echo substr($ac['dtStop'], 8, 2) . "/" . substr($ac['dtStop'], 5, 2) . "/" . substr($ac['dtStop'], 0, 4) . " " . substr($ac['dtStop'], 11, 5);
+                                                      else echo '';
+                                                ?>
+                                               <input type="hidden" id="hTo<?php echo $ac['idAt']; ?>" name="hTo<?php echo $ac['idAt']; ?>" value="<?php echo $ac['dtStop']; ?>" />
+
                                             </td>
-                                            <td>
-                                                <input type="date" class="form-control-plaintext" id="To<?php echo $ac['idAt'];?>" value="<?php if(isset($ac['dtStop'])) echo $ac['dtStop']; ?>" readonly disabled />
-                                            </td>
+
                                             <td id="rev<?php echo $ac['idAt'];?>">
                                                 <?php if(isset($ac['rev'])) echo $ac['rev']; else echo '--';?>
                                             </td>

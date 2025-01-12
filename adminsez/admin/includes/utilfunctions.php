@@ -66,7 +66,7 @@ function  setAttivitaScadIncorso(&$act)     //eliminato campo scaduta, se scadut
 
         $din=new DateTime($act['dtStart']);
         $dfin=new DateTime($act['dtStop']);
-        $dfin->add(new DateInterval('P1D'));
+        //$dfin->add(new DateInterval('P1D'));
 
         //$dain=calcolaGiorniAllaScadenza($today,$act['dtStart']);
         //$dafin=calcolaGiorniAllaScadenza($act['dtStop'],$today);
@@ -409,7 +409,7 @@ function verify_mail($mail)
 function read_csv($file,$delim,$ruolo,&$errors)
 {
     //gestione della fine riga che potrebbe essere diversa in base a dove è stato creato il csv
-    //ini_set('auto_detect_line_endings',TRUE);
+    ini_set('auto_detect_line_endings',TRUE);
 
     //Map lines of the string returned by file function to $rows array.
 
@@ -438,11 +438,10 @@ function read_csv($file,$delim,$ruolo,&$errors)
         }
         else
         {
-
             $contmail=verify_mail($dato["email"]);
             if($contmail!=0)
             {
-                array_push($errors,'Riga '.$riga.' scartata email '.$dato["email"].' duplicata');
+                array_push($errors,'('.$riga.') '.$dato['email'].' duplicata');
                 $totalRows--;
             }
             else
@@ -450,12 +449,11 @@ function read_csv($file,$delim,$ruolo,&$errors)
                 //dovrebbero essere due operazioni indivisibili
                 //$id= set_User( 0,$data['nome'],$data['cognome'],$data['email'],0,0,null); //nome, cognome, mail, ...
                 $id= set_User(0,$dato,null); //nome, cognome, mail, cell, cod e password...
-
                 set_ruolo_utente($id,$ruolo,0);     //ruolo primario e nullo il ruolo secondario
             }
         }
     }
-   //ini_set('auto_detect_line_endings',FALSE);
+   ini_set('auto_detect_line_endings',FALSE);
    return $totalRows;
 }
 

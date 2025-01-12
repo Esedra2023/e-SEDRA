@@ -23,10 +23,14 @@
     <h2>Revisione Proposte</h2>
 	<blockquote class="blockquote">
     <p class="alert alert-primary col-md-12 text-center" role="alert">
-        <?php if($Rproposte['revPro']) echo('Fase attiva dal '.date_format(date_create($Rproposte['dtStart']),'d/m/Y').' al '.date_format(date_create($Rproposte['dtStop']),'d/m/Y').' - mancano '.$Rproposte['ggscad'].' giorni alla chiusura.<br/>');
+        <?php 
+        if($Rproposte['revPro']) echo('Fase attiva dal '.date_format(date_create($Rproposte['dtStart']),'d/m/Y H:i').' al '.date_format(date_create($Rproposte['dtStop']),'d/m/Y H:i').' - Termina tra: <span id="demo">'.$Rproposte['ggscad'].'</span><br/>');
               else echo 'Fase non attiva';
               if($Rproposte['revPro'] && !$Rproposte['IamRev']) {echo 'Il tuo ruolo non consente la partecipazione in questa fase';}
         ?></p>
+        <input type="hidden" id="scadenza" value="<?php echo $$Rproposte['dtStop']; ?>" />
+
+
   </blockquote>
     <hr />
     <div class="row justify-content-evenly">  
@@ -40,7 +44,7 @@
 
 <!--<hr />-->
 
-    <div class="table-div mb-3 col-lg-7">
+    <div class="table-div mb-3 col-lg-8">
         <div id="infoMessaggedx" class="my-callout d-none"></div>
         <input type="hidden" id="whatcont" value="revisor" />
         <table class="table align-middle table-responsive" id="Protable">

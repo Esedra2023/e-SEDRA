@@ -20,6 +20,8 @@
 
 function creaContenutoCella(ele, riga) {
     var st = "";
+    //console.log(ele);
+    //console.log(riga);
     if (ele.type == "button") { // creo button
         st = "<button type='" + ele.type+"'";
         if (ele.hasOwnProperty("class")) {
@@ -64,27 +66,56 @@ function creaContenutoCella(ele, riga) {
             }
         }           
         st += '</button >';
-        //if (ele.text[0] == 0)
-        //    st += ele.text[1] + '</button >';
-        //else if (ele.text[0] == 1)
-        //    st += riga[ele.text[1]] + '</button >';
     }
-    if (ele.type == "text") { //creo testo smeplice
-        st += setText(ele.text, riga);
-        //if (ele.text[0] == 0)
-        //    st += ele.text[1];
-        //else if (ele.text[0] == 1)
-        //    st += riga[ele.text[1]];
+    if (ele.type == "text") { //creo testo semplice
+            st += setText(ele.text, riga);
+    }
+    if (ele.type == "spantxt") { //creo span con testo di classe small
+        st += '<span ';
+        if (ele.hasOwnProperty("class")) {
+            st += setClass(ele.class);
+        }  
+        st += '>';
+        if (ele.hasOwnProperty("number")) {
+            st += setText(ele.text[0], riga);
+            for (i = 1; i < ele.number; i++) { 
+                st += ' ';
+                st += setText(ele.text[i], riga);               
+            }
+        } 
+        else
+         st += setText(ele.text, riga);
+        st += '</span>';
+    }
+    if (ele.type == "textdouble") { //creo testo multiplo     
+            st += setText(ele.text[0], riga);
+            st += '';
+            st += setText(ele.text[1], riga);
     }
     if (ele.type == "link") { //creo link
         st += "<a href= uploadpdf/";
         st += setText(ele.link, riga) + " target='_blank'>";
-        //if (ele.link[0] == 0)
-        //    st += ele.link[1] + " target='_blank'>";
-        //else if (ele.link[0] == 1)
-        //    st += riga[ele.link[1]] + " target='_blank'>";
         st += setText(ele.title, riga) + "</a>";
-        //st += ele.title + "</a>";
+    }
+    if (ele.type == "spanico") {
+        st += "<span class = 'bi ";
+        if (ele.hasOwnProperty('field')) {
+            var ico;
+            //console.log("-- " + ob.span.field+" "+riga[ob.span.field] + " " + ob.span.value);
+            if (riga[ele.field] == ele.value) {
+                ico = ele.icon;
+            }
+            else ico = ele.deficon;
+            //console.log(ico);
+            st += ico;// 'bi-trash3'
+        }
+   
+        st += "'></span >";
+    }
+    if (ele.type == "composite") { //creo cella contenuto multiplo     
+        st += creaContenutoCella(ele.elem[0], riga);
+        st += '<br>';
+        st += creaContenutoCella(ele.elem[1], riga);
     }
     return st;
 }
@@ -114,7 +145,7 @@ function setText(elem, riga) {
         return riga[elem[1]];
 }
 
-function refreshTable(tableid, righe, job) {
+function refreshTable(tableid, righe, job,number) {
     var tab = document.getElementById(tableid);
     var oldtb = tab.getElementsByTagName("tbody");
     
@@ -122,9 +153,12 @@ function refreshTable(tableid, righe, job) {
     let i;
     for (i = 0; i < righe.length; i++) {
         tr = document.createElement("tr");
-        td = document.createElement("td");
-        td.innerHTML = (i + 1);
-        tr.appendChild(td);
+        if (number) { 
+                td = document.createElement("td");
+            td.innerHTML = (i + 1);
+            tr.appendChild(td);
+        }
+       
         for (let j = 0; j < job.ncol; j++) {
             td = document.createElement("td");
             td.innerHTML = creaContenutoCella(job.c[j], righe[i]);
@@ -139,13 +173,13 @@ function refreshTable(tableid, righe, job) {
     tab.appendChild(tbn);
 }
 
-async function call_ajax_dati_table(table, viewtab, obj) {
+async function call_ajax_dati_table(table, viewtab, obj,url,number) {
     var data = new FormData();
     role = document.getElementById("whatcont").value;
     //console.log(role);
     data.append('table', table);
     data.append('role', role);
-    let promo1 = await fetch('ajax/getallposts.php', {
+    let promo1 = await fetch(url, {
         method: 'POST',
         body: data
     }).then(successResponse => {
@@ -164,7 +198,7 @@ async function call_ajax_dati_table(table, viewtab, obj) {
     //console.log('OK.. ' + result);
     if (result) {
         //alert("dati tabella pronti");
-        refreshTable(viewtab, result, obj);
+        refreshTable(viewtab, result, obj,number);
 
     }//finestra per messaggio errore è quella un po' più in basso
     else showMessagge(result['errors'], "my-callout-danger", "infoMessagge2");

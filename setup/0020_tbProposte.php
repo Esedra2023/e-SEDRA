@@ -38,7 +38,7 @@ else if($_SESSION['ini']['dbms'] == 'My SQL'){
 $sql =<<<SQL
     CREATE TABLE proposte (
     idPr INT $autoinc NOT NULL PRIMARY KEY,
-    dtIns   DATE $dtNow  NOT NULL,
+    dtIns   DATETIME $dtNow  NOT NULL,
     utente INT NOT NULL,
     proponente VARCHAR(40),
     email VARCHAR(30),
@@ -52,7 +52,7 @@ $sql =<<<SQL
     ingrad INT NOT NULL DEFAULT 0,
     pubblicato TINYINT NOT NULL,
 	aggiornato DATETIME,
-    dtRev DATE,
+    dtRev DATETIME,
     rev VARCHAR(60),
     revisore INT,
     FOREIGN KEY (utente) REFERENCES utenti(idUs) ON DELETE NO ACTION,

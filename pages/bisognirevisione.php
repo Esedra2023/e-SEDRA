@@ -23,10 +23,12 @@
     <h2>Revisione Bisogni</h2>
 	<blockquote class="blockquote">
     <p class="alert alert-primary col-md-12 text-center" role="alert">
-		<?php if($Rbisogni['revBis']) echo('Fase attiva dal '.date_format(date_create($Rbisogni['dtStart']),'d/m/Y').' al '.date_format(date_create($Rbisogni['dtStop']),'d/m/Y').' - mancano '.$Rbisogni['ggscad'].' giorni alla chiusura.<br/>');
+        <?php if($Rbisogni['revBis']) echo('Fase attiva dal '.date_format(date_create($Rbisogni['dtStart']),'d/m/Y H:i').' al '.date_format(date_create($Rbisogni['dtStop']), 'd/m/Y H:i') . ' - Termina tra: <span id="demo">'.$Rbisogni['ggscad'].'</span><br/>'. count($posts).' Bisogni segnalati' );
               else echo 'Fase non attiva';
               if($Rbisogni['revBis'] && !$Rbisogni['IamRev']) {echo 'Il tuo ruolo non consente la partecipazione in questa fase';}
         ?></p>
+        <input type="hidden" id="scadenza" value="<?php echo $Rbisogni['dtStop']; ?>" />
+
   </blockquote>
     <hr />
     <div class="row justify-content-evenly">  
@@ -40,21 +42,28 @@
 
 <!--<hr />-->
 
-    <div class="table-div mb-3 col-lg-7">
+    <div class="table-div mb-3 col-lg-8">
         <div id="infoMessaggedx" class="my-callout d-none"></div>
         <input type="hidden" id="whatcont" value="revisor" />
         <table class="table align-middle table-responsive" id="Bistable">
             <thead>
                 <tr>
-                    <th>N</th>
+                    <!--<th>N</th>-->
+                    <th>Id</th>
                     <th>Titolo</th>
-                    <th colspan="2">Autore</th>
+                    <th>Amb.</th>
+
+                    <th>Autore</th>
                     <th>
-                        <small>Pubblica</small>
+                        <small>Rev.</small>
                     </th>
-                    <th colspan="2">
-                        <small>Azioni</small>
+                    <th>
+                        <small>Pubb.</small>
                     </th>
+                    <th>
+                        <small>Canc.</small>
+                    </th>
+
                 </tr>
             </thead>
 
@@ -64,31 +73,59 @@
                               $tot=count($posts);
                               foreach ($posts as $key => $post) { ?>
                 <tr>
+                    <!--<td>
+                        <?php //echo $key + 1; ?>
+                     </td>-->
                     <td>
-                        <?php echo $key + 1; ?>
+                        <?php echo $post['idBs'];
+                          ?>
                     </td>
+
                     <td>
                         <button type="button" class="linkstylebutton btn btn-outline-primary text-start" data-idbis="<?php echo  $post['idBs']; ?>" data-crud="R" value="<?php echo  $post['idBs'];?>">
                             <?php echo $post['titleBis']; ?>
-                        </button>
+                                </button>
+                          <br>
+                                        <span class="small"><?php 
+                                            echo $post['textBis']; ?></span>
                     </td>
                     <td>
-                        <?php echo $post['cognome']; ?>
+                          <?php echo $post['ambito']; ?>
                     </td>
+
                     <td>
-                        <?php echo $post['nome']; ?>
+                        <span class="small"><?php echo $post['cognome'].' '. $post['nome']; ?></span>
                     </td>
+                    <!--<td>
+                        <?php //echo $post['nome']; ?>
+                    </td>-->
+                    <td>
+                            <?php if ($post['dtRev'] != null)
+                                  {
+                                    //bottone disabilitato il tooltip non si vede
+                                    $rev = true;
+                                    //$tool="Revisionato";
+                                  }
+                            else
+                                  {
+                                    $rev = false; 
+                                    //$tool="Da revisionare";
+                                  }?>
+                              
+                            <!--<button type="button" disabled class="btn icona" data-bs-toggle="tooltip" title="<?php echo $tool;?>" data-idbis="<?php echo $post['idBs']; ?>" data-crud="R" value="<?php echo $post['idBs']; ?>" name="revision-post">-->
+                                <span class="bi <?php if (!$rev)
+                                    echo 'bi-pencil-square';
+                                else
+                                    echo 'bi-pencil-fill'; ?>"></span>
+                        <!--</button>-->
+                    </td>
+
                     <td>
                         <button type="button" class="btn icona" data-bs-toggle="tooltip" title="<?php if ($post['pubblicato'] == true) echo 'Revoca'; else echo 'Pubblica';?>" data-idbis="<?php echo  $post['idBs']; ?>" data-crud=" <?php echo  $post['idBs'];?> " name="publishun-post" <?php if($post['deleted']) echo 'disabled';?> >
                             <span class="bi <?php if ($post['pubblicato']) echo 'bi-display'; else echo 'bi-eye-slash' ?>"></span>
                         </button>
                     </td>
-                    <td>
-                        <?php if($post['dtRev']!=null)	$rev=true; else $rev=false;?>
-                        <button type="button" class="btn icona" data-bs-toggle="tooltip" title="Revisiona" data-idbis="<?php echo  $post['idBs']; ?>" data-crud="R" value="<?php echo  $post['idBs'];?>" name="revision-post">
-                            <span class="bi <?php if(!$rev) echo 'bi-pencil-square'; else echo 'bi-pencil-fill';?>"></span>
-                        </button>
-                    </td>
+                   
                     <td>
                         <?php if($post['deleted']==1)	$canc=true; else $canc=false;?>
                         <button type="button" class="btn icona" data-bs-toggle="tooltip" title="Cancella" data-idbis="<?php echo $post['idBs']; ?>" data-crud="D" value="<?php echo $post['idBs'];?>" name="cancella-post" <?php if ($canc) echo 'disabled';?>>
@@ -99,7 +136,7 @@
                 <?php }//foreach
                           }	//if
                           if($tot==0) {
-                              echo '<tr><td colspan="5" class="alert alert-primary col-md-12 mt-3 text-center">Nessun bisogno da visualizzare</td></tr>';
+                              echo '<tr><td colspan="7" class="alert alert-primary col-md-12 mt-3 text-center">Nessun bisogno da visualizzare</td></tr>';
                           }
                           //for($i=$tot; $i<8;$i++)
                           //    echo '<tr><td colspan="5"><br/></td></tr>';

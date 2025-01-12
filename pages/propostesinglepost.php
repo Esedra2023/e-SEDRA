@@ -37,14 +37,14 @@ if($VDproposte['ballottaggio'])
     $anonim=true;       //se sono un ruolo autorizzato non vedo gli autori dei bisogni
     $post =getOnePublishProWithGrade($ib,$field,$anonim);     //true per anonimo
     $lk=0;  //nessun cuore
-    if($post['utente']!=$_SESSION['user']['idUs'])    //se non è un mio post posso mettere il like
-    {
+    //if($post['utente']!=$_SESSION['user']['idUs'])    //se non è un mio post posso mettere il like
+    //{
         $like=getMyLikeP($ib,$_SESSION['user']['idUs']);
         if($like!=null)
             $lk=1;  //ho già messo like
         else
             $lk=2;  //posso mettere like
-    }
+    //}
    //nascondere autore se anonima
    if(!$anonim)
    {
@@ -163,7 +163,7 @@ if($VDproposte['ballottaggio'])
                 </ul>
                 <div class="card-footer">
                     <small class="text-muted text-end">
-                        <?php if(isset($post["dtIns"])) echo date("j F Y ", strtotime($post["dtIns"])); ?>
+                        <?php if(isset($post["dtIns"])) echo date("d-m-Y H:i", strtotime($post["dtIns"])); ?>
                     </small>
                 </div>
             </div>
@@ -218,7 +218,7 @@ if($VDproposte['ballottaggio'])
                                     <span class="text-muted text-end small">
                                         &nbsp;&nbsp;
                                         <?php
-                                                echo  date("d-m-Y", strtotime($cmn["dtIns"]));
+                                                echo  date("d-m-Y H:i", strtotime($cmn["dtIns"]));
                                         ?>
                                     </span>
                                 </h6>
@@ -278,7 +278,7 @@ if($VDproposte['ballottaggio'])
                                             <span class="text-muted text-start small">
                                                 &nbsp;&nbsp;
                                                 <?php
-                                              echo  date("d-m-Y", strtotime($risp["dtIns"]));
+                                              echo  date("d-m-Y H:i", strtotime($risp["dtIns"]));
                                                 ?>
                                             </span>
                                         </h6>
@@ -314,17 +314,9 @@ if($VDproposte['ballottaggio'])
 
 </section>
 
-<script src="js/funzioniValLU.js"></script>
+<!--<script src="js/funzioniValLU.js"></script>-->
 <script src="js/blogfunctions.js"></script>
+<script src="js/functions.js"></script>
 <script src="js/singlepostP.js"></script>
-<script>
-    //per fare refresh periodico della parte di pagina della chat
-    //devo fare funzione ajax che recupera dati e JS crea la parte di pagina da visualizzare
 
-    //setInterval(refresh, 5000);
-
-//    function refresh() {
-//    //location.reload();
-//}
-</script>
 

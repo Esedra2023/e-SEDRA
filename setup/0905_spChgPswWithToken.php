@@ -54,7 +54,7 @@ $sql =<<<SQL
 		SELECT @num:=COUNT(*), @idUs:=token.utente FROM token
         WHERE token.token=token AND (token.dtExp IS NULL OR token.dtExp > NOW());
         IF @num > 0 THEN
-		    UPDATE utenti SET utenti.psw=newPsw, utenti.dtPsw=DATE(CURRENT_TIMESTAMP)
+		    UPDATE utenti SET utenti.psw=newPsw, utenti.dtPsw=now()
 		    WHERE utenti.idUs=@idUs;
         END IF;
 	    DELETE FROM token WHERE token.token=token;

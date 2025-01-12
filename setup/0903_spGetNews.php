@@ -34,20 +34,20 @@ if(stripos($_SESSION['ini']['dbms'], 'SQL Server') === 0){
         SET NOCOUNT ON;
         IF  @idUs = 0   BEGIN
             SELECT news.idNw, utenti.nome, utenti.cognome, news.title,
-                   news.text, news.dtNews, news.dtEnd, CONVERT(VARCHAR(17), news.dtNews,113) AS sdtNews
+                   news.text, news.dtNews, news.topublish, news.dtEnd, CONVERT(VARCHAR(17), news.dtNews,113) AS sdtNews
             FROM utenti INNER JOIN news ON utenti.idUs = news.utente
             ORDER BY news.dtNews DESC;
         END
         ELSE IF @iNw = 0 BEGIN
             SELECT news.idNw, utenti.nome, utenti.cognome, news.title,
-                   news.text, news.dtNews, news.dtEnd, news.dtEnd, CONVERT(VARCHAR(17), news.dtNews,113) AS sdtNews
+                   news.text, news.dtNews, news.topublish, news.dtEnd, news.dtEnd, CONVERT(VARCHAR(17), news.dtNews,113) AS sdtNews
             FROM utenti INNER JOIN news ON utenti.idUs = news.utente
             WHERE news.utente=@idUs
             ORDER BY news.dtNews DESC;
         END
         ELSE BEGIN
             SELECT news.idNw, utenti.nome, utenti.cognome, news.title,
-                   news.text, news.dtNews, news.dtEnd, news.dtEnd, CONVERT(VARCHAR(17), news.dtNews,113) AS sdtNews
+                   news.text, news.dtNews, news.topublish, news.dtEnd, news.dtEnd, CONVERT(VARCHAR(17), news.dtNews,113) AS sdtNews
             FROM utenti INNER JOIN news ON utenti.idUs = news.utente
             WHERE news.idNw=@iNw;
         END
@@ -59,18 +59,18 @@ $sql =<<<SQL
     BEGIN
         IF iUs = 0 THEN
             SELECT news.idNw, utenti.nome, utenti.cognome, news.title,
-                   news.text, news.dtNews, news.dtEnd, DATE_FORMAT( news.dtNews,'%d-%m-%Y %T') AS sdtNews
+                   news.text, news.dtNews, news.dtEnd, news.topublish, DATE_FORMAT( news.dtNews,'%d-%m-%Y %T') AS sdtNews
             FROM utenti INNER JOIN news ON utenti.idUs = news.utente
             ORDER BY news.dtNews DESC;
         ELSE IF iNw = 0 THEN
             SELECT news.idNw, utenti.nome, utenti.cognome, news.title,
-                   news.text, news.dtNews, news.dtEnd, DATE_FORMAT( news.dtNews,'%d-%m-%Y %T') AS sdtNews
+                   news.text, news.dtNews, news.topublish, news.dtEnd, DATE_FORMAT( news.dtNews,'%d-%m-%Y %T') AS sdtNews
             FROM utenti INNER JOIN news ON utenti.idUs = news.utente
             WHERE news.utente=iUs
             ORDER BY news.dtNews DESC;
         ELSE
             SELECT news.idNw, utenti.nome, utenti.cognome, news.title,
-                   news.text, news.dtNews, news.dtEnd, DATE_FORMAT( news.dtNews,'%d-%m-%Y %T') AS sdtNews
+                   news.text, news.dtNews, news.topublish, news.dtEnd, DATE_FORMAT( news.dtNews,'%d-%m-%Y %T') AS sdtNews
             FROM utenti INNER JOIN news ON utenti.idUs = news.utente
             WHERE news.idNw=iNw;
         END IF;

@@ -33,7 +33,7 @@ if(isset($_SESSION['moment']))
 defineMoment();		//ri-definisco qui in caso di modifiche da parte dell'admin
 
 $posts=[];
-
+$notable = false;
 $topics = getAllTopics();
 $conta=0;
 $nat=count($_SESSION['moment']);
@@ -49,12 +49,13 @@ if($nat!=0)
         //if($Abisogni['IamRev'])
         //    $posts = wr_getAllPosts("revisor","bisogni");
         //else
-        if($Abisogni['IamAuthor'])         // se non sono mai stato autore non dovrei comunque vedere nulla
-			$posts = wr_getAllPosts("personal","bisogni");
-
-        //$anonim=$Abisogni['anonima'];
-
-		include(ROOT_PATH . '/pages/bisognisegnala.php');
+        if ($Abisogni['IamAuthor']) // se non sono mai stato autore non dovrei comunque vedere nulla
+        {
+            //$anonim=$Abisogni['anonima'];
+            $posts = wr_getAllPosts("personal", "bisogni");
+            include(ROOT_PATH . '/pages/bisognisegnala.php');
+        } else
+            $notable = true;
         $conta++;
     }
 
@@ -73,12 +74,13 @@ if($nat!=0)
         }
         else
         {
-            $posts = wr_getAllPosts("personal","bisogni");
-            $titlePage='Fase attiva dal '.date_format(date_create($Rbisogni['dtStart']),'d/m/Y').
-                ' al '.date_format(date_create($Rbisogni['dtStop']),'d/m/Y').' - mancano '.
-                $Rbisogni['ggscad'].' giorni alla chiusura.<br/>Il tuo ruolo non consente la partecipazione in questa fase';
-            $h2 = $Rbisogni['nome'];
-            include(ROOT_PATH . '/pages/bisognidefault.php');
+            $notable = true;
+            //$posts = wr_getAllPosts("personal","bisogni");
+            //$titlePage='Fase attiva dal '.date_format(date_create($Rbisogni['dtStart']),'d/m/Y H:i').
+            //    ' al '.date_format(date_create($Rbisogni['dtStop']),'d/m/Y H:i').' - mancano '.
+            //    $Rbisogni['ggscad'].'alla chiusura.<br/>Il tuo ruolo non consente la partecipazione in questa fase';
+            //$h2 = $Rbisogni['nome'];
+            //include(ROOT_PATH . '/pages/bisognidefault.php');
         }
         $conta++;
     }
@@ -87,6 +89,7 @@ if($nat!=0)
     {
         //prevale la votazione prendo tutto dall'attività di votazione
         $VDbisogni=$_SESSION['moment']['104'];
+        $VDbisogni['from'] = 104;
         $VDbisogni['votAct']=true;
         $VDbisogni['blogAct']=true;
         $field="pubblicato";
@@ -99,28 +102,84 @@ if($nat!=0)
         $VDbisogni['IamAuthor']=compareRuoli($VDbisogni['author'],$_SESSION['user']['roles']);
         $VDbisogni['IamRev']=IamRevisor($VDbisogni['revisore']);
 
-        if($VDbisogni['IamAuthor'])
+        if ($VDbisogni['IamAuthor'] || $VDbisogni['IamRev']) //ultima versione autore e revisore stesse visibilità
         {
             //la funzione seleziona solo i voti nel periodo attuale di votazione
             $posts = getAllPublishBisWithGrade(true,$field);     //true bisogni anonimi per discussione
-            likeForMeB($posts,$_SESSION['user']['idUs']);
+            //likeForMeB($posts,$_SESSION['user']['idUs']);
+            getMyLikeBAllPost($posts, $_SESSION['user']['idUs'],104);
+            $_SESSION['VDbisogni'] = $VDbisogni;
+            include(ROOT_PATH . '/pages/bisognidiscutivota.php');
         }
+        else
+           $notable = true;
+
         // se sono anche revisore li cambio con quelli nominativi
-        if($VDbisogni['IamRev'])
-        {
-            $posts = getAllPublishBisWithGrade(false,$field);     //revisore vede anche i nominativi e le sue valutazioni se è anche autore-->
-            likeForMeB($posts,0);
-        }
+        //if($VDbisogni['IamRev'])
+        //{
+        //    //revisore vede anche i nominativi e le sue valutazioni se è anche autore-->
+        //    //modificato data 16 marzo 2024 tolta la possibilità del revisore di vedere gli autori dei bisogni in questa fase
+        //    //mettere campo a false per ripristinare la visibilità degli autori
+        //    $posts = getAllPublishBisWithGrade(true,$field);
+        //   // likeForMeB($posts,0);   //revisore vede tutti i like
+        //    //anche revisore vede solo i suoi like
+        //    getMyLikeBAllPost($posts, $_SESSION['user']['idUs'],104);
+        //}
 
         //$anonimV=$VDbisogni['anonima'];       //votazione può essere anonima, ma discussione sempre nominativa
         //$anonimD=$Dbisogni['anonima'];
-        $_SESSION['VDbisogni']=$VDbisogni;
-        include(ROOT_PATH . '/pages/bisognidiscutivota.php');
+
         $conta++;
     }
-   else if (array_key_exists(104,$_SESSION['moment'])) //solo votazione bisogni
+    if (array_key_exists(103, $_SESSION['moment']) && !array_key_exists(104, $_SESSION['moment'])) //solo discussione
+    {
+        //prevale la votazione prendo tutto dall'attività di votazione
+        $Dbisogni = $_SESSION['moment']['103'];
+        $Dbisogni['from'] = 103;
+        $Dbisogni['votAct'] = false;
+        $Dbisogni['blogAct'] = true;
+        $field = "pubblicato";
+        if ($Dbisogni['ballottaggio'])
+            $field = "ingrad";
+        // $Dbisogni=$_SESSION['moment']['103'];
+
+        //dovrebbe avere date coincidenti e stessi ruoli
+        // anche se non coincidono prendo quelli della votazione
+        $Dbisogni['IamAuthor'] = compareRuoli($Dbisogni['author'], $_SESSION['user']['roles']);
+        $Dbisogni['IamRev'] = IamRevisor($Dbisogni['revisore']);
+
+        if ($Dbisogni['IamAuthor'] || $Dbisogni['IamRev']) //ultima versione autore e revisore stesse visibilità
+        {
+            //la funzione seleziona solo i like nel periodo attuale di discussione
+            $posts = getAllPublishBisWithoutGrade(true, $field); //true bisogni anonimi per discussione
+            //likeForMeB($posts,$_SESSION['user']['idUs']);
+            //getMyLikeBAllPost($posts, $_SESSION['user']['idUs'],103);
+            $_SESSION['VDbisogni'] = $Dbisogni;
+            include(ROOT_PATH . '/pages/bisognidiscuti.php');
+        } else
+            $notable = true;
+        // se sono anche revisore li cambio con quelli nominativi
+        //if($VDbisogni['IamRev'])
+        //{
+        //    //revisore vede anche i nominativi e le sue valutazioni se è anche autore-->
+        //    //modificato data 16 marzo 2024 tolta la possibilità del revisore di vedere gli autori dei bisogni in questa fase
+        //    //mettere campo a false per ripristinare la visibilità degli autori
+        //    $posts = getAllPublishBisWithGrade(true,$field);
+        //   // likeForMeB($posts,0);   //revisore vede tutti i like
+        //    //anche revisore vede solo i suoi like
+        //    getMyLikeBAllPost($posts, $_SESSION['user']['idUs'],103);
+        //}
+
+        //$anonimV=$VDbisogni['anonima'];       //votazione può essere anonima, ma discussione sempre nominativa
+        //$anonimD=$Dbisogni['anonima'];
+
+        $conta++;
+    }
+   
+    if (array_key_exists(104,$_SESSION['moment']) && !array_key_exists(103, $_SESSION['moment'])) //solo votazione bisogni
     {
         $VDbisogni=$_SESSION['moment']['104'];
+        $VDbisogni['from'] = 104;
         $VDbisogni['votAct']=true;
         $VDbisogni['blogAct']=false;
         $field="pubblicato";
@@ -133,66 +192,32 @@ if($nat!=0)
         $VDbisogni['IamAuthor']=compareRuoli($VDbisogni['author'],$_SESSION['user']['roles']);
         $VDbisogni['IamRev']=IamRevisor($VDbisogni['revisore']);
 
-        //$IamRevD=IamRevisor($Dbisogni['revisore']);
-        //if($IamRevV != $IamRevD)
-        // $IamRev=$IamRevV;
-
-        if($VDbisogni['IamAuthor'])
+        if ($VDbisogni['IamAuthor'] || $VDbisogni['IamRev']) //ultima versione autore e revisore stesse visibilità
         {
-            $posts = getAllPublishBisWithGrade(true,$field);     //true bisogni anonimi per discussione
-            likeForMeB($posts,$_SESSION['user']['idUs']);
-        }
+            $posts = getAllPublishBisWithGrade(true, $field); //true bisogni anonimi per discussione
+            getMyLikeBAllPost($posts, $_SESSION['user']['idUs'],104);
+            $_SESSION['VDbisogni'] = $VDbisogni;
+            include(ROOT_PATH . '/pages/bisognidiscutivota.php');
+            // likeForMeB($posts,$_SESSION['user']['idUs']);
+        } else
+            $notable = true;
         // se sono anche revisore li cambio con quelli nominativi
-        if($VDbisogni['IamRev'])
-        {
-            $posts = getAllPublishBisWithGrade(false,$field);     //revisore vede anche i nominativi e le sue valutazioni se è anche autore-->
-            likeForMeB($posts,0);
-        }
+        //if($VDbisogni['IamRev'])
+        //{
+        //    //revisore vede anche i nominativi e le sue valutazioni se è anche autore-->
+        //    //modificato data 16 marzo 2024 tolta la possibilità del revisore di vedere gli autori dei bisogni in questa fase
+        //    //mettere campo a false per ripristinare la visibilità degli autori
+        //    $posts = getAllPublishBisWithGrade(true,$field);     //revisore vede anche i nominativi e le sue valutazioni se è anche autore-->
+        //  //  likeForMeB($posts,0);
+        //    //anche revisore vede solo i suoi like
+        //    getMyLikeBAllPost($posts, $_SESSION['user']['idUs'],104);
+        //}
         //$anonimV=$VDbisogni['anonima'];       //votazione può essere anonima, ma discussione sempre nominativa
         //$anonimD=$Dbisogni['anonima'];
-        $_SESSION['VDbisogni']=$VDbisogni;
-        include(ROOT_PATH . '/pages/bisognidiscutivota.php');
+
         $conta++;
    }
-    //    else  if (array_key_exists(103,$_SESSION['moment'])) //solo discussione non può esistere
-   //{
-   //    //votazione non c'è prendo tutto dall'attività discussione
-   //    $VDbisogni=$_SESSION['moment']['103'];
-   //    $VDbisogni['votAct']=false;
-   //    $VDbisogni['blogAct']=true;
 
-   //    // $Dbisogni=$_SESSION['moment']['103'];
-
-   //    //dovrebbe avere date coincidenti e stessi ruoli
-   //    // anche se non coincidono prendo quelli della votazione
-   //    $VDbisogni['IamAuthor']=compareRuoli($VDbisogni['author'],$_SESSION['user']['roles']);
-   //    $VDbisogni['IamRev']=IamRevisor($VDbisogni['revisore']);
-
-   //    //$IamRevD=IamRevisor($Dbisogni['revisore']);
-   //    //if($IamRevV != $IamRevD)
-   //    // $IamRev=$IamRevV;
-
-   //    $posts = wr_getAllPosts('revisor','bisogni');   //ATTTENZIONE CONTIENE ANCHE QUELLI CANCELLATI
-   //    if($VDbisogni['IamAuthor'])   {}   //nascondo i nomi
-   //        //$posts = wr_getAllPosts('revisor','bisogni');     //true bisogni anonimi per discussione
-
-   //    // se sono anche revisore li cambio con quelli nominativi
-   //    //if($VDbisogni['IamRev'])
-   //    //{
-   //    //    $posts = getAllPublishBisWithGrade(false);     //revisore vede anche i nominativi e le sue valutazioni se è anche autore-->
-   //    //}
-   //    foreach($posts as &$po)
-   //    {
-   //        $lk=getLike($po['idBs']);
-   //        if($lk)
-   //            $po['nlike']=$lk['nlike'];
-   //    }
-   //    //$anonimV=$VDbisogni['anonima'];       //votazione può essere anonima, ma discussione sempre nominativa
-   //    //$anonimD=$Dbisogni['anonima'];
-   //    $_SESSION['VDbisogni']=$VDbisogni;
-   //    include(ROOT_PATH . '/pages/bisognidiscutivota.php');
-   //    $conta++;
-   //}
     if(array_key_exists(105,$_SESSION['moment']))   //pubblicazione bisogni
     {
         $Pbisogni=$_SESSION['moment']['105'];
@@ -200,9 +225,7 @@ if($nat!=0)
         //la pubblicazione non ha autore
         $Pbisogni['IamRev']=IamRevisor($Pbisogni['revisore']);
         $Pbisogni['IamAuthor']=false;
-        //$someonepersonalpost=false;
-        //if(!isset($_SESSION['ini']['gradDefBisogni']))      /* &&  !isset($_SESSION['ini']['ballottaggio']))*/
-        //{
+
         $ballot=getLastPollType(104);
         if($ballot!=null)
         {
@@ -215,6 +238,7 @@ if($nat!=0)
 
                     if(!isset($_SESSION['ini']['gradDefBisogni']) || $_SESSION['ini']['gradDefBisogni']==0)
                     {
+                          //echo $_SESSION['ini']['gradDefBisogni'];
                         $posts = wr_getBisResultPolling("revisor",1, $field);   //salvo la graduatoria con ballot a zero e imposto il $_SESSION['ini']['gradDefBisogni']
                     }
                     if($_SESSION['ini']['gradDefBisogni'] == 1) //vedo grad 1 con check
@@ -228,22 +252,23 @@ if($nat!=0)
                     }
                     $posts=wr_viewDefGradBis($field); //recupero graduatoria da tabella apposita
                     $esclusib=getBisogniEsclusi("revisor", $field);
-                    include(ROOT_PATH . '/pages/bisognipubblicaGrad.php');
+                    include(ROOT_PATH . '/pages/bisognipubblicagrad.php');
                 }
                 else
                 {
                     if(isset($_SESSION['ini']['gradDefBisogni']) && $_SESSION['ini']['gradDefBisogni']!=0)
                     {
+                       // echo $_SESSION['ini']['gradDefBisogni'];
                         //vedo grad1 senza check
                         $_POST['check']=0;
                         $_POST['news'] = 0;
                         $posts=wr_viewDefGradBis($field); //recupero graduatoria da tabella apposita
                         $esclusib=getBisogniEsclusi("personal", $field);
-                        include(ROOT_PATH . '/pages/bisognipubblicaGrad.php');
+                        include(ROOT_PATH . '/pages/bisognipubblicagrad.php');
                     }
                     else{//utente generico con graduatoria non ancora consolidata
                         $posts = wr_getBisResultPolling("personal",0, $field);
-                        $titlePage='Fase attiva dal '.date_format(date_create($Pbisogni['dtStart']),'d/m/Y').' al '.date_format(date_create($Pbisogni['dtStop']),'d/m/Y').' - mancano '.$Pbisogni['ggscad'].' giorni alla chiusura.<br/>';
+                        $titlePage='Fase attiva dal '.date_format(date_create($Pbisogni['dtStart']),'d/m/Y').' al '.date_format(date_create($Pbisogni['dtStop']),'d/m/Y').' - mancano '.$Pbisogni['ggscad'].'alla chiusura.<br/>';
                         $titlePage=$titlePage. 'Il tuo ruolo non consente la partecipazione in questa fase';
                         $h2=$Pbisogni['nome'];
                         include(ROOT_PATH . '/pages/bisognidefault.php');
@@ -275,18 +300,18 @@ if($nat!=0)
 
                     $posts=wr_viewDefGradBis($field); //recupero graduatoria da tabella apposita
                     $esclusib=getBisogniEsclusi("revisor", $field);
-                    include(ROOT_PATH . '/pages/bisognipubblicaGrad.php');
+                    include(ROOT_PATH . '/pages/bisognipubblicagrad.php');
                 }
                 else
                 {
-                    if(isset($_SESSION['ini']['BallottaggioBis']) && $_SESSION['ini']['BallottaggioBis'] == 1)
+                    if(isset($_SESSION['ini']['BallottaggioBis']) && $_SESSION['ini']['BallottaggioBis'] == 2)
                     {
                         //vedo grad2 senza check
                         $_POST['check']=0;  $_POST['news'] = 0;
                         $posts=wr_viewDefGradBis($field); //recupero graduatoria da tabella apposita
                         $esclusib=getBisogniEsclusi("personal", $field);
                     }
-                    else{
+                    else{ //utente generico con graduatoria ballottaggio non ancora consolidata vede graduatoria precedente
                         $_POST['field'] = "pubblicato";
                         //vedo grad1 senza check
                         $_POST['check']=0;
@@ -294,23 +319,19 @@ if($nat!=0)
                         $posts=wr_viewDefGradBis("pubblicato"); //recupero graduatoria da tabella apposita
                         $esclusib=getBisogniEsclusi("personal","pubblicato");
                     }
-                    include(ROOT_PATH . '/pages/bisognipubblicaGrad.php');
+                    include(ROOT_PATH . '/pages/bisognipubblicagrad.php');
                 }
-            }
+           }
         } //altrimenti attività in corso o qualche anomalia
-
-        //$anonim=$Abisogni['anonima'];
-
-        //$topics = getAllTopics();
 
         $conta++;
     }
 }
-if($conta==0)
+if($conta==0 || $notable==true)
 {
     //pagina di default dei bisogni personali
     $posts = wr_getAllPosts("personal","bisogni");
-    $titlePage='Nessuna fase attiva riguardante i bisogni, oppure il tuo ruolo non consente la partecipazione alle fasi attive';
+    $titlePage='Nessuna fase attiva riguardante i bisogni, oppure il tuo ruolo non consente la partecipazione alla fase attiva';
     $h2='I miei Bisogni';
     $conambito=false;
     include(ROOT_PATH . '/pages/bisognidefault.php');

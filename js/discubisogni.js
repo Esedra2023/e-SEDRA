@@ -18,15 +18,18 @@
  *
  */
 //------------ MODIFICHE LUISA -------------
-    var chkVoti = []; //array globale per controllo votazione limitata, così strutturato ("nrostelle" => [limite massimo stelle, tot stelle già assegnate])
+    //var chkVoti = []; //array globale per controllo votazione limitata, così strutturato ("nrostelle" => [limite massimo stelle, tot stelle già assegnate])
     // Es: chkVoti = array( '1' => [3,2], ....)
     var $svVoto;
 
 
 ready(function () {
-
+   
     //Quando pagina pronta chiamo funzione per conteggio voti assegnati che riempie array chkVoti
-    chkVal(104);
+    //alert("ready prima di chkVal");
+    //var chkVoti=chkVal(104);
+    //alert("chkVoti dopp chkVal " + chkVoti);
+    //const chkVoti=eseguiChkVal(104);
     //console.log('chkVoti ' + chkVoti);
     //--------- FINE MODIFICHE LUISA --------------
 
@@ -40,14 +43,47 @@ ready(function () {
         //console.log(edt.dataset.idtpc);
         let elem = e.target;
         let span = null;
-        if (elem.classList.contains("linkstylebutton")) {          
+        if (elem.classList.contains("linkstylebutton")) {   
+            //console.log('timer = ' + timer);
+
+        if (timer) {
+            clearInterval(timer);
+            //console.log('timer sospeso ' + timer);
+        }
             //console.log('+ ' + elem.nodeName + ' ' + idBisogno + 'aut ' + auth + ' rev ' + rev);
             refreshSinglePost(elem.dataset.idbis, defaultpage,104) 
         }
         if (elem.classList.contains("rating")) {   
             valGraduatoriaLU(elem,defaultpage,104); 
         }
-
+        if (elem.nodeName == 'SPAN') {
+            elem = elem.parentNode;
+            //span = e.target;
+        }
+        let param = elem.dataset.idbis;
+        if (elem.name == "cancella-voto") {
+            console.log('cancella ' + param);
+            deleteVotoB(param);
+           // btnPubUnpub(pub, elem, span);
+            window.location.reload();          
+        }       
     });
-    
+    var fortimer = document.getElementById("scadenza");
+    var dataFine = fortimer.value;
+    dataFine = dataFine.replace(" ", "T");
+   
+    avviaContoAllaRovescia(dataFine, "demo");
+    //console.log('timer avviato ' + timer);
 }); //end ready
+
+async function deleteVotoB(id) {
+    try {
+        var data = new FormData;
+        data.append("idBis", id);    //valore del campo nascosto con id bisogno
+        /*  data.append("val", 0);*/
+            call_ajax_single_promise('ajax/deletevalbis.php', data);
+
+    } catch (error) {
+        console.error("Errore durante l'esecuzione di deleteVotoB:", error);
+    }
+}

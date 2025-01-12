@@ -57,9 +57,9 @@ $sql =<<<SQL
     BEGIN
          IF crud = 'C' THEN
             INSERT INTO bisogni (utente, ambito, moreambito, titleBis,  imgBis, textBis, pubblicato, dtIns, aggiornato)
-                    VALUES(utente, topicid, more, title,image, body, publish, DATE(CURRENT_TIMESTAMP), DATE(CURRENT_TIMESTAMP));
+                    VALUES(utente, topicid, more, title,image, body, publish, now(), now());
         ELSE IF crud = 'U' THEN
-            UPDATE bisogni SET titleBis=title, ambito= topicid, moreambito=more, imgBis=image, textBis=body, aggiornato=DATE(CURRENT_TIMESTAMP)
+            UPDATE bisogni SET titleBis=title, ambito= topicid, moreambito=more, imgBis=image, textBis=body, aggiornato=now()
             WHERE idBs=vid;
         END IF;
        END IF;

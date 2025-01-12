@@ -43,7 +43,7 @@ if (isset($_POST['topic'])) {
     unset($similposts[$savek]);
 
     if (count($similposts)!=0)
-        $fambito=$_POST['topicName']." ...";
+        $fambito='Altri in: '.$_POST['topicName'];
     else
         $fambito="";
 }
@@ -77,16 +77,20 @@ if (isset($_POST['topic'])) {
                                         </h6>
                                         <p class="card-text">
                                             <a href="" class="linkstylebutton text-decoration-none stretched-link" data-idbis="<?php echo $spost['idBs'];?>">
-                                                <?php echo substr($spost['textBis'],0,80).' ...';?>
+                                                <?php if (strlen($spost['textBis']) > 80)
+                                                        echo substr($spost['textBis'], 0, 80) . ' ...';
+                                                    else
+                                                        echo $spost['textBis'];?>
                                             </a>
                                         </p>
                                     </div>
                             
-                                <div class="card-footer">
+                                <!--<div class="card-footer">
                                     <small class="text-muted">
-                                        <?php echo date("j F Y ", strtotime($spost["dtIns"])); ?>
+                                        <?php 
+                                        //echo date("d-m-Y H:i", strtotime($spost["dtIns"])); ?>
                                     </small>
-                                </div>
+                                </div>-->
                             </div>
                        
                     </div>                   

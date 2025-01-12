@@ -61,7 +61,7 @@ $sql =<<<SQL
     BEGIN
          IF vid = 0 THEN
            INSERT INTO utenti(nome, cognome, email, psw, cell, cod, dtPsw)
-		        VALUES(nomen, cognn, emailn, pswn, celln, codn, DATE(CURRENT_TIMESTAMP));
+		        VALUES(nomen, cognn, emailn, pswn, celln, codn, now());
         ELSE
             IF vid = 1 THEN
                 UPDATE utenti SET cell=celln, cod=codn

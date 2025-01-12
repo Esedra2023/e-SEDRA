@@ -47,31 +47,60 @@ $sqls='';
         }
         if(isset($_POST['dtStart']))
         {
-            $value=$_POST['dtStart'];
-            //$value="$value";
-            if($value!="")
-            {
-                $sqla =$sqla." dtStart='$value',";
+            $datestart = date('Y-m-d H:i:s', strtotime($_POST['dtStart']));
+
+        //$value=$_POST['dtStart'];
+        //    //$value="$value";
+        //    if($value!="")
+        //    {
+        //        $value=str_replace("T", " ", $value);
+                $sqla =$sqla." dtStart='$datestart',";
                 if($idprec!=0)
-                    $sqlb =$sqlb." dtStart='$value',";
-            }
+                    $sqlb =$sqlb." dtStart='$datestart',";
+            //}
         }
+        //if (isset($_POST['hStart'])) {
+        //$value = $_POST['hStart'];
+        ////$value="$value";
+        //if ($value != "") {
+        //    $sqla = $sqla . " hStart='$value',";
+        //    if ($idprec != 0)
+        //        $sqlb = $sqlb . " hStart='$value',";
+        //    }
+        //}
         if(isset($_POST['dtStop']))
         {
-            $value=$_POST['dtStop'];
-            //$value="$value";
-            if($value!="")
-            {
-                $sqla =$sqla." dtStop='$value',";
-                if($ida == 101 || $ida == 201){
-                    $idnex=$ida+1;
-                    $dnex=calcolaDataAfter($value,1,'D'); //imposto la data di start della revisione
-                    $sqlc =$sqlc." dtStart='$dnex',";
-                }
+             $datestop = date('Y-m-d H:i:s', strtotime($_POST['dtStop']));
+            //$value=$_POST['dtStop'];
+            ////$value="$value";
+            //if($value!="")
+            //{
+            //    $value=str_replace("T", " ", $value);
+            $sqla =$sqla." dtStop='$datestop',";
+                //ATTENZIONE NON IMPOSTO PIù LA DATA DI INIZIO REVISIONE
+                //if($ida == 101 || $ida == 201){
+                //    $idnex=$ida+1;
+                //    $dnex=calcolaDataAfter($value,1,'D'); //imposto la data di start della revisione
+                //    $sqlc =$sqlc." dtStart='$dnex',";
+                //}
                 if($idprec!=0)
-                    $sqlb =$sqlb." dtStop='$value',";
-            }
+                    $sqlb =$sqlb." dtStop='$datestop',";
+            //}
         }
+        //if (isset($_POST['hStop'])) {
+        //    $value = $_POST['hStop'];
+        //    //$value="$value";
+        //    if ($value != "") {
+        //        $sqla = $sqla . " hStop='$value',";
+        //        if ($ida == 101 || $ida == 201) {
+        //            //$idnex = $ida + 1;
+        //            //$dnex = calcolaDataAfter($value, 1, 'D'); //imposto la data di start della revisione
+        //            $sqlc = $sqlc . " hStart='$dnex',";
+        //        }
+        //        if ($idprec != 0)
+        //            $sqlb = $sqlb . " dtStop='$value',";
+        //    }
+        //}
        if(isset($_POST['grad']) && $_POST['grad']==1 && ($ida==104 || $ida==204))  //graduatoria
         {
             $field='vbis';  //su bisogni
@@ -209,7 +238,11 @@ $sqls='';
             $chkd = $stmt->fetch(PDO::FETCH_ASSOC); //result set per una riga di attivita
             $riga['blog']=$chkd['active'];
         }
-
+        //prendo fino ai minuti e rimpiazzo lo spazio tra data e ora con la T
+        $riga['dtStart'] = substr($riga['dtStart'], 0, 16);
+        $riga['dtStop'] = substr($riga['dtStop'], 0, 16);
+        str_replace(" ","T", $riga['dtStart']);
+        str_replace(" ","T", $riga['dtStop']);
         $_SESSION['formacti']=$riga;
         //$sql ="SELECT * FROM attivita WHERE idAt=ida;";
         $conn=null;

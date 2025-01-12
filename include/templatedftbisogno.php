@@ -20,7 +20,14 @@
  */
 
 ?>
-		<div class="col-lg-5 mb-3 mt-3">
+<!--<style>
+    #accordionBis {
+        /*position: fixed;*/ /* Posizionamento fisso rispetto al viewport */
+        left: 0px; /* Distanza dal lato destro del viewport */
+        top: 40px; /* Distanza dal top del viewport */
+    }
+</style>-->
+		<div class="col-lg-4 mb-3 mt-3">
 			
             <div id="infoMessagge" class="my-callout d-none"></div>
 
@@ -110,8 +117,6 @@
  	var collapsableBis;
 	ready(function () {
 
-
-
     let sezB = document.getElementById("collapseBis");
     if (sezB) {
         collapsableBis = new bootstrap.Collapse(sezB, { toggle: false });
@@ -135,6 +140,7 @@
             resetHidden();
         });
     }
+
 
     var topic = document.getElementById("topic_id");
 		if (topic)
@@ -160,10 +166,13 @@
 
 }) //end ready
 
+
+
+
 //ok per revisione - per pubblicazione cambiato tolto il settaggio del titolo
-function showBisogno(bis, crud) {
+    function showBisogno(bis, crud) {
     document.getElementById("hidden_post_id").value = bis['idBs'];
-    console.log("valore di hidden ", bis['idBs']);
+  /*  console.log("valore di hidden ", bis['idBs']);*/
     document.getElementById("titleBis").value = bis['titleBis'];
     document.getElementById("textBis").value = bis['textBis'];
     document.getElementById("topic_id").value = bis['ambito'];
@@ -199,14 +208,14 @@ function showBisogno(bis, crud) {
      if (crud == 'U') {
             abilitaFS(fsForm, true);
          vediPulsante(cp, true);
-         if (pb.disabled) pb.disabled = false;
+         if (pb.disabled) pb.removeAttribute('disabled');
              cp.value = "Conferma Dati";
             settaTitleAccordion("btnAccBis", "Modifica Bisogno");
         }
         if (crud == 'D') {
             abilitaFS(fsForm, false);
             abilitaFS(fsRev, true);
-            pb.disabled = true;
+            pb.setAttribute('disabled', true);
             cp.value = "Cancella";
             vediPulsante(cp, true);
             settaTitleAccordion("btnAccBis", "Cancella Bisogno");
@@ -216,7 +225,7 @@ function showBisogno(bis, crud) {
             abilitaFS(fsRev, true);
             cp.value = "Conferma Dati";
             vediPulsante(cp, true);
-            if(pb.disabled) pb.disabled = false;
+            if(pb.disabled) pb.removeAttribute('disabled');
             settaTitleAccordion("btnAccBis", "Revisiona Bisogno");
         }
         if (crud == 'V' || bis['deleted'] == 1) {
@@ -233,7 +242,7 @@ function showBisogno(bis, crud) {
     //    //    if(revBis)
     //    //        revBis.style.display = 'none';
     //}
-    //else fieldsetBis.disabled = '';
+    //else fieldsetBis.removeAttribute('disabled');
 }
 
 

@@ -38,7 +38,7 @@ else if($_SESSION['ini']['dbms'] == 'My SQL'){
 $sql =<<<SQL
     CREATE TABLE valPrp (
     idVp INT $autoinc NOT NULL PRIMARY KEY,
-    dtIns   DATE $dtNow  NOT NULL,
+    dtIns   DATETIME $dtNow  NOT NULL,
     utente INT,
     proposta INT NOT NULL,
     grade REAL,

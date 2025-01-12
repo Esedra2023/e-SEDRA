@@ -63,7 +63,7 @@
                     <?php if(isset($post['nlike'])) echo $post['nlike']; else echo'-'; ;?>
                 </td>
                 <td>
-                    <?php if($post['dtRev']!=null) echo date("d-m-Y", strtotime($post['dtRev']));else echo ''?>
+                    <?php if($post['dtRev']!=null) echo date("d-m-Y H:i", strtotime($post['dtRev']));else echo ''?>
                 </td>
                 <td>
                     <?php echo $post['rev']; ?>

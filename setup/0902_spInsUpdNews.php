@@ -32,8 +32,9 @@ if(stripos($_SESSION['ini']['dbms'], 'SQL Server') === 0){
         @id INT,
 		@title VARCHAR(40),
 		@text VARCHAR(1024),
-        @dtEnd DATE,
-        @dtExp INT
+        @dtEnd DATETIME,
+        @dtExp INT,
+        @topublish TINYINT
     AS
     BEGIN
         SET NOCOUNT ON;
@@ -42,8 +43,8 @@ if(stripos($_SESSION['ini']['dbms'], 'SQL Server') === 0){
             WHERE DATEADD(week, @dtExp, news.dtEnd) < GETDATE();
         END
         IF @crud = 'C' BEGIN
-            INSERT INTO news(utente, title, text, dtEnd)
-            VALUES (@id, @title, @text, @dtEnd);
+            INSERT INTO news(utente, title, text, dtEnd,topublish)
+            VALUES (@id, @title, @text, @dtEnd,@topublish);
         END
         ELSE IF @crud = 'U' BEGIN
             UPDATE news SET title=@title, text=@text, dtEnd=@dtEnd WHERE idNw=@id;
@@ -52,17 +53,17 @@ if(stripos($_SESSION['ini']['dbms'], 'SQL Server') === 0){
 SQL;
 } else if($_SESSION['ini']['dbms'] == 'My SQL'){
 $sql =<<<SQL
-    CREATE PROCEDURE insNews(crud CHAR, id INT, title VARCHAR(40), text VARCHAR(1024), dtEnd DATE, dtExp INT)
+    CREATE PROCEDURE insNews(crud CHAR, id INT, title VARCHAR(40), text VARCHAR(1024), dtEnd DATE, dtExp INT, top TINYINT)
     BEGIN
         IF dtExp > 0 THEN
             DELETE FROM news
             WHERE DATE_ADD(news.dtEnd, INTERVAL dtExp WEEK) < NOW();
         END IF;
         IF crud = 'C' THEN
-            INSERT INTO news(utente, title, text, dtNews, dtEnd)
-            VALUES (id, title, text, NOW(), dtEnd);
+            INSERT INTO news(utente, title, text, dtNews, dtEnd, topublish)
+            VALUES (id, title, text, NOW(), dtEnd, top);
         ELSE IF crud = 'U' THEN
-            UPDATE news SET news.title=title, news.text=text, news.dtEnd=dtEnd WHERE idNw=id;
+            UPDATE news SET news.title=title, news.text=text, news.dtEnd=dtEnd  WHERE idNw=id;
         END IF;
     END IF;
     END;

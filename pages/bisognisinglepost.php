@@ -17,6 +17,8 @@
  * @copyright Copyright 2023 e-Sedra. All Rights Reserved.
  *
  */
+?>
+<?php
 if (session_status() !== PHP_SESSION_ACTIVE) {
           session_start();
       }
@@ -24,9 +26,9 @@ if (!defined('ROOT_PATH'))
           define ('ROOT_PATH', $_SESSION['ini']['ROOT_PATH']);
 
 require_once ROOT_PATH.'/include/functions.php';
-require_once(ROOT_PATH . '/include/postfunctions.php'); ?>
+require_once(ROOT_PATH . '/include/postfunctions.php');
 
-<?php
+
 if(!isset($_SESSION['VDbisogni']) || ! isset($_POST['idBis']) )  forbidden();
 $VDbisogni=$_SESSION['VDbisogni'];
 $field="pubblicato";
@@ -38,14 +40,14 @@ if($VDbisogni['ballottaggio'])
     $anonim=true;       //se sono un ruolo autorizzato non vedo gli autori dei bisogni
     $post = getOnePublishBisWithGrade( $ib,$field,$anonim);     //true per anonimo
     $lk=0;  //nessun cuore
-    if($post['utente']!=$_SESSION['user']['idUs'])    //se non è un mio post posso mettere il like
-    {
-        $like=getMyLikeB($ib,$_SESSION['user']['idUs']);
+    //if($post['utente']!=$_SESSION['user']['idUs'])    //se non è un mio post posso mettere il like
+    //{
+        $like=getMyLikeB($ib,$_SESSION['user']['idUs'], $VDbisogni['from']);
         if($like!=null)
             $lk=1;  //ho già messo like
         else
             $lk=2;  //posso mettere like
-    }
+    //}
    //nascondere autore se anonima
    if(!$anonim)
    {
@@ -80,7 +82,6 @@ if($VDbisogni['ballottaggio'])
 //}
 ?>
 
-<!--<script defer type="module" src="nested-comments-main/script.js"></script>-->
 
 <section class="container mt-3" id="singlepostb">
     <h2 ><?php if($VDbisogni['blogAct']) echo 'Discussione Bisogni'; else echo 'Discussione Bisogni non attivata'; ?></h2>
@@ -114,20 +115,28 @@ if($VDbisogni['ballottaggio'])
                     </p>
                 </div>
                 <ul class="list-group list-group-flush">
-                    <?php if(isset($VDbisogni['IamAuthor']) && $VDbisogni['IamAuthor'] && $VDbisogni['votAct'] ){
+                    <?php if (isset($VDbisogni['IamAuthor']) && $VDbisogni['IamAuthor']) {
                         //zona votazione
-                    ?>
-                    <li class="list-group-item text-center">
-                        <button type="button" class="btn icona" data-bs-toggle="tooltip" title="LIKE" id="btnlike" value="<?php echo $lk?>" name="btnlike" <?php if($lk<2) echo 'disabled';?>>
-                            <span class="bi <?php if($lk<2) echo 'bi-heart-fill'; else echo 'bi-heart';?>"></span>
-                        </button>
-                    </li>
-
-                    <li class="list-group-item text-center">
-                        <input type="hidden" class="provafunz" id="idBs<?php echo  $post['idBs']; ?>" value="<?php echo  $post['idBs']; ?>" />
-                        <my-rating class="rating" max-value="10" value="<?php if(isset($post['grade'])) echo $post['grade']; ?>"></my-rating>
-                    </li>
-                    <?php }  ?>
+                        if ($VDbisogni['blogAct']) {
+                            ?>
+                            <li class="list-group-item text-center">
+                                <button type="button" class="btn icona" data-bs-toggle="tooltip" title="LIKE" id="btnlike" value="<?php echo $lk ?>" name="btnlike" <?php if ($lk < 2)
+                                      echo 'disabled'; ?>>
+                                    <span class="bi <?php if ($lk < 2)
+                                        echo 'bi-heart-fill';
+                                    else
+                                        echo 'bi-heart'; ?>"></span>
+                                </button>
+                            </li>
+                    <?php }
+                        if ($VDbisogni['votAct']) { ?>
+                        <li class="list-group-item text-center">
+                            <input type="hidden" class="provafunz" id="idBs<?php echo $post['idBs']; ?>" value="<?php echo $post['idBs']; ?>" />
+                            <my-rating class="rating" max-value="10" value="<?php if (isset($post['grade']))
+                                echo $post['grade']; ?>"></my-rating>
+                        </li>
+                    <?php }
+                    }?>
                     <li class="list-group-item text-start">
                         <form id="formCommento" action="" method="POST">
                             <input type="hidden" id="idOrigin" name="idOrigin" value="<?php echo $post['idBs']; ?>" />
@@ -151,11 +160,16 @@ if($VDbisogni['ballottaggio'])
                     </li>
 
                 </ul>
-                <div class="card-footer">
+                <!--<div class="card-footer">
                     <small class="text-muted text-end">
-                        <?php if(isset($post["dtIns"])) echo date("j F Y ", strtotime($post["dtIns"])); ?>
+                        <?php //if (isset($post["dtIns"])){
+                            //echo date("d-m-Y H:i", strtotime($post["dtIns"]));
+                        //$date = new DateTimeImmutable($post["dtIns"], new DateTimeZone('Europe/Rome'));
+                        //echo $date->format('d-m-Y H:i');
+                        //}
+                        ?>
                     </small>
-                </div>
+                </div>-->
             </div>
             <div id="infoMessagge" class="my-callout d-none"></div>
             <!--sposto qui gli altri bisogni nello stesso ambito-->
@@ -212,7 +226,8 @@ if($VDbisogni['ballottaggio'])
                                     <span class="text-muted text-end small">
                                         &nbsp;&nbsp;
                                         <?php
-                                                echo  date("d-m-Y", strtotime($cmn["dtIns"]));
+               
+                                                echo  date("d-m-Y H:i", strtotime($cmn["dtIns"]));
                                         ?>
                                     </span>
                                 </h6>
@@ -274,7 +289,7 @@ if($VDbisogni['ballottaggio'])
                                             <span class="text-muted text-start small">
                                                 &nbsp;&nbsp;
                                                 <?php
-                                              echo  date("d-m-Y", strtotime($risp["dtIns"]));
+                                              echo  date("d-m-Y H:i", strtotime($risp["dtIns"]));
                                                 ?>
                                             </span>
                                         </h6>
@@ -310,17 +325,9 @@ if($VDbisogni['ballottaggio'])
 
 </section>
 
-<script src="js/funzioniValLU.js"></script>
-<script src="js/blogfunctions.js"></script>
-<script src="js/singlepostB.js"></script>
-<script>
-    //per fare refresh periodico della parte di pagina della chat
-    //devo fare funzione ajax che recupera dati e JS crea la parte di pagina da visualizzare
+<!--<script src="js/funzioniValLU.js"></script>-->
+<script  src="js/blogfunctions.js"></script>
+<script  src="js/functions.js"></script>
+<script  src="js/singlepostB.js"></script>
 
-    //setInterval(refresh, 5000);
-
-//    function refresh() {
-//    //location.reload();
-//}
-</script>
 

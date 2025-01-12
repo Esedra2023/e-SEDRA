@@ -33,7 +33,8 @@ require_once ROOT_PATH .'/include/wrapperfunctions.php';
 if(isset($_SESSION['moment']))
     unset($_SESSION['moment']);
 defineMoment();		//ri definisco qui in caso di modifiche da parte dell'admin altrimenti non si aggiorna
-//$nat=count($_SESSION['moment']);
+////$nat=count($_SESSION['moment']);
+$now = new DateTimeImmutable('now', new DateTimeZone('Europe/Rome')); /*new DateTime();*/
 if (array_key_exists(300,$_SESSION['moment']))
 {
     $news=$_SESSION['moment']['300'];
@@ -43,10 +44,11 @@ if (array_key_exists(300,$_SESSION['moment']))
     $news['IamRev']=IamRevisor($news['revisore']);
 
 
-    $now = new DateTime();
-    $now=$now->format('Y-m-d');
-    $tomorrow=calcolaDataAfter($now,1,'D');
-    $to1W=calcolaDataAfter($now,1,'W');
+            //$now=$now->format('Y-m-d');
+            //$tomorrow= $now->add(new DateInterval('P1D'));
+                //calcolaDataAfter($now,1,'D');
+            //$to1W= $now->add(new DateInterval('P7D'));
+            //calcolaDataAfter($now,1,'W');
     $allnews = wr_getNews(1,0,0);
     $news['periodNews']=true;
 }
@@ -62,13 +64,14 @@ if (array_key_exists(103,$_SESSION['moment']))
 
     $allCIna=wr_getCina(103);
 }
-//ancora da mettere a posto
+////ancora da mettere a posto
 if (array_key_exists(203,$_SESSION['moment']))
 {
     $dpro=$_SESSION['moment']['203'];
     $dpro['IamAuthor']=false;
     $dpro['IamRev']=IamRevisor($dpro['revisore']);
     $dpro['periodSegnP']=true;
+
     $allCIna=wr_getCina(203);
 }
 
@@ -118,21 +121,25 @@ if (array_key_exists(203,$_SESSION['moment']))
                             <div class="card-text">
                                 <form id="formtel">
                                     <div class="form-floating mb-3">
-                                        <input type="tel" class="form-control" id="cell" name="cell" value="<?php echo $_SESSION['user']['cell']; ?>" />
+                                        <input type="tel" class="form-control" id="mycell" name="cell" value="<?php echo $_SESSION['user']['cell']; ?>" />
                                         <label for="mycell" class="form-label">Telefono</label>
                                     </div>
                                     <div class="form-floating mb-3">
-                                        <input type="text" class="form-control" id="cod" name="cod" value="<?php echo $_SESSION['user']['cod']; ?>" />
+                                        <input type="text" class="form-control" id="mycod" name="cod" value="<?php echo $_SESSION['user']['cod']; ?>" />
                                         <label for="mycod" class="form-label">Codice</label>
                                     </div>
                                 </form>
                                 <div class="row">
                                     <div class="form-floating mb-3 col-md-6">
-                                        <input type="date" class="form-control form-control-plaintext" id="mydateP" value="<?php echo $_SESSION['user']['dtPsw']; ?>" disabled />
+                                        <input type="text" class="form-control form-control-plaintext" id="mydateP" value="<?php echo date("d-m-Y H:i", strtotime($_SESSION['user']['dtPsw']));?>" disabled />
+
+
                                         <label for="mydateP" class="form-label">Creazione password</label>
                                     </div>
                                     <div class="form-floating mb-3 col-md-6">
                                         <input type="text" class="form-control form-control-plaintext" id="mygP" value="<?php if(isset($_SESSION['user']['ggScPsw'])) echo $_SESSION['user']['ggScPsw']; ?>" disabled />
+
+
                                         <label for="mygP" class="form-label">Giorni scadenza password</label>
                                     </div>
                                 </div>
@@ -140,10 +147,11 @@ if (array_key_exists(203,$_SESSION['moment']))
                         </div>
                         <div class="card-footer">
                             <div class="col-12 text-md-end">
-                                <input type="submit" id="mymoddati" class="btn btn-primary" name="mymoddati" value="Modifica Dati" disabled />
+                                <input type="submit" id="mymoddati" class="btn btn-primary" name="mymoddati" value="Modifica Dati" disabled/>
                             </div>
                             <small class="text-muted text-md-end">
-                                <?php echo date("d-m-Y"); ?>
+                                <?php //$date = new DateTimeImmutable('now', new DateTimeZone('Europe/Rome'));
+                                echo $now->format('d-m-Y H:i');  ?>
                             </small>
                         </div>
 
@@ -162,6 +170,7 @@ if (array_key_exists(203,$_SESSION['moment']))
                       $_POST['itable']='P';
                       include(ROOT_PATH . '/include/templatecontinadeguato.php');
                   }
+                  
             ?>
             <?php if(isset($news) && $news['periodNews'] && $news['IamRev'])
                       include(ROOT_PATH . '/include/templategestiscinews.php');
@@ -217,30 +226,13 @@ if (array_key_exists(203,$_SESSION['moment']))
     </div>
 </div>
 
-
-<script>
-  
-    var mycell;
- ready(function () {
-  
-    var mybtn = document.getElementById("mymoddati");
-    mybtn.addEventListener("click",savetelefono);
-
-    mycell=document.getElementById("cell");
-    mycell.addEventListener('change', () => {
-        if (mybtn.disabled) mybtn.disabled = false;
-    });
-  
-   var mycod=document.getElementById("cod");
-    mycod.addEventListener('change', () => {
-        if (mybtn.disabled) mybtn.disabled = false;
-    });
-
-});
+    <script>
 
     function savetelefono() {
-       var num = mycell.value;
-        if (num.match(/3\d{2}[\. ]??\d{6,7}$/)) {
+        var tel = document.getElementById("mycell");
+        var num = tel.value;
+        /* if (num != "") { */
+        if (num.match(/3\d{2}[\. ]??\d{6,7}$/) || num == '') {
             data = new FormData(document.getElementById("formtel"));
             data.append("nome", document.getElementById("nome").value);
             data.append("cognome", document.getElementById("cognome").value);
@@ -248,7 +240,27 @@ if (array_key_exists(203,$_SESSION['moment']))
             var res = call_ajax_single_promise("ajax/updateuserprofile.php", data)
             if (res != 0) {
                 showMessagge("Dati profilo aggiornati", "my-callout-warning");
+                document.getElementById("mymoddati").setAttribute("disabled", true);
             }
-        }else showMessagge("Numero cellulare non valido", "my-callout-danger");
+        } else showMessagge("Numero cellulare non valido", "my-callout-danger");
+        /*   }*/
     }
-</script>
+
+    ready(function () {
+
+            var mybtn = document.getElementById("mymoddati");
+            mybtn.addEventListener("click", savetelefono);
+
+            var mycell = document.getElementById("mycell");
+            mycell.addEventListener('change', () => {
+                if (document.getElementById("mymoddati").disabled) document.getElementById("mymoddati").removeAttribute("disabled");
+            });
+
+            var mycod = document.getElementById("mycod");
+            mycod.addEventListener('change', () => {
+                if (document.getElementById("mymoddati").disabled) document.getElementById("mymoddati").removeAttribute("disabled");
+            });
+    }); 
+     
+    </script>
+

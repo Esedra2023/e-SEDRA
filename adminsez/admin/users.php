@@ -101,7 +101,10 @@ if(isset($_SESSION['template']))
                                     </div>
                                     <div class="form-floating col-md-6">
                                       
-                                        <input type="date" class="form-control form-control-plaintext" id="dtPsw" name="dtPsw" value="<?php echo date('Y-m-d');?>" disabled />
+                                        <input type="datetime-local" class="form-control form-control-plaintext" id="dtPsw" name="dtPsw" value="<?php date_default_timezone_set('Europe/Rome');
+                                    echo str_replace(" ", "T", date('Y-m-d H:i'));?>"
+                                            disabled />
+
                                         <label for="dtPsw" class="form-label">Data creazione password</label>
                                     </div>
                                     <div class="form-floating col-md-6">

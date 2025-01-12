@@ -45,6 +45,7 @@ function call_ajax_set_comment(formNome, risp, master,elemb,itable) {
     data.append('risp', risp);
     data.append('master', master);
     data.append('itable', itable);
+    stampaFormData(data);
     fetch('ajax/setcomment.php', {
         method: 'POST',
         body: data
@@ -59,13 +60,14 @@ function call_ajax_set_comment(formNome, risp, master,elemb,itable) {
             response.text().then(function (risp) {
                 //trasformo ilJSON in oggetto JS
                 var bis = JSON.parse(risp);
+               /* alert("set_comment bis " + bis + " elemb " + elemb);*/
                 var nt = 104;
                 if (itable == 'P') nt = 204;
-                refreshSinglePost(elemb,defaultpage,nt);
+                refreshSinglePost(elemb,21,nt);  //1 per defaultpage non definito
             });
         })
         .catch(function (err) {
-            //console.log('Fetch Error :-S', err);
+            console.log('Fetch Error :-S', err);
         });
 }
 

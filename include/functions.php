@@ -163,9 +163,22 @@ function calcolaDataAfter($datapwd,$m,$tipo){
     $inter='P'.$m.$tipo;
     $dateIni = date_create($datapwd);
     $dateStop = date_add($dateIni, new DateInterval($inter));
-    return(date_format($dateStop, "Y-m-d"));
+    return(date_format($dateStop, "Y-m-d H:i"));
 }
 
+function calcolaTempoAllaScadenza($dtSto)
+{
+    $utc_timezone = new DateTimeZone("Europe/Rome");
+    $adesso = new DateTimeImmutable('now',$utc_timezone);
+    $dfin = new DateTimeImmutable($dtSto, $utc_timezone);
+
+    $diff = ($dfin)->diff($adesso);
+    return $diff;
+    //if ($adesso < $dfin)
+    //    return $gg;
+    //else
+    //    return $gg * (-1);
+}
 
 function calcolaGiorniAllaScadenza($dtSta,$dtSto)
 {
@@ -181,7 +194,7 @@ function calcolaGiorniAllaScadenza($dtSta,$dtSto)
 function defineMoment()
 {
     if(!$conn = connectDB()) {echo errorConnectDB(); exit();}
-    $sql = "CALL getMoment";        //tutte le attività con date che comprendono la data odierna
+    $sql = "CALL getMoment";        //tutte le attività con date che comprendono data e ora odierna
     if(stripos($_SESSION['ini']['dbms'], 'SQL Server') === 0) {
         $sql = '{'.$sql.'}';
     }
@@ -215,10 +228,12 @@ function defineMoment()
            unset($mt['note']);
            if($mt['active'])
            {
-               $gg=calcolaGiorniAllaScadenza(date("Y-m-d"),$mt['dtStop']);
-               $mt['ggscad']=$gg+1;
-               //sarà impossibile che succeda!!!
-               if($gg<0) $mt['stato']=2;    //TERMINATA
+               $tot = calcolaTempoAllaScadenza($mt['dtStop']);
+                $mt['ggscad'] = " ";
+                $mt['ggscad']=$mt['ggscad'].$tot->d."g ";
+                $mt['ggscad']=$mt['ggscad'].$tot->h."h ";
+                $mt['ggscad']=$mt['ggscad'].$tot->i."m ";
+                $mt['ggscad'] = $mt['ggscad'] . $tot->s . "s ";
                $key=$mt['idAt'];
                unset($mt['idAt']);
                $author=getRuoliAutorizzati($key);
@@ -383,7 +398,7 @@ function sendTokenMail($token,$emailUtente)
     //echo "This works: {$arr['key']}";
     $message ='Ricevi questa mail perchè qualcuno ha richiesto un Token di accesso'."\r\n".'alla applicazione. Se non sei stato tu, ignora questo messaggio.'."\r\n\r\n".'Token: '.$token;
 
-    if($_SESSION['ini']['scTkn']) $message=$message."\r\n".'La sua validità è di '.$_SESSION['ini']['scTkn'].' ore.';
+    if($_SESSION['ini']['scTkn']!=0) $message=$message."\r\n".'La sua validità è di '.$_SESSION['ini']['scTkn'].' ore.';
     $headers='From: '.$_SESSION['ini']['emailNoRep']. "\r\n".'Reply-To: '.$_SESSION['ini']['emailNoRep']."\r\n".'X-Mailer: PHP/'. phpversion();
     return mail($to, $subject, $message, $headers);
 }

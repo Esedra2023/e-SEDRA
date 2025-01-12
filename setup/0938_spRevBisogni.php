@@ -53,12 +53,12 @@ if(stripos($_SESSION['ini']['dbms'], 'SQL Server') === 0){
 SQL;
 } else if($_SESSION['ini']['dbms'] == 'My SQL'){
 $sql =<<<SQL
-    CREATE PROCEDURE revBisogni(vid INT, topicid INT, more VARCHAR(30), title VARCHAR(60),image VARCHAR(50),body VARCHAR(1024), publish TINYINT,revisor INT, note VARCHAR(60),crud CHAR(1))
+    CREATE PROCEDURE revBisogni(vid INT, topicid INT, more VARCHAR(30), title VARCHAR(60), body VARCHAR(1024),image VARCHAR(50),publish TINYINT,revisor INT, note VARCHAR(60),crud CHAR(1))
     BEGIN
         IF crud = 'D' THEN
             UPDATE bisogni SET deleted=1, revisore=revisor, pubblicato=0 WHERE idBs=vid;
         ELSE IF crud = 'R' THEN
-            UPDATE bisogni SET ambito=topicid, moreambito=more, titleBis=title, textBis=body, imgBis=image, dtRev=DATE(CURRENT_TIMESTAMP), pubblicato=publish, rev=note, revisore=revisor
+            UPDATE bisogni SET ambito=topicid, moreambito=more, titleBis=title, textBis=body, imgBis=image, dtRev=now(), pubblicato=publish, rev=note, revisore=revisor
             WHERE idBs=vid;
         END IF;
        END IF;

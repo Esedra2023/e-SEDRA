@@ -56,7 +56,7 @@ $sql =<<<SQL
         IF crud = 'D' THEN
             UPDATE proposte SET deleted=1, revisore=revisor, rev=note, pubblicato=0 WHERE idBs=vid;
         ELSE IF crud = 'R' THEN
-            UPDATE proposte SET titlePrp=title, textPrp=body, rifbisgenerico=bis, dtRev=DATE(CURRENT_TIMESTAMP), pubblicato=publish, rev=note, revisore=revisor
+            UPDATE proposte SET titlePrp=title, textPrp=body, rifbisgenerico=bis, dtRev=now(), pubblicato=publish, rev=note, revisore=revisor
             WHERE idPr=vid;
         END IF;
        END IF;

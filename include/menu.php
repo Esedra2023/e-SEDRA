@@ -155,52 +155,179 @@ const myon = (type, el, listener, all = false) => {
     }
   }, true)
 
+    function fadeInPage(element, duration) {
+        element.style.opacity = 0;
+        element.style.display = 'block';
 
-    $(document).ready(function () {
-// -----  LOGIN/LOGOUT -----
-    $('#logButton').click(function (event) {
-        /*alert("clic su logButton");*/
-        event.preventDefault();
-        $.get('include/login.php', function (response) {
-            $('header').append(response).find('#login-page').fadeIn(300);
+        let startTime = null;
+
+        function animation(currentTime) {
+            if (!startTime) {
+                startTime = currentTime;
+            }
+
+            let timeElapsed = currentTime - startTime;
+            let progress = Math.min(timeElapsed / duration, 1);
+
+            element.style.opacity = progress;
+
+            if (progress < 1) {
+                requestAnimationFrame(animation);
+            }
+        }
+
+        requestAnimationFrame(animation);
+    }
+
+
+    function loadAlsoScript(html) {
+        const parser = new DOMParser();
+        const doc = parser.parseFromString(html, 'text/html');
+        const header = document.querySelector('header');
+        //alert(header);
+        // Aggiungi l'HTML al documento
+        Array.from(doc.body.childNodes).forEach(node => {
+            header.appendChild(node);
+        });
+
+        // Trova e esegui gli script nel contenuto caricato
+        const scripts = Array.from(doc.querySelectorAll('script'));
+        scripts.forEach(script => {
+            const newScript = document.createElement('script');
+            if (script.src) {
+                newScript.src = script.src;
+            } else {
+                newScript.textContent = script.textContent;
+            }
+            document.body.appendChild(newScript);
+            if (!script.src) {
+                newScript.parentNode.removeChild(newScript); // Rimuovi lo script dopo l'esecuzione se non ha un src
+            }
+        });
+    }
+
+
+   document.addEventListener('DOMContentLoaded', function () {
+        var nodata = new FormData;
+        var lg = document.getElementById("logButton");
+        if (lg != null) {         
+            lg.addEventListener("click", function (event) {
+                
+             event.preventDefault();      
+        
+        let promo=fetch('include/login.php',{method:'POST'})
+        .then(response => response.text())
+            .then(html => {
+                loadAlsoScript(html);
+
+             //Opzionalmente, aggiungi un fadeIn o altro effetto visivo
+            const loginPage = header.querySelector('#login-page');
+            if (loginPage) {
+                loginPage.style.display = 'none';
+                fadeInPage(loginPage, 300); 
+            }
+        })
+        .catch(error => console.error('Error loading the login page:', error));
+
+            });
+       }
+
+        document.querySelectorAll('#navbar a').forEach(link => {
+        link.addEventListener('click', function (event) {
+            if (!this.classList.contains('no_link')) {
+                if (this.id !== "logButton" && this.id !== "m_logout") {
+                    // Implementazione di waitIcon senza jQuery
+                    // waitIcon('#contentPage');
+                   // console.log(this.getAttribute('href'));
+                    if (timer) { clearInterval(timer); }
+                    // Caricamento del contenuto con Fetch API
+                    fetch(this.getAttribute('href'), {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/x-www-form-urlencoded',
+                        },
+                        body: 'page=99'
+                    })
+                        .then(response => response.text())
+                        .then(html => {
+                            /*loadAlsoScript(html);*/
+                            insertAndExecuteScripts('#contentPage', html);
+                    //        document.querySelector('#contentPage').innerHTML = html;
+                    });
+
+                    // Gestione della visualizzazione del menu attivo
+                    document.querySelectorAll('.active').forEach(active => {
+                        active.classList.remove('active');
+                    });
+                    this.classList.add('active');
+
+                    // Aggiornamento nel DB della pagina utente corrente con Fetch API
+                    fetch('ajax/updmenu.php', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/x-www-form-urlencoded',
+                        },
+                        body: 'menu=' + this.id
+                    });
+
+                    if (document.querySelector('#navbar').classList.contains('navbar-mobile')) {
+                        let el = document.getElementById('mobileMenu');
+                        el.click(); // Simulazione click su mobileMenu
+                    }
+
+                    event.preventDefault(); // Previene il comportamento di default del link
+                }
+            }
         });
     });
+     
+  });
+
+//    $(document).ready(function () {
+// -----  LOGIN/LOGOUT -----
+    //$('#logButton').click(function (event) {
+    //    /*alert("clic su logButton");*/
+    //    event.preventDefault();
+    //    $.get('include/login.php', function (response) {
+    //        $('header').append(response).find('#login-page').fadeIn(300);
+    //    });
+    //});
 
     // -----  MENU PAGINE UTENTE ----
 
-    $('#navbar a').click(function (event) {
-       /* alert($(this));*/
-        //if ($(this).prop('id') === "logButton") {
-        //    /*alert("login passa qui " + $(this).prop('id'));*/
-        //    event.preventDefault();
-        //}
-        //if ($(this).prop('id') === "m_logout")
-        //{
-        //    /*alert("logout passa qui " + $(this).prop('id'));*/
-        //    /*event.preventDefault();*/
-        //}
-        //else
-        if (!$(this).hasClass("no_link")) {     /*BARBARA aggiunto per menu dropdown*/
-            /* alert("altri menu " + $(this).prop('id'));*/
-            if ($(this).prop('id') != "logButton" && $(this).prop('id') != "m_logout") {
-                /*waitIcon('#contentPage');*/ //js function per icona loader
-                // carica <section id="#contentPage" con pagina php
-                //alert($(this).prop('href'));
-                $('#contentPage').load($(this).prop('href'), { page: 99 });
-                //gestisce visualizzazione scelta menu
-                $(".active").removeClass("active");
-                $(this).addClass("active");
-               /* underline($(this));*/
-                //aggiorna nel DB la pagina utente corrente
-                $.post("ajax/updmenu.php", { menu: $(this).prop('id') }); //$(this).index -mettere #id al menu
-                if ($('#navbar').hasClass("navbar-mobile")) {
-                    el = document.getElementById("mobileMenu");
-                    simulateClick(el);
-                }
-                event.preventDefault();
-            }
-        }
-    }); //$('.mainMenu a').click
-    }); //fine $(document).ready
+    //$('#navbar a').click(function (event) {
+    //   /* alert($(this));*/
+    //    //if ($(this).prop('id') === "logButton") {
+    //    //    /*alert("login passa qui " + $(this).prop('id'));*/
+    //    //    event.preventDefault();
+    //    //}
+    //    //if ($(this).prop('id') === "m_logout")
+    //    //{
+    //    //    /*alert("logout passa qui " + $(this).prop('id'));*/
+    //    //    /*event.preventDefault();*/
+    //    //}
+    //    //else
+    //    if (!$(this).hasClass("no_link")) {     /*BARBARA aggiunto per menu dropdown*/
+    //        /* alert("altri menu " + $(this).prop('id'));*/
+    //        if ($(this).prop('id') != "logButton" && $(this).prop('id') != "m_logout") {
+    //            /*waitIcon('#contentPage');*/ //js function per icona loader
+    //            // carica <section id="#contentPage" con pagina php
+    //            //alert($(this).prop('href'));
+    //            $('#contentPage').load($(this).prop('href'), { page: 99 });
+    //            //gestisce visualizzazione scelta menu
+    //            $(".active").removeClass("active");
+    //            $(this).addClass("active");
+    //           /* underline($(this));*/
+    //            //aggiorna nel DB la pagina utente corrente
+    //            $.post("ajax/updmenu.php", { menu: $(this).prop('id') }); //$(this).index -mettere #id al menu
+    //            if ($('#navbar').hasClass("navbar-mobile")) {
+    //                el = document.getElementById("mobileMenu");
+    //                simulateClick(el);
+    //            }
+    //            event.preventDefault();
+    //        }
+    //    }
+    //}); //$('.mainMenu a').click
+    //}); //fine $(document).ready
 
 </script>

@@ -32,7 +32,7 @@ if(stripos($_SESSION['ini']['dbms'], 'SQL Server') === 0){
     BEGIN
         SET NOCOUNT ON;
             SELECT * FROM attivita
-            WHERE (getdate() between dtStart AND DATEADD(DAY, 1, dtStop));
+            WHERE (getdate() between dtStart AND dtStop);
     END
 SQL;
 } else if($_SESSION['ini']['dbms'] == 'My SQL'){
@@ -40,7 +40,7 @@ $sql =<<<SQL
     CREATE PROCEDURE getMoment()
     BEGIN
             SELECT * FROM attivita
-            WHERE now() between dtStart AND (dtStop + INTERVAL 1 DAY);
+            WHERE now() between dtStart AND dtStop;
     END
 SQL;
 }

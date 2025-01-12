@@ -97,7 +97,7 @@ $itable=$_POST['itable'];
                 <?php foreach ($allCIna as $key => $cia):?>
                 <tr id="rina<?php echo $cia['idSC']; ?>">
                     <td>
-                        <input type="date" class="form-control-plaintext" value="<?php  if(isset($cia['dtIns'])) echo $cia['dtIns'];?>" readonly disabled />
+                        <?php  if(isset($cia['dtIns'])) echo date("d-m-Y H:i", strtotime($cia['dtIns']));?>
                     </td>
                     <td>
                         <?php echo $cia['cognome'].' '.$cia['nome'];?>
@@ -167,7 +167,7 @@ $itable=$_POST['itable'];
             keyboard: false, backdrop: "static"
         })
         var canOKCIna = document.getElementById("confermCancelCIna");
-            canOKCIna.addEventListener("click", function () { myModalCIna.hide(); call_ajax_delete_CIna(CInaToedit, itable); locatiom.reload();/*call_ajax_refresh_CIna_table();*/});
+            canOKCIna.addEventListener("click", function () { myModalCIna.hide(); call_ajax_delete_CIna(CInaToedit, itable); window.location.reload();/*call_ajax_refresh_CIna_table();*/});
 
         var anCIna = document.getElementById("closeModalCancelCIna");
         anCIna.addEventListener("click", function () { resetAccordion(collapsableCIna, "bottoneAccCIna", formCIna, "Dettagli"); /*suNws.value = "Pubblica news";*/ });
@@ -364,12 +364,14 @@ async function call_ajax_delete_CIna(idCIna,itable) {
     }
 
     function creaCardHeader(nome, cognome, data) {
-        var date = new Date(data);
+        //var dt = data.substring(0, 16);
+        //var date = new Date(data);
+
         //var dateFormat = (date.getDate().length != 2 ?"0" + date.getDate() : date.getDate())+ "-" +((date.getMonth()+1).length != 2 ? "0" + (date.getMonth() + 1) : (date.getMonth()+1)) + "-" + date.getFullYear() ;
             var ch=document.createElement("div");
             ch.classList.add("card-header");
             ch.innerHTML="<h6 class='card-subtitle text-end'>"+nome+" "+cognome+"<span class='text-muted text-end small'> &nbsp;&nbsp;"+
-                data+" </span></h6>";
+        data.substring(0, 16) +" </span></h6>";
         return ch;
     }
 

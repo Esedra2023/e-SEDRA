@@ -41,11 +41,11 @@ $pswAdm = password_hash($_POST['PSWAD'], PASSWORD_DEFAULT);
 $sql =<<<SQL
 CREATE TABLE utenti (
     idUs    INT $autoinc NOT NULL PRIMARY KEY,
-    nome    VARCHAR(30)  NOT NULL,
-    cognome VARCHAR(30)  NOT NULL,
-    email   VARCHAR(30)  NOT NULL UNIQUE,
+    nome    VARCHAR(40)  NOT NULL,
+    cognome VARCHAR(40)  NOT NULL,
+    email   VARCHAR(60)  NOT NULL UNIQUE,
     psw     VARCHAR(255) NOT NULL,
-    dtPsw   DATE $dtNow  NOT NULL,
+    dtPsw   DATETIME $dtNow  NOT NULL,
     cell    VARCHAR(20),
     cod     VARCHAR(20),
     menuAct TINYINT DEFAULT 0

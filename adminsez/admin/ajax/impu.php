@@ -23,6 +23,7 @@ if (session_status() !== PHP_SESSION_ACTIVE) {
 //require_once('../../config.php');
 if (!defined('ROOT_PATH'))
     define ('ROOT_PATH', $_SESSION['ini']['ROOT_PATH']);
+
 require_once ROOT_PATH .'/include/functions.php';
 require_once(ROOT_PATH  . '/adminsez/admin/includes/utilfunctions.php');
 //header('Content-Type: application/json');
@@ -45,13 +46,13 @@ require_once(ROOT_PATH  . '/adminsez/admin/includes/utilfunctions.php');
                 if($upload_file_name!="" && strlen ($upload_file_name)<=100)
                 {
                     //replace any non-alpha-numeric cracters in th file name
-                    $upload_file_name = preg_replace("/[^A-Za-z0-9 \.\-_]/", '', $upload_file_name);
+            //$upload_file_name = preg_replace("/[^A-Za-z0-9 \.\-_]/", '', $upload_file_name);
                     //Save the file
                     //$dest=__DIR__.'/upload/'.$upload_file_name;
                     //if (!move_uploaded_file($_FILES['fileToUpload']['tmp_name'], $dest))
 
                     // recupero alcune informazioni sul file inviato
-                    $userfile_tmp = $_FILES['fileup']['tmp_name'];
+               $userfile_tmp = $_FILES['fileup']['tmp_name'];
                     //$userfile_vero = $_FILES['fileup']['name'];
                     //$tipo_file = $_FILES['fileup']['type'];
 
@@ -60,6 +61,10 @@ require_once(ROOT_PATH  . '/adminsez/admin/includes/utilfunctions.php');
                     {
                         $output['success']="Importati ".$righe." utenti.";
                     }
+                    //else
+                    //{
+                    //    array_push($errors,'Mail duplicate!');
+                    //}
                 }
                 else
                 {
@@ -76,7 +81,7 @@ require_once(ROOT_PATH  . '/adminsez/admin/includes/utilfunctions.php');
     }
 
     echo json_encode($output);
-    exit(0);
+    //exit(0);
 
 
 

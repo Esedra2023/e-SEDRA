@@ -46,7 +46,7 @@ SQL;
           $sql =<<<SQL
     CREATE PROCEDURE getMaxStar(tipo INT)
     BEGIN
-        IF @tipo = 104 THEN
+        IF tipo = 104 THEN
             SELECT numberOfStars.idStar, numberOfStars.vbis AS maxStar
             FROM numberOfStars;
         ELSE

@@ -153,7 +153,7 @@ ready(function () {
                     //console.log('REVOCA/PUBBLICA ' + param);
                     var pub = TogglePubblication(param,"proposte");
                     btnPubUnpub(pub, elem, span);
-                    location.reload();
+                    window.location.reload(); 
                     //window.location.href = window.location.href;
                 }
                 else if (elem.name == "revision-post") {
@@ -177,6 +177,11 @@ ready(function () {
             }
         });
     } 
+    var fortimer = document.getElementById("scadenza");
+    var dataFine = fortimer.value;
+    dataFine = dataFine.replace(" ", "T");
+    console.log(dataFine);
+    avviaContoAllaRovescia(dataFine, "demo");
 });//ready
 
 
@@ -226,7 +231,7 @@ async function call_ajax_rev_proposta(crud) {
     //console.log('OK.. ' + result);
     if (result['success']) {
         showMessagge(result['success'], "my-callout-info", "infoMessagge");
-        call_ajax_dati_table('proposte', 'Protable', revisorpro);
+        call_ajax_dati_table('proposte', 'Protable', revisorpro, 'ajax/getallpostsdatedelimited.php');
         resetAccordion(collapsablePro, "btnAccPro", formPro, "Revisione proposta");       
     }
     else {      

@@ -89,8 +89,11 @@ $tot=count($result);
                     </thead>
                     <tbody class="table-group-divider ">
                         <?php
-                        foreach($result as $row) {      
-                            echo "<tr><td>" . $row["cognome"] . " " . $row["nome"] . "</td><td>" . $row["ruolo"] . "</td><td>" . $row["email"] . "</td><td>". $row["dtS"] . "</td><td>" . $row["dtE"] . "</td></tr>";
+                        foreach($result as $row) {
+                            $dfi = $row["dtE"];
+                            if ($row["dtE"] == "")
+                                $dfi = "...";
+                            echo "<tr><td>" . $row["cognome"] . " " . $row["nome"] . "</td><td>" . $row["ruolo"] . "</td><td>" . $row["email"] . "</td><td>". $row["dtS"] . "</td><td>" . $dfi . "</td></tr>";
                         }
                         ?>
                     </tbody>
@@ -133,7 +136,7 @@ async function call_ajax_delete_logs() {
     //console.log('aspetto che la promessa risolva');
     let result = await promo;
    // console.log('OK..promessa risolta ' + result);
-    location.reload();
+        window.location.reload(); 
 }
 
 //async function call_ajax_write_logs() {

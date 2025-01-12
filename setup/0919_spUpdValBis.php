@@ -48,15 +48,28 @@ if(stripos($_SESSION['ini']['dbms'], 'SQL Server') === 0){
 SQL;
 } else if($_SESSION['ini']['dbms'] == 'My SQL'){
 $sql =<<<SQL
-    CREATE PROCEDURE updValBis(idBis INT, idUs INT, val INT)
-    BEGIN
-		SELECT @id=valBis.idVb FROM valBis WHERE valBis.bisogno=idBis AND valBis.utente=idUs AND valBis.dtIns >= (SELECT dtStart FROM attivita WHERE idAt=104) AND valBis.dtIns <= (SELECT dtStop FROM attivita WHERE idAt=104);
-		IF @id > 0 THEN
-			 UPDATE valBis SET valBis.grade=val, valBis.dtIns=DATE(CURRENT_TIMESTAMP) WHERE valBis.idVb=@id;
-		ELSE
-			INSERT INTO valBis(bisogno, utente, grade, dtIns) VALUES(idBis, idUs, val, DATE(CURRENT_TIMESTAMP));
-		END IF;
-    END
+
+CREATE PROCEDURE updValBis(
+    IN idBis INT,
+    IN idUs INT,
+    IN val INT
+)
+BEGIN
+    DECLARE id INT DEFAULT 0;
+
+    SELECT valBis.idVb INTO id FROM valBis
+    WHERE valBis.bisogno = idBis AND valBis.utente = idUs
+    AND valBis.dtIns >= (SELECT dtStart FROM attivita WHERE idAt = 104)
+    AND valBis.dtIns <= (SELECT dtStop FROM attivita WHERE idAt = 104)
+    LIMIT 1;
+
+    IF id > 0 THEN
+        UPDATE valBis SET grade = val, dtIns = NOW() WHERE idVb = id;
+    ELSE
+        INSERT INTO valBis(bisogno, utente, grade, dtIns) VALUES(idBis, idUs, val,now());
+    END IF;
+END
+
 SQL;
 }
 

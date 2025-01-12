@@ -41,7 +41,7 @@ SQL;
 $sql =<<<SQL
     CREATE PROCEDURE chgPsw(idUs INT, newPsw VARCHAR(255))
     BEGIN
-		UPDATE utenti SET utenti.psw=newPsw, utenti.dtPsw=DATE(CURRENT_TIMESTAMP)
+		UPDATE utenti SET utenti.psw=newPsw, utenti.dtPsw=now()
 		WHERE utenti.idUs=idUs;
     END
 SQL;

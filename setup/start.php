@@ -57,9 +57,9 @@ $fileContent = <<<INI
 ROOT_PATH="{$_POST['SubDROOT']}"
 ;configurazione
 
-posta="{$_POST['MAIL']}"
-social="{$_POST['SOCIAL']}"
-web="{$_POST['WEB']}"
+posta="{$_POST['emailLink']}"
+social="{$_POST['socialLink']}"
+web="{$_POST['webLink']}"
 
 [connection]
 ;parametri di connessione al DB
@@ -86,5 +86,6 @@ else {echo json_encode(error('Impossibile creare il file di log')); exit();}
 $files = glob(ROOT_PATH.'/setup/0*.php');
 foreach($files as $key => $file) $files[$key] = 'setup/'.basename($file);
 echo json_encode($files);
+//echo $files;
 ///////////////////////////////////////////////////
 exit();

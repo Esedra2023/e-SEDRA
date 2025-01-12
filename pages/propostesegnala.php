@@ -22,10 +22,13 @@
     <h2>Inserimento Proposte</h2>
 	<blockquote class="blockquote">
     <p class="alert alert-primary col-md-12 text-center" role="alert">
-		<?php if($Aproposte['proAct']) echo('Fase attiva dal '.date_format(date_create($Aproposte['dtStart']),'d/m/Y').' al '.date_format(date_create($Aproposte['dtStop']),'d/m/Y').' - mancano '.$Aproposte['ggscad'].' giorni alla chiusura.<br/>');
+        <?php
+        if($Aproposte['proAct']) echo('Fase attiva dal '.date_format(date_create($Aproposte['dtStart']),'d/m/Y H:i').' al '.date_format(date_create($Aproposte['dtStop']),'d/m/Y H:i').' - Termina tra: <span id="demo">'.$Aproposte['ggscad'].'</span><br/>');
         else echo 'Fase non attiva';
               if($Aproposte['proAct'] && !$Aproposte['IamAuthor']) {echo 'Il tuo ruolo non consente la partecipazione in questa fase';}
         ?></p>
+        <input type="hidden" id="scadenza" value="<?php echo $$Aproposte['dtStop']; ?>" />
+
   </blockquote>
     <hr />
     <div class="row justify-content-evenly">  
@@ -51,7 +54,7 @@
 <!--<hr />-->
 	<!-- Display  from DB-->
 <!--<div class="col-md-7 mt-3">-->     <!--colonna per table-->
- <div class="table-div mb-3 col-lg-7">
+ <div class="table-div mb-3 col-lg-8">
 <?php if ($Aproposte['proAct'] && $Aproposte['IamAuthor']) { ?>
 				
 			<div id="infoMessaggedx" class="my-callout d-none"></div>

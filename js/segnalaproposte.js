@@ -57,7 +57,7 @@ ready(function () {
     //Riabilito i campi disabilitati di default dal template
     var btnacc = document.getElementById("btnAccPro");
     if (btnacc) {
-        btnacc.disabled = false;
+        btnacc.removeAttribute('disabled');
         btnacc.addEventListener("click", function () {
             formPro.reset();
             document.getElementById("divallegaPdf").classList.remove("d-none");
@@ -67,17 +67,17 @@ ready(function () {
 
     var fieldsetPro = document.getElementById("fsForm");
     if (fieldsetPro) {
-        fieldsetPro.disabled = false;
+        fieldsetPro.removeAttribute('disabled');
     }
 
     var modulopdf = document.getElementsByName("PDFToUpload")[0];
-    //modulopdf.disabled = true;
+    //modulopdf.setAttribute('disabled', true);
    
     var downmodulo = document.getElementById("downpdf");
     //downmodulo.addEventListener("click", function () {
     //    if (modulopdf.disabled) {
-    //        modulopdf.disabled = false;
-    //        confirm.disabled = false;
+    //        modulopdf.removeAttribute('disabled');
+    //        confirm.removeAttribute('disabled');
     //    }
     //});
 
@@ -99,7 +99,7 @@ ready(function () {
     delProOK.addEventListener("click", function () {
         //non passare true,false perchè il JSON li trasforma in testo
         call_ajax_delete_pro(id_proposta_selezionata, 0);   //eliminazione logica, false fa eliminazione fisica sono il proprietario
-        call_ajax_dati_table('proposte', 'Protable', personalpro);
+        call_ajax_dati_table('proposte', 'Protable', personalpro, 'ajax/getallposts.php');
     });
 
 
@@ -115,7 +115,7 @@ ready(function () {
    
     var confirm = document.getElementById("confirmPro");
     if (confirm) {
-        //confirm.disabled = true;
+        //confirm.setAttribute('disabled', true);
         confirm.addEventListener("click", (e) => {
            var id = document.getElementById("hidden_post_id").value;
             e.preventDefault();
@@ -245,7 +245,7 @@ function validateDataForm() {
             //console.log(result['success']);
             myMdT.hide();
             showMessagge(result['success'], "my-callout-warning");
-            call_ajax_dati_table('proposte', 'Protable', personalpro);
+            call_ajax_dati_table('proposte', 'Protable', personalpro, 'ajax/getallposts.php');
             //window.location.href = window.location.href;
         }
     }
@@ -277,7 +277,7 @@ async function call_ajax_upcre_proposte() {
             formPro.reset();
             // alert(result['success']);
             showMessagge(result['success'], "my-callout-info", "infoMessagge");
-            call_ajax_dati_table('proposte', 'Protable', personalpro);
+            call_ajax_dati_table('proposte', 'Protable', personalpro, 'ajax/getallposts.php');
 
         }//finestra per messaggio errore è quella un po' più in basso
         else showMessagge(result['errors'], "my-callout-danger", "infoMessagge2");

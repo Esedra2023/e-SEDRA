@@ -70,7 +70,7 @@ ready(function () {
     tcheck = document.getElementById('moreinfo');
 
     tptable = document.querySelector('#topicTable');
-    console.log(tptable);
+    //console.log(tptable);
     tptable.addEventListener("click", (e) => { 
         if (e.target.nodeName != 'BUTTON' && e.target.nodeName != 'SPAN') { /*//console.log('- '+e.target);*/  return; }
         //let edt = e.target.closest('.spedit');

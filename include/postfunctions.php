@@ -108,19 +108,21 @@ function getPostAuthorById($user_id)
 function getAllPublishBisWithGrade($anonim,$field)
 {
     if(!$conn = connectDB()) {echo errorConnectDB(); exit();}
-
+    //$dateSegn = "SELECT dtStart, dtStop FROM attivita WHERE idAt=101";
+    //$stmt = $conn->prepare($dateSegn);
+    //if (!$stmt->execute())
+    //    throw new Exception('Errore query GetDateSegnalazioni');
+    //$dtif = $stmt->fetchAll(PDO::FETCH_ASSOC);
+    //$di = $dtif[0]['dtStart'];
+    //$df= $dtif[0]['dtStop'];
     if(!$anonim)
-       $sql="SELECT t.* , idVb, grade FROM (SELECT b.*,nome, cognome FROM bisogni as b, utenti as u WHERE b.utente=u.idUs AND $field=1 AND deleted <> 1) AS t LEFT JOIN valBis ON idBs=bisogno AND valBis.utente=".$_SESSION['user']['idUs'];
+       $sql="SELECT t.* , idVb, grade FROM (SELECT b.*, a.ambito as ambitonome, a.valenza, nome, cognome FROM bisogni as b, utenti as u, ambiti as a WHERE b.utente=u.idUs AND b.ambito=a.idAm AND dtIns >= (SELECT dtStart FROM attivita WHERE idAt=101) AND dtIns <= (SELECT dtStop FROM attivita WHERE idAt=101) AND $field=1 AND deleted <> 1) AS t LEFT JOIN valBis ON idBs=bisogno AND valBis.utente=".$_SESSION['user']['idUs'];
     else
-        $sql="SELECT t.* , idVb, grade FROM (SELECT * FROM bisogni WHERE $field=1 AND deleted <> 1) AS t LEFT JOIN valBis ON idBs=bisogno AND valBis.utente=".$_SESSION['user']['idUs'];
-    if(stripos($_SESSION['ini']['dbms'], 'SQL Server') === 0){
-        $sqd= " AND valBis.dtIns between (SELECT dtStart FROM attivita WHERE idAt=104) AND DATEADD(DAY, 1, (SELECT dtStop FROM attivita WHERE idAt=104));";
-    }
-    else if($_SESSION['ini']['dbms'] == 'My SQL'){
-        $sqd= " AND valBis.dtIns between (SELECT dtStart FROM attivita WHERE idAt=104) AND ((SELECT dtStop FROM attivita WHERE idAt=104) + INTERVAL 1 DAY);";
-    }
-    $sql=$sql.$sqd;
-    $stmt = $conn->prepare($sql);
+        $sql="SELECT t.* , idVb, grade FROM (SELECT b.*, a.ambito as ambitonome, a.valenza FROM bisogni as b, ambiti as a WHERE b.ambito=a.idAm AND dtIns >= (SELECT dtStart FROM attivita WHERE idAt=101) AND dtIns <= (SELECT dtStop FROM attivita WHERE idAt=101) AND $field=1 AND deleted <> 1) AS t LEFT JOIN valBis ON idBs=bisogno AND valBis.utente=".$_SESSION['user']['idUs'];
+    $sqd= " AND valBis.dtIns between (SELECT dtStart FROM attivita WHERE idAt=104) AND (SELECT dtStop FROM attivita WHERE idAt=104) ORDER BY ambito, idBs;";
+    //}
+    $sqlt=$sql.$sqd;
+    $stmt = $conn->prepare($sqlt);
     if(! $stmt->execute()) throw new Exception('Errore query GetAllPublishBisogniWithGrade');
     $posts = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
@@ -129,21 +131,44 @@ function getAllPublishBisWithGrade($anonim,$field)
 	return $posts;
 }
 
+function getAllPublishBisWithoutGrade($anonim, $field)
+{
+    if (!$conn = connectDB()) {
+        echo errorConnectDB();
+        exit();
+    }
+    if (!$anonim)
+        $sql = "SELECT t.*, idmi as nlike FROM (SELECT b.*, a.ambito as ambitonome, a.valenza, nome, cognome FROM bisogni as b, utenti as u, ambiti as a WHERE b.utente=u.idUs AND b.ambito=a.idAm AND dtIns >= (SELECT dtStart FROM attivita WHERE idAt=101) AND dtIns <= (SELECT dtStop FROM attivita WHERE idAt=101) AND $field=1 AND deleted <> 1) AS t LEFT JOIN miPiaceB ON idBs=bisogno AND miPiaceB.utente=" . $_SESSION['user']['idUs'];
+    else
+        $sql = "SELECT t.* , idmi as nlike FROM (SELECT b.*, a.ambito as ambitonome, a.valenza FROM bisogni as b, ambiti as a WHERE b.ambito=a.idAm AND dtIns >= (SELECT dtStart FROM attivita WHERE idAt=101) AND dtIns <= (SELECT dtStop FROM attivita WHERE idAt=101) AND $field=1 AND deleted <> 1) AS t LEFT JOIN miPiaceB ON idBs=bisogno AND miPiaceB.utente=" . $_SESSION['user']['idUs'];
+    $sqd = " AND miPiaceB.dtIns between (SELECT dtStart FROM attivita WHERE idAt=103) AND (SELECT dtStop FROM attivita WHERE idAt=103) ORDER BY ambito, idBs;";
+    //}
+    $sqlt = $sql . $sqd;
+    $stmt = $conn->prepare($sqlt);
+    if (!$stmt->execute())
+        throw new Exception('Errore query GetAllPublishBisogniWithoutGrade');
+    $posts = $stmt->fetchAll(PDO::FETCH_ASSOC);
+  
+    $conn = null;
+    $stmt = null;
+    return $posts;
+}
+
 
 function getAllPublishProWithGrade($anonim,$field)
 {
     if(!$conn = connectDB()) {echo errorConnectDB(); exit();}
 
     if(!$anonim)
-        $sql="SELECT t.* , idVp, grade FROM (SELECT p.*,nome, cognome FROM proposte as p, utenti as u WHERE p.utente=u.idUs AND $field=1 AND deleted <> 1) AS t LEFT JOIN valPrp ON t.idPr=proposta AND valPrp.utente=".$_SESSION['user']['idUs'];
+        $sql="SELECT t.* , idVp, grade FROM (SELECT p.*,nome, cognome FROM proposte as p, utenti as u WHERE p.utente=u.idUs AND AND dtIns >= (SELECT dtStart FROM attivita WHERE idAt=201) AND dtIns <= (SELECT dtStop FROM attivita WHERE idAt=201) $field=1 AND deleted <> 1) AS t LEFT JOIN valPrp ON t.idPr=proposta AND valPrp.utente=".$_SESSION['user']['idUs'];
     else
-        $sql="SELECT t.* , idVp, grade FROM (SELECT * FROM proposte WHERE $field=1 AND deleted <> 1) AS t LEFT JOIN valPrp ON idPr=proposta AND valPrp.utente=".$_SESSION['user']['idUs'];
-    if(stripos($_SESSION['ini']['dbms'], 'SQL Server') === 0){
-        $sqd= " AND valPrp.dtIns between (SELECT dtStart FROM attivita WHERE idAt=204) AND DATEADD(DAY, 1, (SELECT dtStop FROM attivita WHERE idAt=204));";
-    }
-    else if($_SESSION['ini']['dbms'] == 'My SQL'){
-        $sqd= " AND valPrp.dtIns between (SELECT dtStart FROM attivita WHERE idAt=204) AND ((SELECT dtStop FROM attivita WHERE idAt=204) + INTERVAL 1 DAY);";
-    }
+        $sql="SELECT t.* , idVp, grade FROM (SELECT * FROM proposte WHERE AND dtIns >= (SELECT dtStart FROM attivita WHERE idAt=201) AND dtIns <= (SELECT dtStop FROM attivita WHERE idAt=201) $field=1 AND deleted <> 1) AS t LEFT JOIN valPrp ON idPr=proposta AND valPrp.utente=".$_SESSION['user']['idUs'];
+    //if(stripos($_SESSION['ini']['dbms'], 'SQL Server') === 0){
+    //    $sqd= " AND valPrp.dtIns between (SELECT dtStart FROM attivita WHERE idAt=204) AND (SELECT dtStop FROM attivita WHERE idAt=204);";
+    //}
+    //else if($_SESSION['ini']['dbms'] == 'My SQL'){
+        $sqd= " AND valPrp.dtIns between (SELECT dtStart FROM attivita WHERE idAt=204) AND (SELECT dtStop FROM attivita WHERE idAt=204);";
+    //}
     $sql=$sql.$sqd;
     $stmt = $conn->prepare($sql);
     if(! $stmt->execute()) throw new Exception('Errore query GetAllPublishProposteWithGrade');
@@ -228,12 +253,12 @@ function getOnePublishBisWithGrade($idB,$field,$anonim=true){
     else
         $sql="SELECT t.* , idVb, grade FROM (SELECT * FROM bisogni WHERE $field=1 AND deleted <> 1 AND idBs=$idB) AS t LEFT JOIN valBis ON idBs=bisogno AND valBis.utente=".$_SESSION['user']['idUs'];
 
-    if(stripos($_SESSION['ini']['dbms'], 'SQL Server') === 0){
-        $sqd= " AND valbis.dtIns between (SELECT dtStart FROM attivita WHERE idAt=104) AND DATEADD(DAY, 1, (SELECT dtStop FROM attivita WHERE idAt=104));";
-    }
-    else if($_SESSION['ini']['dbms'] == 'My SQL'){
-        $sqd= " AND valbis.dtIns between (SELECT dtStart FROM attivita WHERE idAt=104) AND ((SELECT dtStop FROM attivita WHERE idAt=104) + INTERVAL 1 DAY);";
-    }
+    //if(stripos($_SESSION['ini']['dbms'], 'SQL Server') === 0){
+    //    $sqd= " AND valBis.dtIns between (SELECT dtStart FROM attivita WHERE idAt=104) AND (SELECT dtStop FROM attivita WHERE idAt=104);";
+    //}
+    //else if($_SESSION['ini']['dbms'] == 'My SQL'){
+    $sqd= " AND valBis.dtIns between (SELECT dtStart FROM attivita WHERE idAt=104) AND (SELECT dtStop FROM attivita WHERE idAt=104);";
+    //}
     $sql=$sql.$sqd;
     $stmt = $conn->prepare($sql);
     if(! $stmt->execute()) throw new Exception('Errore query GetsingleBis');
@@ -255,12 +280,12 @@ function getOnePublishProWithGrade($idP,$field, $anonim=true)
     else
         $sql="SELECT t.* , idVp, grade FROM (SELECT * FROM proposte WHERE $field=1 AND deleted <> 1 AND idPr=$idP) AS t LEFT JOIN valPrp ON idPr=proposta AND valPrp.utente=".$_SESSION['user']['idUs'];
 
-    if(stripos($_SESSION['ini']['dbms'], 'SQL Server') === 0){
-        $sqd= " AND valPrp.dtIns between (SELECT dtStart FROM attivita WHERE idAt=204) AND DATEADD(DAY, 1, (SELECT dtStop FROM attivita WHERE idAt=204));";
-    }
-    else if($_SESSION['ini']['dbms'] == 'My SQL'){
-        $sqd= " AND valPrp.dtIns between (SELECT dtStart FROM attivita WHERE idAt=204) AND ((SELECT dtStop FROM attivita WHERE idAt=204) + INTERVAL 1 DAY);";
-    }
+    //if(stripos($_SESSION['ini']['dbms'], 'SQL Server') === 0){
+    //    $sqd= " AND valPrp.dtIns between (SELECT dtStart FROM attivita WHERE idAt=204) AND (SELECT dtStop FROM attivita WHERE idAt=204);";
+    //}
+    //else if($_SESSION['ini']['dbms'] == 'My SQL'){
+        $sqd= " AND valPrp.dtIns between (SELECT dtStart FROM attivita WHERE idAt=204) AND (SELECT dtStop FROM attivita WHERE idAt=204);";
+    //}
     $sql=$sql.$sqd;
 
     $stmt = $conn->prepare($sql);
@@ -355,20 +380,20 @@ function getSimilarProposte($idPr,$field)
     }
     return null;
 }
-function getMyLikeB($idB,$idUs){
+function getMyLikeB($idB,$idUs,$at){
     if(!$conn = connectDB()) {echo errorConnectDB(); exit();}
 
     $sql = "SELECT * FROM miPiaceB WHERE bisogno=$idB AND utente=$idUs"; //;AND pubblicato=1"
-    if(stripos($_SESSION['ini']['dbms'], 'SQL Server') === 0){
-        $sqd= " AND miPiaceB.dtIns between (SELECT dtStart FROM attivita WHERE idAt=104) AND DATEADD(DAY, 1, (SELECT dtStop FROM attivita WHERE idAt=104));";
-    }
-    else if($_SESSION['ini']['dbms'] == 'My SQL'){
-        $sqd= " AND miPiaceB.dtIns between (SELECT dtStart FROM attivita WHERE idAt=104) AND ((SELECT dtStop FROM attivita WHERE idAt=104) + INTERVAL 1 DAY);";
-    }
+    //if(stripos($_SESSION['ini']['dbms'], 'SQL Server') === 0){
+    //    $sqd= " AND miPiaceB.dtIns between (SELECT dtStart FROM attivita WHERE idAt=104) AND (SELECT dtStop FROM attivita WHERE idAt=104);";
+    //}
+    //else if($_SESSION['ini']['dbms'] == 'My SQL'){
+        $sqd= " AND miPiaceB.dtIns between (SELECT dtStart FROM attivita WHERE idAt=$at) AND (SELECT dtStop FROM attivita WHERE idAt=$at);";
+    //}
     $sql=$sql.$sqd;
     //try{
     $stmt = $conn->prepare($sql);
-    if(! $stmt->execute()) throw new Exception('Errore query GetMyLike');
+    if(! $stmt->execute()) throw new Exception('Errore query GetMyLikeB');
     $lk = $stmt->fetchAll(PDO::FETCH_ASSOC);
     $conn=null;
     $stmt=null;
@@ -379,12 +404,12 @@ function getMyLikeP($idP,$idUs){
     if(!$conn = connectDB()) {echo errorConnectDB(); exit();}
 
     $sql = "SELECT * FROM miPiaceP WHERE proposta=$idP AND utente=$idUs"; //;AND pubblicato=1"
-    if(stripos($_SESSION['ini']['dbms'], 'SQL Server') === 0){
-        $sqd= " AND miPiaceP.dtIns between (SELECT dtStart FROM attivita WHERE idAt=204) AND DATEADD(DAY, 1, (SELECT dtStop FROM attivita WHERE idAt=204));";
-    }
-    else if($_SESSION['ini']['dbms'] == 'My SQL'){
-        $sqd= " AND miPiaceP.dtIns between (SELECT dtStart FROM attivita WHERE idAt=204) AND ((SELECT dtStop FROM attivita WHERE idAt=204) + INTERVAL 1 DAY);";
-    }
+    //if(stripos($_SESSION['ini']['dbms'], 'SQL Server') === 0){
+    //    $sqd= " AND miPiaceP.dtIns between (SELECT dtStart FROM attivita WHERE idAt=204) AND (SELECT dtStop FROM attivita WHERE idAt=204);";
+    //}
+    //else if($_SESSION['ini']['dbms'] == 'My SQL'){
+        $sqd= " AND miPiaceP.dtIns between (SELECT dtStart FROM attivita WHERE idAt=204) AND (SELECT dtStop FROM attivita WHERE idAt=204);";
+    //}
     $sql=$sql.$sqd;
     //try{
     $stmt = $conn->prepare($sql);
@@ -402,6 +427,8 @@ function getMyLikeP($idP,$idUs){
 function getPublishedPostsByTopic($am_id,$field) {
     if(!$conn = connectDB()) {echo errorConnectDB(); exit();}
 	$sql = "SELECT *  FROM bisogni as b where b.ambito=$am_id AND b.$field=1 AND b.deleted <> 1";
+    $period = " AND dtIns >= (SELECT dtStart FROM attivita WHERE idAt=101) AND dtIns <= (SELECT dtStop FROM attivita WHERE idAt=101);";
+    $sql = $sql . $period;
     //try{
     $stmt = $conn->prepare($sql);
     if(!$stmt->execute()) throw new Exception('Errore query getPublishedPostsByTopic');
@@ -458,12 +485,12 @@ function getLikeB($idBs)
     if(!$conn = connectDB()) {echo errorConnectDB(); exit();}
     //totali per tutti i bisogni, se il bisogno è personale li filtro dopo
         $sql = "SELECT count(*) as nlike FROM miPiaceB WHERE bisogno=$idBs ";
-        if(stripos($_SESSION['ini']['dbms'], 'SQL Server') === 0){
-            $sqd= " AND miPiaceB.dtIns between (SELECT dtStart FROM attivita WHERE idAt=104) AND DATEADD(DAY, 1, (SELECT dtStop FROM attivita WHERE idAt=104)) ";
-        }
-        else if($_SESSION['ini']['dbms'] == 'My SQL'){
-            $sqd= " AND miPiaceB.dtIns between (SELECT dtStart FROM attivita WHERE idAt=104) AND ((SELECT dtStop FROM attivita WHERE idAt=104) + INTERVAL 1 DAY) ";
-        }
+        //if(stripos($_SESSION['ini']['dbms'], 'SQL Server') === 0){
+        //    $sqd= " AND miPiaceB.dtIns between (SELECT dtStart FROM attivita WHERE idAt=104) AND (SELECT dtStop FROM attivita WHERE idAt=104) ";
+        //}
+        //else if($_SESSION['ini']['dbms'] == 'My SQL'){
+            $sqd= " AND miPiaceB.dtIns between (SELECT dtStart FROM attivita WHERE idAt=104) AND (SELECT dtStop FROM attivita WHERE idAt=104) ";
+        //}
         $sql=$sql.$sqd."GROUP BY bisogno;";
 
     $stmt = $conn->prepare($sql);
@@ -500,18 +527,28 @@ function likeForMeB(&$posts,$me)
     //return $posts;
 }
 
+function getMyLikeBAllPost(&$posts, $me,$from)
+{
+        foreach ($posts as &$po) {
+            //if ($po['utente'] == $me) {
+                $like = getMyLikeB($po['idBs'],$me,$from);
+                if ($like != null)
+                    $po['nlike'] = 1;
+            //}
+        }
+}
 
 function getLikeP($idPr)
 {
     if(!$conn = connectDB()) {echo errorConnectDB(); exit();}
     //totali per tutti i bisogni, se il bisogno è personale li filtro dopo
     $sql = "SELECT count(*) as nlike FROM miPiaceP WHERE proposta=$idPr ";
-    if(stripos($_SESSION['ini']['dbms'], 'SQL Server') === 0){
-        $sqd= " AND miPiaceP.dtIns between (SELECT dtStart FROM attivita WHERE idAt=204) AND DATEADD(DAY, 1, (SELECT dtStop FROM attivita WHERE idAt=204)) ";
-    }
-    else if($_SESSION['ini']['dbms'] == 'My SQL'){
-        $sqd= " AND miPiaceP.dtIns between (SELECT dtStart FROM attivita WHERE idAt=204) AND ((SELECT dtStop FROM attivita WHERE idAt=204) + INTERVAL 1 DAY) ";
-    }
+    //if(stripos($_SESSION['ini']['dbms'], 'SQL Server') === 0){
+    //    $sqd= " AND miPiaceP.dtIns between (SELECT dtStart FROM attivita WHERE idAt=204) AND (SELECT dtStop FROM attivita WHERE idAt=204) ";
+    //}
+    //else if($_SESSION['ini']['dbms'] == 'My SQL'){
+        $sqd= " AND miPiaceP.dtIns between (SELECT dtStart FROM attivita WHERE idAt=204) AND (SELECT dtStop FROM attivita WHERE idAt=204) ";
+    //}
     $sql=$sql.$sqd."GROUP BY proposta;";
 
     $stmt = $conn->prepare($sql);
@@ -558,8 +595,9 @@ function getSummaryBis($field)
 {
     if(!$conn = connectDB()) {echo errorConnectDB(); exit();}
 
-    $sql = "SELECT idBs, titleBis FROM bisogni WHERE $field=1 AND deleted <> 1;";
-
+    $sql = "SELECT idBs, titleBis FROM bisogni WHERE $field=1 AND deleted <> 1";
+    $period = " AND dtIns >= (SELECT dtStart FROM attivita WHERE idAt=101) AND dtIns <= (SELECT dtStop FROM attivita WHERE idAt=101);";
+    $sql = $sql . $period;
     $stmt = $conn->prepare($sql);
     if(! $stmt->execute()) throw new Exception('Errore query getSummaryBis');
     $bis = $stmt->fetchAll(PDO::FETCH_ASSOC);

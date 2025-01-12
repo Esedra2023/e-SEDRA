@@ -26,7 +26,7 @@
 ready(function () {
 
     //Quando pagina pronta chiamo funzione per conteggio voti assegnati che riempie array chkVoti
-    chkVal(204);
+    //chkVal(204);
     //console.log('chkVoti ' + chkVoti);
     //--------- FINE MODIFICHE LUISA --------------
 
@@ -44,12 +44,43 @@ ready(function () {
             //console.log('+ ' + elem.nodeName + ' ' + idBisogno + 'aut ' + auth + ' rev ' + rev);
             //var n = Number(e.target.previousElementSibling.value) +1;
             //alert(n);
-            refreshSinglePost(elem.dataset.idpro, defaultpage,204,0) 
+            if (timer) {
+                clearInterval(timer);
+                //console.log('timer sospeso ' + timer);
+            }
+            refreshSinglePost(elem.dataset.idpro, defaultpage, 204, 0) 
         }
         if (elem.classList.contains("rating")) {   
             valGraduatoriaLU(elem,defaultpage,204); 
         }
+        if (elem.nodeName == 'SPAN') {
+            elem = elem.parentNode;
+            //span = e.target;
+        }
+        let param = elem.dataset.idbis;
+        if (elem.name == "cancella-voto") {
+            console.log('cancella ' + param);
+            deleteVotoP(param);
+            // btnPubUnpub(pub, elem, span);
+            window.location.reload();
+        }       
 
     });
-    
+    var fortimer = document.getElementById("scadenza");
+    var dataFine = fortimer.value;
+    dataFine = dataFine.replace(" ", "T");
+
+    avviaContoAllaRovescia(dataFine, "demo");
 }); //end ready
+
+async function deleteVotoP(id) {
+    try {
+        var data = new FormData;
+        data.append("idBis", id);    //valore del campo nascosto con id bisogno
+        /*  data.append("val", 0);*/
+        call_ajax_single_promise('ajax/deletevalpro.php', data);
+
+    } catch (error) {
+        console.error("Errore durante l'esecuzione di deleteVotoB:", error);
+    }
+}

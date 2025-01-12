@@ -42,11 +42,11 @@ if($_SESSION['user']['idUs']==1) {
                     </thead>
                     <tbody>
                         <?php foreach ($comcanc as $key => $ccm){
-                                  $dti=substr($ccm['dtIns'],0,10);
+                                  //$dti=str_replace(" ", "T",$ccm['dtIns']);
                         ?>
                         <tr>
                             <td>
-                                <input type="date" class="form-control-plaintext" value="<?php  echo $dti;?>" readonly disabled />
+                                <?php echo date("d-m-Y H:i", strtotime($ccm['dtIns']));?>  
                             </td>
                             <td>
                                 <?php echo $ccm['acognome'].' '.$ccm['anome'];?>
@@ -55,7 +55,8 @@ if($_SESSION['user']['idUs']==1) {
                                 <?php echo $ccm['content'];?>
                             </td>
                             <td>
-                                <input type="date" class="form-control-plaintext" value="<?php  if(isset($ccm['dtRev'])) echo $ccm['dtRev'];?>" readonly disabled />
+                                <?php  if(isset($ccm['dtRev'])) echo date("d-m-Y H:i", strtotime($ccm['dtRev']));?>
+
                             </td>
                             <td>
                                 <?php echo $ccm['revcogn'].' '.$ccm['revnome'];?>

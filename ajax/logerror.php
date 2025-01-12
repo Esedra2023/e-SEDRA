@@ -26,8 +26,8 @@ require_once ROOT_PATH.'/include/functions.php';
 if(!isset($_POST['err'])) forbidden();
 
 // ---------------- modifica file INI logerrors.txt.php
-date_default_timezone_set('Europe/Amsterdam');
-$dt = date('d/m/Y H:i');
+date_default_timezone_set('Europe/Rome');
+$dt = date('d-m-Y H:i');
 $fileContent = <<<ERR
 
 <=========================================>

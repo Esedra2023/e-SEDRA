@@ -47,8 +47,8 @@
           $err=$stmt->bindValue(':idAct', $act);
           $stmt->execute();
           $row = $stmt->fetch(PDO::FETCH_ASSOC);
-          $dtIni = $row["dtStart"];
-          $dtFin = $row["dtStop"];
+          //$dtIni = $row["dtStart"];     
+          //$dtFin = $row["dtStop"];
           $tipoVal = $row["altridati"];
       } catch(PDOException $e) {echo error($e); exit();}
 
@@ -72,7 +72,7 @@
               //foreach($rows as $ro)
               {
                   $idStar = $rows[$i]['idStar'];
-                  $max=$rows[$i]['maxstar'];
+                  $max=$rows[$i]['maxStar'];
                   $chkVal[$idStar]=array($max,0);
               }
               //    while($row = $stmt->fetch(PDO::FETCH_ASSOC)){
@@ -84,15 +84,15 @@
           for($i=1;$i<=10;$i++)
               $chkVal[$i] = array(1024, 0);
       }
-          $sql = "CALL getNroVoti(:idAct, :idUs, :dtIni, :dtFin)";
+          $sql = "CALL getNroVoti(:idAct, :idUs)";
           if(stripos($_SESSION['ini']['dbms'], 'SQL Server') === 0) $sql = '{'.$sql.'}';
 
           if(!$conn = connectDB()) {echo errorConnectDB(); exit();}
           try{
               $stmt = $conn->prepare($sql);
               $stmt->bindValue(':idUs', $_SESSION['user']['idUs']);
-              $stmt->bindValue(':dtIni', $dtIni);
-              $stmt->bindValue(':dtFin', $dtFin);
+              //$stmt->bindValue(':dtIni', $dtIni);
+              //$stmt->bindValue(':dtFin', $dtFin);
               $stmt->bindValue(':idAct', $act);
               $stmt->execute();
               while($row = $stmt->fetch(PDO::FETCH_ASSOC)){

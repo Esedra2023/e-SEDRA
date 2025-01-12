@@ -18,22 +18,45 @@
  *
  */
 var revisorbis = {
-    "ncol": 6,
+    "ncol": 7,
     "c": [
         {
-            "type": "button",
-            "class": ["linkstylebutton", "btn", "btn-outline-primary", "text-start"],
-            "exdata": { "idbis": [1,"idBs"] , "crud":[0, "R"]},
-            "value": "idBs",
-            "text": [1, "titleBis"]       //1 nome di variabile  0 dato costante
+            "type": "text",
+            "text": [1, "idBs"]
+        },
+        {
+            "type": "composite",
+            "elem":[{
+                    "type": "button",
+                    "class": ["linkstylebutton", "btn", "btn-outline-primary", "text-start"],
+                    "exdata": { "idbis": [1, "idBs"], "crud": [0, "R"] },
+                    "value": "idBs",
+                    "text": [1, "titleBis"]       //1 nome di variabile  0 dato costante
+                },
+                {
+                    "type": "spantxt",
+                    "class":["small"],
+                    "text": [1, "textBis"]
+                }
+            ]
         },
         {
             "type": "text",
-            "text": [1,"cognome"]
+            "text": [1, "ambito"]
         },
         {
-            "type": "text",
-            "text": [1,"nome"]
+            "type": "spantxt",
+            "class": ["small"],
+            "number":2,
+            "text": [[1, "cognome"], [1, "nome"]]   
+        },
+        {
+           
+            "type": "spanico",
+            "field": "dtRev",
+            "value": null,
+            "icon": "bi-pencil-square",
+            "deficon": "bi-pencil-fill"
         },
         {
             "type": "button",
@@ -50,23 +73,7 @@ var revisorbis = {
                     }
             },
             "disable": {"field":"deleted"}
-        },
-        {
-            "type": "button",
-            "class": ["btn", "icona"],
-            "exdata": { "idbis": [1, "idBs"], "crud": [0, "R"] },
-            "value": "idBs",
-            "other": " data-bs-toggle='tooltip' title='Revisiona' name='revision-post'",
-            "textobj": {
-                "span": {
-                    "field": "dtRev",
-                    "value": null,
-                    "icon": "bi-pencil-square",
-                    "deficon": "bi-pencil-fill"
-                }
-            },
-            "disable": { "field": "deleted" }
-        },
+        },       
         {
             "type": "button",
             "class": ["btn", "icona"],
@@ -142,18 +149,18 @@ ready(function () {
                     //console.log('REVOCA/PUBBLICA ' + param);
                     var pub = TogglePubblication(param,"bisogni");
                     btnPubUnpub(pub, elem, span);
-                    location.reload();
+                    window.location.reload(); 
                     //window.location.href = window.location.href;
                 }
-                else if (elem.name == "revision-post") {
-                    actualCrud = elem.dataset.crud;
-                    //console.log('REVISION ' + param);
-                    //oldTit = getTitleAccordion("btnAccBis");
-                    //if (oldTit != defaultTit)
-                    //    settaTitleAccordion("btnAccBis", defaultTit);
-                    call_ajax_edit_bis(param, 'R' );
-                    //call_ajax_revision_bis(param);
-                }
+                //else if (elem.name == "revision-post") {
+                //    actualCrud = elem.dataset.crud;
+                //    //console.log('REVISION ' + param);
+                //    //oldTit = getTitleAccordion("btnAccBis");
+                //    //if (oldTit != defaultTit)
+                //    //    settaTitleAccordion("btnAccBis", defaultTit);
+                //    call_ajax_edit_bis(param, 'R' );
+                //    //call_ajax_revision_bis(param);
+                //}
                 else if (elem.name == "cancella-post") {
                     actualCrud = elem.dataset.crud;
                     //console.log('CANCEL ' + param);
@@ -166,6 +173,11 @@ ready(function () {
             }
         });
     } 
+    var fortimer = document.getElementById("scadenza");
+    var dataFine = fortimer.value;
+    dataFine = dataFine.replace(" ", "T");
+    //console.log(dataFine);
+    avviaContoAllaRovescia(dataFine, "demo");
 });//ready
 
 
@@ -216,7 +228,7 @@ async function call_ajax_rev_bisogno(crud) {
     //console.log('OK.. ' + result);
     if (result['success']) {
         showMessagge(result['success'], "my-callout-info", "infoMessagge");
-        call_ajax_dati_table('bisogni', 'Bistable', revisorbis);
+        call_ajax_dati_table('bisogni', 'Bistable', revisorbis, 'ajax/getallpostsdatelimited.php',false);
         resetAccordion(collapsableBis, "btnAccBis", formBis, "Revisione bisogno");
         //window.location.href = window.location.href;
     }

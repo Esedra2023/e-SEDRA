@@ -19,6 +19,8 @@
  */
 //const defaultpage = 5;
 var rootPATH;
+var timer;
+//var timerrefresh;
 
 //per passare il ROOT_PATH in JS
 async function call_ajax_rootpath() {
@@ -47,11 +49,11 @@ async function call_ajax_rootpath() {
 function abilitaFS(fs, ab) {
     if (ab) {
         if (fs.disabled)
-            fs.disabled = false;
+            fs.removeAttribute('disabled');
     }
     else {
-        if (!fs.disabled)
-            fs.disabled = true;
+      /*  if (!fs.disabled)*/
+            fs.setAttribute('disabled',true);
     }
 }
 
@@ -225,28 +227,110 @@ function ToggleGradDef(id, tab) {
         });
 }
 
-
+function stampaFormData(data) {
+    for (var pair of data.entries()) {
+        console.log(pair[0] + ', ' + pair[1]);
+    }
+}
 
 //carica in modo asincrono la pagina 'url' passandogli 'data' nella sezione contentPage dell'index
 //usando la funzione loadData presa da gitHub contenuta nel file fetch_loader.js
-async function call_ajax_viewPage(url, data) {
+//async function call_ajax_viewPage(url, data) {
 
-    let promo = fetch(url, {
-        method: 'POST',
-        body: data
-    }).then(function (successResponse) {
-        return successResponse.text();
-    })
-        .then(function (html) {
-           /* console.info('content has been fetched from data.html');*/
-            loadData(html, '#contentPage').then(function (html) {
-                /*console.info('I\'m a callback');*/
-            })
-        }).catch((error) => { console.log(error); });
+//    alert(url);
+//    stampaFormData(data);
+
+//    let promo = fetch(url, {
+//        method: 'POST',
+//        body: data
+//   }).then(function (successResponse) {
+//        return successResponse.text();
+//    })
+//        .then(function (html) {
+//           /* console.info('content has been fetched from data.html');*/
+//            loadData(html, '#contentPage').then(function (html) {
+//                /*console.info('I\'m a callback');*/
+//            })
+//        }).catch((error) => { console.log(error); });
+//}
+
+function insertAndExecuteScripts(containerSelector, html) {
+    const container = document.querySelector(containerSelector);
+    container.innerHTML = html;
+
+    const scripts = container.querySelectorAll('script');
+    scripts.forEach(oldScript => {
+        const newScript = document.createElement('script');
+        if (oldScript.src) {
+            // Per gli script esterni, imposta l'attributo src
+            newScript.src = oldScript.src;
+        } else {
+            // Per gli script inline, copia il testo
+            newScript.textContent = oldScript.textContent;
+        }
+
+        // Copia eventuali attributi aggiuntivi che potrebbero essere importanti
+        Array.from(oldScript.attributes).forEach(attr => {
+            newScript.setAttribute(attr.name, attr.value);
+        });
+
+        // Sostituisci lo script originale con il nuovo
+        oldScript.parentNode.replaceChild(newScript, oldScript);
+    });
 }
 
 
+//async function call_ajax_viewPage(url, data) {
 
+//    //alert(url);
+//    //stampaFormData(data);
+
+//    let promo=fetch(url, {
+//        method: 'POST',
+//        //headers: {
+//        //    'Content-Type': 'application/x-www-form-urlencoded',
+//        //},
+//        body: data
+//    })
+//        .then(response => response.text())
+//        .then(html => {
+//            /*loadAlsoScript(html);*/
+//            insertAndExecuteScripts('#contentPage', html);
+//            //        document.querySelector('#contentPage').innerHTML = html;
+//            /*})*/
+//        }).catch((error) => { console.log(error); });
+//}
+
+async function call_ajax_viewPage(url, data) {
+    try {
+        const response = await fetch(url, {
+            method: 'POST',
+            body: data
+        });
+
+        const html = await response.text();
+        insertAndExecuteScripts('#contentPage', html);
+    } catch (error) {
+        console.log(error);
+    }
+}
+
+
+function refreshSinglePost(idb, dfpage, act, n = 0) {
+    var data = new FormData;
+    data.append("page", dfpage);
+    //alert("id " + idb+ " defaultp "+dfpage+" act "+act);
+    if (act == 104) {
+        data.append("idBis", idb);
+         call_ajax_viewPage("pages/bisognisinglepost.php", data);
+        /*call_ajax_viewPage("pages/home.php", data);*/
+    }
+    else {
+        data.append("idPro", idb);
+        /* data.append("n", n);*/
+        call_ajax_viewPage("pages/propostesinglepost.php", data);
+    }
+}
 
 
 
@@ -354,27 +438,62 @@ function hideMessagge(cla,divM) {
 }
 
 //scrive parametri errore in logerrors.txt.php
+//function logerror(num, file, error) {
+//    $.ajax({
+//        method: "POST",
+//        data: 'num=' + num + '&file=' + file + '&err=' + error,
+//        url: "ajax/logerror.php",
+//    }).done(function (result) {
+//        if (result.substr(0, 2) === '->') {
+//            alert('Errore 000-5: ' + result);
+//        }
+//    }).fail(function (xhr, ajaxOptions, thrownError) {
+//        alert("Errore 000-6: " + xhr.status + " " + thrownError);
+//    })
+//} //fine logerror()
+
 function logerror(num, file, error) {
-    $.ajax({
-        method: "POST",
-        data: 'num=' + num + '&file=' + file + '&err=' + error,
-        url: "ajax/logerror.php",
-    }).done(function (result) {
-        if (result.substr(0, 2) === '->') {
-            alert('Errore 000-5: ' + result);
-        }
-    }).fail(function (xhr, ajaxOptions, thrownError) {
-        alert("Errore 000-6: " + xhr.status + " " + thrownError);
+    // Prepariamo i dati da inviare
+    const formData = new URLSearchParams();
+    formData.append('num', num);
+    formData.append('file', file);
+    formData.append('err', error);
+
+    // Utilizziamo fetch per inviare la richiesta
+    fetch('ajax/logerror.php', {
+        method: 'POST',
+        body: formData, // Usiamo formData per inviare i dati come 'application/x-www-form-urlencoded'
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+        },
     })
-} //fine logerror()
-
-function waitIcon($tag) {
-    $($tag).append('<img src="images/load3.gif" id="__wtIcn" style="z-index:500;position:fixed;width:30vw;top:50%;left:50%;transform:translate(-50%,-50%);"/>');
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            return response.text(); // Qui assumiamo che la risposta sia testuale
+        })
+        .then(result => {
+            if (result.substring(0, 2) === '->') {
+                alert('Errore 000-5: ' + result);
+            }
+        })
+        .catch(error => {
+            // Gestiamo errori di rete o se la promessa è stata rifiutata
+            alert("Errore 000-6: " + error.message);
+        });
 }
 
-function removeWaitIcon() {
-    $("#__wtIcn").remove();
-}
+
+
+
+//function waitIcon($tag) {
+//    $($tag).append('<img src="images/load3.gif" id="__wtIcn" style="z-index:500;position:fixed;width:30vw;top:50%;left:50%;transform:translate(-50%,-50%);"/>');
+//}
+
+//function removeWaitIcon() {
+//    $("#__wtIcn").remove();
+//}
 
 function ready(fn) {
     if (document.readyState != 'loading') {
@@ -422,3 +541,45 @@ document.addEventListener("DOMContentLoaded", function () {
 //    .forEach(tooltip => {
 //        new bootstrap.Tooltip(tooltip)
 //    })
+
+
+function avviaContoAllaRovescia(dataFine, elementoId) {
+    // Converte dataFine in un timestamp
+    var dataFineTimestamp = new Date(dataFine).getTime();
+
+    // Aggiorna il conto alla rovescia ogni 1 secondo
+    timer = setInterval(function () {
+        // Ottieni la data e l'ora attuali
+        var oraAttuale = new Date().getTime();
+
+        // Trova la distanza tra ora e la data di fine
+        var distanza = dataFineTimestamp - oraAttuale;
+
+        // Calcoli per giorni, ore, minuti e secondi
+        var giorni = Math.floor(distanza / (1000 * 60 * 60 * 24));
+        var ore = Math.floor((distanza % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+        var minuti = Math.floor((distanza % (1000 * 60 * 60)) / (1000 * 60));
+        var secondi = Math.floor((distanza % (1000 * 60)) / 1000);
+
+        // Mostra il risultato nell'elemento specificato
+        document.getElementById(elementoId).innerHTML = giorni + "g " + ore + "h " + minuti + "m " + secondi + "s ";
+
+        // Se il conto alla rovescia finisce, scrivi del testo
+        if (distanza < 0) {
+            clearInterval(timer);
+            document.getElementById(elementoId).innerHTML = "TERMINATA";
+            window.location.reload(); // Aggiunge il refresh della pagina qui
+            //if (timerrefresh)
+            //    clearInterval(timerrefresh);
+        }
+    }, 1000);
+}
+
+function avviaTimerRefresh(idb, dfpage, act) {
+    timerrefresh = setInterval(function () {
+        console.log("refresh "+idb);
+        refreshSinglePost(idb, dfpage, act);
+        }, 20000);
+}
+
+

@@ -32,7 +32,7 @@ require_once ROOT_PATH .'/include/functions.php';
 
     if(!$conn = connectDB()) {echo errorConnectDB(); exit();}
 	$sql = "SELECT gb.*, a.ambito, b.titleBis, b.textBis, b.utente, b.dtRev, b.rev, b.pubblicato, b.ingrad FROM gradBisogni AS gb, ambiti AS a, bisogni AS b
-        WHERE gb.idAm=a.idAm AND gb.idBs=b.idBs AND a.idAm=b.ambito AND gb.ballot=$bal;";
+        WHERE gb.idAm=a.idAm AND gb.idBs=b.idBs AND a.idAm=b.ambito AND gb.ballot=$bal ORDER BY gb.grade DESC, gb.nlike DESC, gb.votanti DESC;";
     $stmt = $conn->prepare($sql);
     if(! $stmt->execute()) throw new Exception('Errore query GetGradBis');
     $gradb = $stmt->fetchAll(PDO::FETCH_ASSOC);

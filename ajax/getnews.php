@@ -46,10 +46,7 @@ if(isset($_POST['edit']) && $_POST['edit']==1)
     $conn = NULL;
 
     if(!isset($_POST['notajax']))
+    {
         echo json_encode($news);
-    //$topic_name = $topic['ambito'];
-    //$topic_val = $topic['valenza'];
-    //header("location: ../topics.php");
-    //exit(0);
-
+    }
 

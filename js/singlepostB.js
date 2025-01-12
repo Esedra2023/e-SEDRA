@@ -20,9 +20,10 @@
 
 var defaultpage = 21;
 var datipost = new FormData();
-
+var bis = document.getElementById("idOrigin").value;
 
 ready(function () {
+    /*alert("ready in singlepostB.js "+chkVoti);*/
     var bisa = document.getElementsByClassName("bisassociati");
     if (bisa) {
         //alert("lungh " + bisa.length);
@@ -33,7 +34,6 @@ ready(function () {
             });
     }
     
-
     var rat = document.getElementsByClassName("rating");
     if (rat.length!=0) {
        // alert("rating trovato "+rat[0]+" "+this);
@@ -44,7 +44,11 @@ ready(function () {
     for (let i = 0; i < linkbis.length; i++)
         linkbis[i].addEventListener("click", function (e) {
             e.preventDefault();
-            refreshSinglePost(e.target.dataset.idbis,defaultpage,104,0);
+            refreshSinglePost(e.target.dataset.idbis, defaultpage, 104, 0);
+            //if (timerrefresh) {
+            //    clearInterval(timerrefresh);
+            //    avviaTimerRefresh(e.target.dataset.idbis, defaultpage, 104);
+            //}
         });
 
     var likebtn=document.getElementById("btnlike");
@@ -53,20 +57,28 @@ ready(function () {
         likebtn.addEventListener("click", function (e)
         {
             e.preventDefault();
-            var bis = document.getElementById("idOrigin").value;
+            //messo globale
+            //var bis = document.getElementById("idOrigin").value;
             call_ajax_set_like(bis,'B');
             updateHearth(likebtn);
         });
 }
     var bback = document.getElementById("backPage");
-    bback.addEventListener("click", function () { goPersonalPost('B'); } );
+    if (bback) {
+        bback.addEventListener("click", function () {
+           /* alert("cliccato bback page");*/
+            //if (timerrefresh) 
+            //    clearInterval(timerrefresh);
+            goPersonalPost('B');
+        });
+    } else console.log("bback nullo");
 
     var btnpubCom = document.getElementById("pubblicaComm");
     if (btnpubCom) { 
         btnpubCom.addEventListener("click", function (e) {
             e.preventDefault();
             var savelem = e.target;
-           /* alert("target "+savelem);*/
+           /* alert("clic su pubblicaComm ");*/
             call_ajax_set_comment("formCommento", 0, null, savelem.dataset.idbis,'B');
      });
     }
@@ -75,13 +87,13 @@ ready(function () {
     for (let i = 0; i < sig.length; i++)
         sig[i].addEventListener("click", function () {
             var id = this.getAttribute("id");
-            this.disabled = true;
+            this.setAttribute('disabled', true);
             var nome = "btnSegnala";
             var idBl = id.substr(nome.length, id.length);
             //console.log(idBl);
             var bri = document.getElementById("toggleRisp" + idBl);
           /*  alert('bri ' + bri);*/
-            if(bri) bri.disabled = true;
+            if(bri) bri.setAttribute('disabled', true);
             call_ajax_segnala_commento(idBl,'B');
             var card = document.getElementById("Commento" + idBl);
            /* alert("cerco commento n " + idBl);*/
@@ -98,9 +110,12 @@ ready(function () {
             btnpub[i].addEventListener("click", function (e) {
                 e.preventDefault();
                 var id = this.getAttribute("id");
+               /* alert("clic su pubblica risposta");*/
                 var nome = "rispostaCommento";
                 var idBl = id.substr(nome.length, id.length);
                 call_ajax_set_comment("formRisposta" + idBl, 1, idBl, e.target.dataset.idbis,'B');
             });
     }
+
+    //avviaTimerRefresh(bis, defaultpage, 104);
 });

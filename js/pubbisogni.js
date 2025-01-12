@@ -124,16 +124,21 @@ ready(function () {
 
             }//else
         });
-    }  
+    } 
+    var fortimer = document.getElementById("scadenza");
+    var dataFine = fortimer.value;
+    dataFine = dataFine.replace(" ", "T");
+    console.log(dataFine);
+    avviaContoAllaRovescia(dataFine, "demo");
 }); //end ready
 
 
 async function componiAutoNews(what,itable,field) {
     var data = new FormData;
-    data.append("title", "Pubblicata graduatoria " + what);
+    data.append("title", "Graduatoria " + what);
     data.append("field", field);
     data.append("itable", itable);
-    let promo = fetch('ajax/automaticNews.php', {
+    let promo = fetch('ajax/automaticnews.php', {
         method: 'POST',
         body: data
     }).then(successResponse => {
@@ -151,8 +156,8 @@ async function componiAutoNews(what,itable,field) {
     //console.log('aspetto che la promessa risolva');
 
     let result = await promo;
-    confv2.disabled = true;
-    goHomePage();
+    confv2.setAttribute('disabled', true);
+   // goHomePage();
     console.log('OK ... promessa risolta ' + result);
     return (result);
 }
@@ -202,7 +207,7 @@ function goHomePage() {
 
 //function consolidaGrad() {
 //   //call_ajax_get_poll_res("revisor", 1, 1); 
-//   // confGrad.disabled = true;
+//   // confGrad.setAttribute('disabled', true);
 //   // location.reload();
 //    //creapdf();
 //    //alert(globalgrad[0].titleBis);

@@ -35,10 +35,10 @@
         include(ROOT_PATH . '/include/templatedftbisogno.php');
         ?>
 
-        <div class="table-div col-lg-7 mb-3 mt-3">
+        <div class="table-div col-lg-8 mb-3 mt-3">
             <div id="infoMessaggedx" class="my-callout d-none"></div>
             <?php
-                if(isset($_SESSION['ini']['BallottaggioBis']) && $_SESSION['ini']['BallottaggioBis'] == 1)
+                if(isset($_SESSION['ini']['BallottaggioBis']) && $_SESSION['ini']['BallottaggioBis'] == 2)
                 {
                     $grad=wr_viewDefGradBis("ingrad");
                     include(ROOT_PATH . '/include/templateaccgradbis.php');

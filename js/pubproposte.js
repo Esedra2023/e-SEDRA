@@ -102,7 +102,12 @@ ready(function () {
                 }
           // }//else
         });
-    }  
+    }
+    var fortimer = document.getElementById("scadenza");
+    var dataFine = fortimer.value;
+    dataFine = dataFine.replace(" ", "T");
+    console.log(dataFine);
+    avviaContoAllaRovescia(dataFine, "demo");
 }); //end ready
 
 

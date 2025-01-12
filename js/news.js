@@ -18,37 +18,62 @@
  *
  */
 //var urlROOT;
-$(document).ready(function () {
+
+ready(function () {
 	//call_ajax_rootpath();
+	//console.log('ready');
+	const acc = document.getElementById("NewsScadAccHP");
+
+	/*nascondiScadute();*/
+	const ck = document.getElementById("newscadute");
+	if (ck != null) {
+		if (!ck.checked) {
+			nascondiScadute();
+			//console.log('non checked nascosto scadute');
+		}
+		ck.addEventListener("click", function () {
+			mostraNews(this.checked);
+		});
+	}
+
+
+//DOMContentLoaded sostituisce il .ready
+
+//$(document).ready(function () {
+//	//call_ajax_rootpath();
 	
-	nascondiScadute();
-	ck = document.getElementById("newscadute");
-	if (ck != null)
-		ck.addEventListener("click", function () { mostraNews(this.checked); });
-});
+//	nascondiScadute();
+//	ck = document.getElementById("newscadute");
+//	if (ck != null)
+//		ck.addEventListener("click", function () { mostraNews(this.checked); });
+//});
 
 function nascondiScadute() {
-	let acc = document.getElementById("NewsScadAccHP");	
-	acc.classList.add('d-none');
+/*	let acc = document.getElementById("NewsScadAccHP");	*/
+	if (!acc.classList.contains('d-none'))
+		acc.classList.add('d-none');
 }
 
 
 function mostraNews(ck) {
-	
-	if (ck) { 
+	console.log('ck ' + ck);
+	if (ck) {
 		mostraScadute();
+		//console.log('ho mostrato');
 	}
-	else
+	else { 
 		nascondiScadute();
+		//console.log('ho nascosto');
+	}
 }
 
 function mostraScadute() {
-	let acc = document.getElementById("NewsScadAccHP");
-	acc.classList.remove('d-none');
+	/*	let acc = document.getElementById("NewsScadAccHP");*/
+	if (acc.classList.contains('d-none'))
+		acc.classList.remove('d-none');
 }
 	
-
-
+});
 
 
 

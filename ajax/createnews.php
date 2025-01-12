@@ -32,7 +32,22 @@ $errors = [];
     $quale=$_POST['idNw'];
     $title = esc($_POST['title']);
     $body = esc($_POST['text']);
-    $datfin=$_POST['dtEnd'];
+
+if (isset($_POST['dtEnd'])) {
+    //$datfin = $_POST['dtEnd'];
+    //$datafin = str_replace("T", " ", $datfin);
+    //if ($datfin != "") {
+    //    $datafin = str_replace("T", " ", $datfin);
+    //}
+} else
+    $datfin = "";
+    $dataOra = date('Y-m-d H:i:s', strtotime($_POST['dtEnd']));
+    //$datfin=$_POST['dtEnd'];
+    //if($datfin!="")
+    //{
+    //     $datfin = str_replace("T", " ", $datfin);
+    //}
+
     $exp=$_POST['settScad'];
     if($exp=='mai') $exp=100;
     $crud=$_POST['crud'];
@@ -50,21 +65,31 @@ $errors = [];
             if(!$conn = connectDB()) {echo errorConnectDB(); exit();}
             if($crud =='C')
             {
-                $sql = "CALL insNews(:crud,:utente, :title, :body, :dtend, :exp)";
+                if (isset($_POST['topublish'])) //c'è sempre 1 o 0
+                    $toph = $_POST['topublish'];
+        $sql = "CALL insNews(:crud,:utente, :title, :body, :dtend, :exp, :topublish)";
                 if(stripos($_SESSION['ini']['dbms'], 'SQL Server') === 0) $sql = '{'.$sql.'}';
                 $stmt = $conn->prepare($sql);
-                $arrVal = array(':crud'=>$crud,':utente'=>$_SESSION['user']['idUs'],':title'=>$title, ':body'=>$body, ':dtend'=>$datfin,':exp'=>$exp);
+                $arrVal = array(':crud'=>$crud,':utente'=>$_SESSION['user']['idUs'],':title'=>$title, ':body'=>$body, ':dtend'=>$dataOra,':exp'=>$exp, ':topublish'=>$toph);
                 if(! $stmt->execute($arrVal)) throw new Exception('Errore query salva news');
                 $conn=null;
                 $stmt=null;
                 $output['success']="Creazione news terminata";
             }
             else if($crud =='U'){
-                $sql = "CALL insNews(:crud, :idnews, :title, :body, :dtend, :exp)";
+                //update non usa topublish
+                $sql = "CALL insNews(:crud, :idnews, :title, :body, :dtend, :exp, :topublish)";
                 if(stripos($_SESSION['ini']['dbms'], 'SQL Server') === 0) $sql = '{'.$sql.'}';
                 $stmt = $conn->prepare($sql);
-                $arrVal = array(':crud'=>$crud,':idnews'=>$quale,':title'=>$title, ':body'=>$body, ':dtend'=>$datfin,':exp'=>$exp);
+                $arrVal = array(':crud'=>$crud,':idnews'=>$quale,':title'=>$title, ':body'=>$body, ':dtend'=>$dataOra,':exp'=>$exp, ':topublish' => 0);
                 if(! $stmt->execute($arrVal)) throw new Exception('Errore query aggiorna news');
+                if (isset($_POST['topublish']) && $_POST['topublish']!=3) //deve essere a zero
+                {
+                    $toph = $_POST['topublish']; //solo per vederlo
+                    $sql = 'UPDATE news SET news.topublish=0 WHERE idNw=' . $quale . ';';
+                    if (!$stmt = $conn->query($sql))
+                            throw new Exception('Errore query update pubblicata news');
+                }
                 $conn=null;
                 $stmt=null;
                 unset($_SESSION['isEditingNews']);

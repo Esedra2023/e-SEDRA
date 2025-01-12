@@ -23,10 +23,13 @@
     <h2>Segnalazione Bisogni</h2>
 	<blockquote class="blockquote">
     <p class="alert alert-primary col-md-12 text-center" role="alert">
-		<?php if($Abisogni['bisAct']) echo('Fase attiva dal '.date_format(date_create($Abisogni['dtStart']),'d/m/Y').' al '.date_format(date_create($Abisogni['dtStop']),'d/m/Y').' - mancano '.$Abisogni['ggscad'].' giorni alla chiusura.<br/>');
+		<?php if($Abisogni['bisAct']) echo('Fase attiva dal '.date_format(date_create($Abisogni['dtStart']),'d/m/Y H:i').' al '.date_format(date_create($Abisogni['dtStop']),'d/m/Y H:i').' - Termina tra: <span id="demo">'.$Abisogni['ggscad'].'</span><br/>');
         else echo 'Fase non attiva';
         if($Abisogni['bisAct'] && !$Abisogni['IamAuthor']) {echo 'Il tuo ruolo non consente la partecipazione in questa fase';}
         ?></p>
+        <input type="hidden" id="scadenza" value="<?php echo $Abisogni['dtStop']; ?>" />
+
+
   </blockquote>
 	
    <hr />
@@ -41,7 +44,7 @@
                       include(ROOT_PATH . '/include/templatedftbisogno.php');
               }?>
 <!--<div class="col-md-7 mt-3">-->     <!--colonna per table-->
-        <div class="table-div mb-3 col-lg-7">
+        <div class="table-div mb-3 col-lg-8">
             <?php if ($Abisogni['bisAct'] && $Abisogni['IamAuthor']) { ?>
 
             <div id="infoMessaggedx" class="my-callout d-none"></div>

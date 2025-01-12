@@ -29,10 +29,11 @@ $field = $_POST['field'];
     </h2>
 	<blockquote class="blockquote">
     <p class="alert alert-primary col-md-12 text-center" role="alert">
-		<?php if($Pproposte['pubPro']) echo('Fase attiva dal '.date_format(date_create($Pproposte['dtStart']),'d/m/Y').' al '.date_format(date_create($Pproposte['dtStop']),'d/m/Y').' - mancano '.$Pproposte['ggscad'].' giorni alla chiusura.<br/>');
+        <?php if($Pproposte['pubPro']) echo('Fase attiva dal '.date_format(date_create($Pproposte['dtStart']),'d/m/Y H:i').' al '.date_format(date_create($Pproposte['dtStop']),'d/m/Y H:i') . ' - Termina tra: <span id="demo">'.$Pproposte['ggscad'].'</span><br/>');
               else echo 'Fase non attiva';
               if($Pproposte['pubPro'] && !$Pproposte['IamRev']) {echo 'Il tuo ruolo non consente la partecipazione in questa fase';}
         ?></p>
+        <input type="hidden" id="scadenza" value="<?php echo $Pbisogni['dtStop']; ?>" />
   </blockquote>
     <hr />
     <div class="row justify-content-evenly">  
@@ -43,7 +44,7 @@ $field = $_POST['field'];
     include(ROOT_PATH . '/include/templatedftproposta.php');
     ?>		
 
-        <div class="table-div mb-3 col-lg-7">
+        <div class="table-div mb-3 col-lg-8">
             <div id="infoMessaggedx" class="my-callout d-none"></div>
             <?php 
         if ($Pproposte['pubPro']  && $Pproposte['IamRev']) {
@@ -181,7 +182,7 @@ $field = $_POST['field'];
                                 </td>
                                 <?php if($post['utente']==$_SESSION['user']['idUs']) {?>
                                 <td>
-                                    <?php if($post['dtRev']!=null) echo date("d-m-Y", strtotime($post['dtRev']));else echo ''?>
+                                    <?php if($post['dtRev']!=null) echo date("d-m-Y H:i", strtotime($post['dtRev']));else echo ''?>
                                 </td>
                                 <td>
                                     <?php echo $post['rev']; ?>
@@ -240,7 +241,7 @@ $field = $_POST['field'];
                             <?php echo $eb['rev']; ?>
                         </td>
                         <td>
-                            <?php if($eb['dtRev']!=null) echo date("d-m-Y", strtotime($eb['dtRev']));else echo '';?>
+                            <?php if($eb['dtRev']!=null) echo date("d-m-Y H:i", strtotime($eb['dtRev']));else echo '';?>
                         </td>
                         <td>
                             <?php if(isset($eb['deleted']) && $eb['deleted']) echo "<i class='bi bi-trash3'></i>"; else if(!$eb['pubblicato']) echo "<i class='bi bi-x-circle-fill'></i>"; else echo "<i class='bi bi-display'></i>"; ?>

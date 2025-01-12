@@ -76,7 +76,7 @@ if($nat!=0)
             $posts = wr_getAllPosts("personal","proposte");
             $titlePage='Fase attiva dal '.date_format(date_create($Rproposte['dtStart']),'d/m/Y').
                 ' al '.date_format(date_create($Rproposte['dtStop']),'d/m/Y').' - mancano '.
-                $Rproposte['ggscad'].' giorni alla chiusura.<br/>Il tuo ruolo non consente la partecipazione in questa fase';
+                $Rproposte['ggscad'].'alla chiusura.<br/>Il tuo ruolo non consente la partecipazione in questa fase';
             $h2 = $Rproposte['nome'];
             include(ROOT_PATH . '/pages/propostedefault.php');
         }
@@ -205,7 +205,7 @@ if($nat!=0)
                     }
                     else{//utente generico con graduatoria non ancora consolidata
                         $posts = wr_getProResultPolling("personal",0, $field);
-                        $titlePage='Fase attiva dal '.date_format(date_create($Pproposte['dtStart']),'d/m/Y').' al '.date_format(date_create($Pproposte['dtStop']),'d/m/Y').' - mancano '.$Pproposte['ggscad'].' giorni alla chiusura.<br/>';
+                        $titlePage='Fase attiva dal '.date_format(date_create($Pproposte['dtStart']),'d/m/Y').' al '.date_format(date_create($Pproposte['dtStop']),'d/m/Y').' - mancano '.$Pproposte['ggscad'].'alla chiusura.<br/>';
                         $titlePage=$titlePage. 'Il tuo ruolo non consente la partecipazione in questa fase';
                         $h2=$Pproposte['nome'];
                         include(ROOT_PATH . '/pages/propostedefault.php');

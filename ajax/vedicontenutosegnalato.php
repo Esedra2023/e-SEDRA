@@ -30,12 +30,12 @@ $it=$_POST['itable'];
 if($it=='B')
 {
     $tab='bisogni';
-    $sql="SELECT b.titleBis as title, bB.idBl,bB.content,".dateString('bB.dtIns', false)." as dtIns,  u.nome, u.cognome,bB.risp, bB.idMaster
+    $sql="SELECT b.titleBis as title, bB.idBl,bB.content,bB.dtIns,  u.nome, u.cognome,bB.risp, bB.idMaster
     FROM blogB AS bB, bisogni AS b, utenti AS u
     WHERE bB.bisogno=b.idBs AND bB.autore=u.idUs AND bB.idBl=(SELECT commento FROM segnalaCommB WHERE idSC={$_POST['idSC']})";
 }else{
     $tab='proposte';
-    $sql="SELECT p.titlePrp as title, bP.idBl,bP.content, ".dateString('bP.dtIns', false)." as dtIns, u.nome, u.cognome,bP.risp, bP.idMaster
+    $sql="SELECT p.titlePrp as title, bP.idBl,bP.content, bP.dtIns, u.nome, u.cognome,bP.risp, bP.idMaster
     FROM blogP AS bP, proposte AS p, utenti AS u
     WHERE bP.proposta=p.idPr AND bP.autore=u.idUs AND bP.idBl=(SELECT commento FROM segnalaCommP WHERE idSC={$_POST['idSC']})";
 }
@@ -51,7 +51,7 @@ if($it=='B')
 if($bl['risp']==1)
 {
     //prelevo il commento originario
-    $sql = "SELECT bB.content,".dateString('bB.dtIns', false)." as dtIns, u.nome, u.cognome
+    $sql = "SELECT bB.content,bB.dtIns, u.nome, u.cognome
     FROM blog$it AS bB, utenti AS u
     WHERE bB.autore=u.idUs AND bB.idBl={$bl['idMaster']};";
     try{
@@ -63,7 +63,7 @@ if($bl['risp']==1)
 }
 else {
     //vado a cercare eventuali risposte
-    $sql = "SELECT bB.content,".dateString('bB.dtIns', false)." as dtIns, u.nome, u.cognome
+    $sql = "SELECT bB.content,bB.dtIns, u.nome, u.cognome
     FROM blog$it AS bB, utenti AS u
     WHERE bB.autore=u.idUs AND bB.idMaster={$bl['idBl']};";
     try{

@@ -55,13 +55,13 @@ ready(function () {
     //Riabilito i campi disabilitati di default dal template
     var btnacc = document.getElementById("btnAccBis");
     if (btnacc) {
-        btnacc.disabled = false;
+        btnacc.removeAttribute('disabled');
         btnacc.addEventListener("click", resetHidden());
     }
 
     var fieldsetBis = document.getElementById("fsForm");
     if (fieldsetBis) {
-        fieldsetBis.disabled = false;
+        fieldsetBis.removeAttribute('disabled');
     }
 
     var mmt = document.getElementById('myModalBis');
@@ -79,7 +79,7 @@ ready(function () {
     var delBisOK = document.getElementById("deleteBis");
     delBisOK.addEventListener("click", function () {
         call_ajax_delete_bis(id_bisogno_selezionato, 0);    //0 false fa eliminazione fisica => è un mio bisogno
-        call_ajax_dati_table('bisogni', 'Bistable', personalbis);
+        call_ajax_dati_table('bisogni', 'Bistable', personalbis, 'ajax/getallposts.php');
     });
 
 
@@ -130,7 +130,14 @@ ready(function () {
             }
         });
     }
+    var fortimer = document.getElementById("scadenza");
+    var dataFine = fortimer.value;
+    dataFine = dataFine.replace(" ", "T");
+    console.log(dataFine);
+    avviaContoAllaRovescia(dataFine, "demo");
+    
 }); //end ready
+
 
 function resetHidden() {
     document.getElementById("hidden_post_id").value = 0;
@@ -172,7 +179,7 @@ async function call_ajax_delete_bis(idcanc,clogic) {
         //console.log(result['success']);
         myMdT.hide();
         showMessagge(result['success'], "my-callout-warning");
-        call_ajax_dati_table('bisogni', 'Bistable', personalbis);
+        call_ajax_dati_table('bisogni', 'Bistable', personalbis, 'ajax/getallposts.php');
         //window.location.href = window.location.href;
     }
 }
@@ -204,7 +211,7 @@ async function call_ajax_upcre_bisogni() {
         resetAccordion(collapsableBis, "btnAccBis", formBis, "Segnala nuovo bisogno");
         formBis.reset();
         showMessagge(result['success'], "my-callout-info", "infoMessagge");      
-        call_ajax_dati_table('bisogni', 'Bistable', personalbis);
+        call_ajax_dati_table('bisogni', 'Bistable', personalbis, 'ajax/getallposts.php');
     }
     else showMessagge(result['errors'], "my-callout-danger","infoMessagge");   
 }

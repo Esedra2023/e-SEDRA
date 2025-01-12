@@ -24,7 +24,7 @@
             <tr>
                 <th>N</th>
                 <th>Titolo</th>
-                <th>Ambito</th>
+                <!--<th>Ambito</th>-->
                 <th>Voti</th>
                 <th>
                     <i class="bi bi-heart-fill"></i>
@@ -52,17 +52,17 @@
                         <?php echo $post['titleBis']; ?>
                     </button>
                 </td>
-                <td>
+                <!--<td>
                     <?php if(isset($post['ambito'])) echo $post['ambito']; ?>
-                </td>
+                </td>-->
                 <td>
-                    <?php if(isset($post['grade']) && $post['grade']!=null) echo $post['grade']; else echo '---' ?>
+                    <?php if(isset($post['grade']) && $post['grade']!=null) echo $post['grade']; else echo '--' ?>
                 </td>
                 <td>
                     <?php if(isset($post['nlike'])) echo $post['nlike']; else echo'-'; ;?>
                 </td>
                 <td>
-                    <?php if(isset($post['dtRev']) && $post['dtRev']!=null) echo date("d-m-Y", strtotime($post['dtRev']));else echo 'NR'?>
+                    <?php if(isset($post['dtRev']) && $post['dtRev']!=null) echo date("d-m-Y H:i", strtotime($post['dtRev']));else echo 'NR'?>
                 </td>
                 <td>
                     <?php if(isset($post['rev'])) echo $post['rev']; ?>
@@ -76,7 +76,7 @@
                         }//end for
             }//if
             if($tot==0) {
-                echo '<tr><td colspan="8"class="alert alert-primary col-md-12 mt-3 text-center">Nessun bisogno da visualizzare</td></tr>';
+                echo '<tr><td colspan="7"class="alert alert-primary col-md-12 mt-3 text-center">Nessun bisogno da visualizzare</td></tr>';
             }
             ?>
         </tbody>

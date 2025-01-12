@@ -38,7 +38,7 @@ else if($_SESSION['ini']['dbms'] == 'My SQL'){
 $sql =<<<SQL
     CREATE TABLE segnalaCommP (
     idSC INT $autoinc NOT NULL PRIMARY KEY,
-    dtIns   DATE $dtNow  NOT NULL,
+    dtIns   DATETIME $dtNow  NOT NULL,
     utente INT,
     commento INT NOT NULL,
     FOREIGN KEY (utente) REFERENCES utenti(idUs) ON DELETE NO ACTION,

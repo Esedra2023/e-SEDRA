@@ -24,7 +24,6 @@ if (!defined('ROOT_PATH'))
     define ('ROOT_PATH', $_SESSION['ini']['ROOT_PATH']);
 require_once ROOT_PATH .'/include/functions.php';
 
-
     $role=$_POST['role'];
     $savegrad=$_POST['savegrad'];
     $field=$_POST['field'];
@@ -35,7 +34,7 @@ require_once ROOT_PATH .'/include/functions.php';
     (SELECT biv, grade, votanti, nlike
         FROM (SELECT bisogni.idBs as biv, sum(grade) as grade, count(grade) as votanti
             FROM bisogni LEFT JOIN  valBis ON
-            bisogni.idBs=valbis.bisogno AND valBis.dtIns >= (SELECT dtStart FROM attivita WHERE idAt=104) AND valBis.dtIns <= (SELECT dtStop FROM attivita WHERE idAt=104)
+            bisogni.idBs=valBis.bisogno AND valBis.dtIns >= (SELECT dtStart FROM attivita WHERE idAt=104) AND valBis.dtIns <= (SELECT dtStop FROM attivita WHERE idAt=104)
             GROUP BY bisogni.idBs) AS vv LEFT JOIN
             (SELECT bisogni.idBs as bil,count(idmi) as nlike
             FROM (bisogni LEFT JOIN  miPiaceB ON
@@ -75,17 +74,23 @@ require_once ROOT_PATH .'/include/functions.php';
 
         //if($save)
         //{
-            $up="";
-            $sql="DELETE FROM gradBisogni WHERE ballot=$bal; INSERT INTO gradBisogni (idBs,IdAm,grade,nlike,votanti, ballot) VALUES ";
-            foreach($gradposts as $gb)
+            //$up="";
+            $coll="(";
+            $sql = "DELETE FROM gradBisogni WHERE ballot=$bal; INSERT INTO gradBisogni (idBs,IdAm,grade,nlike,votanti, ballot) VALUES ";
+        foreach($gradposts as $gb)
             {
+                if ($gb['grade'] == null)
+                    $gb['grade'] = 0;
                 $sql=$sql."({$gb['idBs']},{$gb['idAm']},{$gb['grade']},{$gb['nlike']},{$gb['votanti']},$bal)";
                 $sql=$sql.",";
-                $up=$up."UPDATE bisogni SET ingrad=1 WHERE idBs={$gb['idBs']};";
+                $coll = $coll . $gb['idBs'].",";
+                //$up=$up."UPDATE bisogni SET ingrad=1 WHERE idBs={$gb['idBs']};";
             }
             $rest = substr($sql, 0, -1);
             $rest=$rest.";";
-            $rest=$rest.$up;
+            $coll = substr($coll, 0, -1);   //tolgo virgola finale
+            $coll = $coll . ")";
+            $rest=$rest."UPDATE bisogni SET ingrad=1 WHERE idBs IN ".$coll;
             $stmt = $conn->prepare($rest);
             if(! $stmt->execute()) throw new Exception('Errore query save graduatoria');
             $_SESSION['ini']['gradDefBisogni']=1;
@@ -98,7 +103,6 @@ require_once ROOT_PATH .'/include/functions.php';
 
             }
 
-        //}
     }
     $conn=null;
     $stmt=null;

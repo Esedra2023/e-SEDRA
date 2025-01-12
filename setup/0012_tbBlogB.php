@@ -44,7 +44,7 @@ CREATE TABLE blogB
 	content VARCHAR(1024) NOT NULL,
     dtIns DATETIME $dtNow NOT NULL,
     stato INT NOT NULL DEFAULT 0,
-    dtRev DATE,
+    dtRev DATETIME,
     revisore INT,
     note VARCHAR(40),
     risp TINYINT DEFAULT 0,

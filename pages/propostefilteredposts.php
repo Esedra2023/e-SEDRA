@@ -78,7 +78,10 @@ if (isset($_POST['idPr'])) {
                             
                                 <div class="card-footer">
                                     <small class="text-muted">
-                                        <?php echo date("j F Y ", strtotime($spost["dtIns"])); ?>
+                                        <?php
+                                            echo date("d-m-Y H:i", strtotime($spost["dtIns"]));
+                                            //echo date("j F Y ", strtotime($spost["dtIns"]));
+                                            ?>
                                     </small>
                                 </div>
                             </div>
